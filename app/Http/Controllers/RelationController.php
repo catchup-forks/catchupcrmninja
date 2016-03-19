@@ -55,7 +55,7 @@ class RelationController extends BaseController
         return View::make('list', array(
             'entityType' => ENTITY_RELATION,
             'title' => trans('texts.relations'),
-            'sortCol' => '4',
+            'sortCol' => '1',
             'columns' => Utils::trans([
               'checkbox',
               'relation',

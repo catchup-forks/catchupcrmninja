@@ -80,7 +80,7 @@ return array(
     'relations' => 'Relaties',
     'invoices' => 'Facturen',
     'payments' => 'Betalingen',
-    'credits' => 'Kredietnota\'s',
+    'credits' => 'Creditnota\'s',
     'history' => 'Geschiedenis',
     'search' => 'Zoeken',
     'sign_up' => 'Aanmelden',
@@ -107,7 +107,7 @@ return array(
         <p>Voorbeelden van dynamische factuur variabelen:</p>
         <ul>
           <li>"Fitnesslidmaatschap voor de maand :MONTH" => "Fitnesslidmaatschap voor de maand juli"</li>
-          <li>"Jaarlijks abonnement :YEAR+1" => "Jaarlijks abonnement 2015"</li>
+          <li>"Jaarlijks abonnement :YEAR+1" => "Jaarlijks abonnement 2016"</li>
           <li>"Betaling voor :QUARTER+1" => "Betaling voor Q2"</li>
         </ul>',
 
@@ -128,14 +128,14 @@ return array(
     'delete_relation' => 'Verwijder relatie',
     'archive_payment' => 'Archiveer betaling',
     'delete_payment' => 'Verwijder betaling',
-    'archive_credit' => 'Archiveer kredietnota',
-    'delete_credit' => 'Verwijder kredietnota',
+    'archive_credit' => 'Archiveer creditnota',
+    'delete_credit' => 'Verwijder creditnota',
     'show_archived_deleted' => 'Toon gearchiveerde/verwijderde',
     'filter' => 'Filter',
     'new_relation' => 'Nieuwe relatie',
     'new_invoice' => 'Nieuwe factuur',
     'new_payment' => 'Nieuwe betaling',
-    'new_credit' => 'Nieuwe kredietnota',
+    'new_credit' => 'Nieuwe creditnota',
     'contact' => 'Contact',
     'date_created' => 'Aanmaakdatum',
     'last_login' => 'Laatste login',
@@ -160,7 +160,7 @@ return array(
 
     // relation view page
     'create_invoice' => 'Factuur aanmaken',
-    'enter_credit' => 'Kredietnota ingeven',
+    'enter_credit' => 'Creditnota ingeven',
     'last_logged_in' => 'Laatste login',
     'details' => 'Details',
     'standing' => 'Openstaand',
@@ -244,11 +244,11 @@ return array(
     'deleted_payments' => ':count betalingen succesvol verwijderd',
     'applied_payment' => 'Betaling succesvol toegepast',
 
-    'created_credit' => 'Kredietnota succesvol aangemaakt',
-    'archived_credit' => 'Kredietnota succesvol gearchiveerd',
-    'archived_credits' => ':count kredietnota\'s succesvol gearchiveerd',
-    'deleted_credit' => 'Kredietnota succesvol verwijderd',
-    'deleted_credits' => ':count kredietnota\'s succesvol verwijderd',
+    'created_credit' => 'Creditnota succesvol aangemaakt',
+    'archived_credit' => 'Creditnota succesvol gearchiveerd',
+    'archived_credits' => ':count creditnota\'s succesvol gearchiveerd',
+    'deleted_credit' => 'Creditnota succesvol verwijderd',
+    'deleted_credits' => ':count creditnota\'s succesvol verwijderd',
 
     // E-mails
     'confirmation_subject' => 'InvoiceNinja Organisationbevestiging',
@@ -473,14 +473,14 @@ return array(
     'restore_invoice' => 'Herstel factuur',
     'restore_quote' => 'Herstel offerte',
     'restore_relation' => 'Herstel relatie',
-    'restore_credit' => 'Herstel kredietnota',
+    'restore_credit' => 'Herstel creditnota',
     'restore_payment' => 'Herstel betaling',
 
     'restored_invoice' => 'Factuur succesvol hersteld',
     'restored_quote' => 'Offerte succesvol hersteld',
     'restored_relation' => 'Relatie succesvol hersteld',
     'restored_payment' => 'Betaling succesvol hersteld',
-    'restored_credit' => 'Kredietnota succesvol hersteld',
+    'restored_credit' => 'Creditnota succesvol hersteld',
 
     'reason_for_canceling' => 'Help ons om onze site te verbeteren door ons te vertellen waarom u weggaat.',
     'discount_percent' => 'Percentage',
