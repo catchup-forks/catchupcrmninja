@@ -28,9 +28,9 @@ class OrganisationGatewayService extends BaseService
     }
     */
 
-    public function getDatatable($accountId)
+    public function getDatatable($organisationId)
     {
-        $query = $this->OrganisationGatewayRepo->find($accountId);
+        $query = $this->OrganisationGatewayRepo->find($organisationId);
 
         return $this->createDatatable(ENTITY_ORGANISATION_GATEWAY, $query, false);
     }

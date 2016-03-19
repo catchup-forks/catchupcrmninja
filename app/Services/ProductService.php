@@ -31,9 +31,9 @@ class ProductService extends BaseService
     }
     */
 
-    public function getDatatable($accountId)
+    public function getDatatable($organisationId)
     {
-        $query = $this->productRepo->find($accountId);
+        $query = $this->productRepo->find($organisationId);
 
         return $this->createDatatable(ENTITY_PRODUCT, $query, false);
     }

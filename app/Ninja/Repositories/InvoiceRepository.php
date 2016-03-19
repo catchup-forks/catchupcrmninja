@@ -33,14 +33,14 @@ class InvoiceRepository extends BaseRepository
                 ->get();
     }
 
-    public function getInvoices($accountId, $clientPublicId = false, $entityType = ENTITY_INVOICE, $filter = false)
+    public function getInvoices($organisationId, $clientPublicId = false, $entityType = ENTITY_INVOICE, $filter = false)
     {
         $query = DB::table('invoices')
             ->join('organisations', 'organisations.id', '=', 'invoices.organisation_id')
             ->join('clients', 'clients.id', '=', 'invoices.client_id')
             ->join('invoice_statuses', 'invoice_statuses.id', '=', 'invoices.invoice_status_id')
             ->join('contacts', 'contacts.client_id', '=', 'clients.id')
-            ->where('invoices.organisation_id', '=', $accountId)
+            ->where('invoices.organisation_id', '=', $organisationId)
             ->where('clients.deleted_at', '=', null)
             ->where('contacts.deleted_at', '=', null)
             ->where('invoices.is_recurring', '=', false)
@@ -92,14 +92,14 @@ class InvoiceRepository extends BaseRepository
         return $query;
     }
 
-    public function getRecurringInvoices($accountId, $clientPublicId = false, $filter = false)
+    public function getRecurringInvoices($organisationId, $clientPublicId = false, $filter = false)
     {
         $query = DB::table('invoices')
                     ->join('organisations', 'organisations.id', '=', 'invoices.organisation_id')
                     ->join('clients', 'clients.id', '=', 'invoices.client_id')
                     ->join('frequencies', 'frequencies.id', '=', 'invoices.frequency_id')
                     ->join('contacts', 'contacts.client_id', '=', 'clients.id')
-                    ->where('invoices.organisation_id', '=', $accountId)
+                    ->where('invoices.organisation_id', '=', $organisationId)
                     ->where('invoices.is_quote', '=', false)
                     ->where('contacts.deleted_at', '=', null)
                     ->where('invoices.is_recurring', '=', true)
@@ -690,7 +690,7 @@ class InvoiceRepository extends BaseRepository
         }
 
         $sql = implode(' OR ', $dates);
-        $invoices = Invoice::whereAccountId($organisation->id)
+        $invoices = Invoice::whereOrganisationId($organisation->id)
                     ->where('balance', '>', 0)
                     ->where('is_quote', '=', false)
                     ->where('is_recurring', '=', false)

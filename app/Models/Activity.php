@@ -13,7 +13,7 @@ class Activity extends Eloquent
 
     public function scopeScope($query)
     {
-        return $query->whereAccountId(Auth::user()->organisation_id);
+        return $query->whereOrganisationId(Auth::user()->organisation_id);
     }
 
     public function organisation()

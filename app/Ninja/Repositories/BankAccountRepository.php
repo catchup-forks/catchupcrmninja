@@ -15,12 +15,12 @@ class BankOrganisationRepository extends BaseRepository
         return 'App\Models\BankAccount';
     }
 
-    public function find($accountId)
+    public function find($organisationId)
     {
         return DB::table('bank_accounts')
                     ->join('banks', 'banks.id', '=', 'bank_accounts.bank_id')
                     ->where('bank_accounts.deleted_at', '=', null)
-                    ->where('bank_accounts.organisation_id', '=', $accountId)
+                    ->where('bank_accounts.organisation_id', '=', $organisationId)
                     ->select(
                         'bank_accounts.public_id',
                         'banks.name as bank_name',

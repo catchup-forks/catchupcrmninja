@@ -12,10 +12,10 @@ class TaxRateRepository extends BaseRepository
         return 'App\Models\TaxRate';
     }
 
-    public function find($accountId)
+    public function find($organisationId)
     {
         return DB::table('tax_rates')
-                ->where('tax_rates.organisation_id', '=', $accountId)
+                ->where('tax_rates.organisation_id', '=', $organisationId)
                 ->where('tax_rates.deleted_at', '=', null)
                 ->select('tax_rates.public_id', 'tax_rates.name', 'tax_rates.rate', 'tax_rates.deleted_at');
     }

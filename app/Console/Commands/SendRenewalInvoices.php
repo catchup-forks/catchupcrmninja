@@ -38,11 +38,11 @@ class SendRenewalInvoices extends Command
 
         foreach ($accounts as $organisation) {
             // don't send multiple invoices to multi-company users
-            if ($userAccountId = $this->accountRepo->getUserAccountId($organisation)) {
-                if (isset($sentTo[$userAccountId])) {
+            if ($userOrganisationId = $this->accountRepo->getUserOrganisationId($organisation)) {
+                if (isset($sentTo[$userOrganisationId])) {
                     continue;
                 } else {
-                    $sentTo[$userAccountId] = true;
+                    $sentTo[$userOrganisationId] = true;
                 }
             }
 

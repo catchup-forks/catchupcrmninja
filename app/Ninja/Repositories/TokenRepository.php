@@ -13,10 +13,10 @@ class TokenRepository extends BaseRepository
         return 'App\Models\AccountToken';
     }
 
-    public function find($accountId)
+    public function find($organisationId)
     {
         $query = DB::table('account_tokens')
-                  ->where('account_tokens.organisation_id', '=', $accountId);
+                  ->where('account_tokens.organisation_id', '=', $organisationId);
 
         if (!Session::get('show_trash:token')) {
             $query->where('account_tokens.deleted_at', '=', null);

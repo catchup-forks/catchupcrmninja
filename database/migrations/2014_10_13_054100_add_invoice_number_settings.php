@@ -26,9 +26,9 @@ class AddInvoiceNumberSettings extends Migration {
 		// set initial counter value for organisations with invoices
     $accounts = DB::table('organisations')->lists('id');
 
-    foreach ($accounts as $accountId) {
+    foreach ($accounts as $organisationId) {
       
-      $invoiceNumbers = DB::table('invoices')->where('organisation_id', $accountId)->lists('invoice_number');
+      $invoiceNumbers = DB::table('invoices')->where('organisation_id', $organisationId)->lists('invoice_number');
       $max = 0;
 
       foreach ($invoiceNumbers as $invoiceNumber) {
@@ -36,7 +36,7 @@ class AddInvoiceNumberSettings extends Migration {
         $max = max($max, $number);
       }      
 
-      DB::table('organisations')->where('id', $accountId)->update(['invoice_number_counter' => ++$max]);
+      DB::table('organisations')->where('id', $organisationId)->update(['invoice_number_counter' => ++$max]);
     }	
 	}
 

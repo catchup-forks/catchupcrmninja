@@ -71,18 +71,18 @@ class InvoiceController extends BaseController
 
     public function getDatatable($clientPublicId = null)
     {
-        $accountId = Auth::user()->organisation_id;
+        $organisationId = Auth::user()->organisation_id;
         $search = Input::get('sSearch');
 
-        return $this->invoiceService->getDatatable($accountId, $clientPublicId, ENTITY_INVOICE, $search);
+        return $this->invoiceService->getDatatable($organisationId, $clientPublicId, ENTITY_INVOICE, $search);
     }
 
     public function getRecurringDatatable($clientPublicId = null)
     {
-        $accountId = Auth::user()->organisation_id;
+        $organisationId = Auth::user()->organisation_id;
         $search = Input::get('sSearch');
 
-        return $this->recurringInvoiceService->getDatatable($accountId, $clientPublicId, ENTITY_RECURRING_INVOICE, $search);
+        return $this->recurringInvoiceService->getDatatable($organisationId, $clientPublicId, ENTITY_RECURRING_INVOICE, $search);
     }
 
     public function edit($publicId, $clone = false)

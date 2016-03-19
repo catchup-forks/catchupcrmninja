@@ -754,59 +754,8 @@
 </div>
 <br/>
 <div class="container">
-@if (Utils::isNinjaProd())
-  @if (Auth::check() && Auth::user()->isTrial())
-    {!! trans(Auth::user()->organisation->getCountTrialDaysLeft() == 0 ? 'texts.trial_footer_last_day' : 'texts.trial_footer', [
-            'count' => Auth::user()->organisation->getCountTrialDaysLeft(),
-            'link' => '<a href="javascript:submitProPlan()">' . trans('texts.click_here') . '</a>'
-        ]) !!}
-  @endif
-@else
-  {{ trans('texts.powered_by') }}
-  {{-- Per our license, please do not remove or modify this section. --}}
-  {!! link_to('https://www.invoiceninja.com/?utm_source=powered_by', 'InvoiceNinja.com', ['target' => '_blank', 'title' => 'invoiceninja.com']) !!} -
-  {!! link_to(RELEASES_URL, 'v' . NINJA_VERSION, ['target' => '_blank', 'title' => trans('texts.trello_roadmap')]) !!} | 
-  @if (Auth::user()->organisation->isWhiteLabel())
-    {{ trans('texts.white_labeled') }}
-  @else
-    <a href="#" onclick="loadImages('#whiteLabelModal');$('#whiteLabelModal').modal('show');">{{ trans('texts.white_label_link') }}</a>
-
-    <div class="modal fade" id="whiteLabelModal" tabindex="-1" role="dialog" aria-labelledby="whiteLabelModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title" id="myModalLabel">{{ trans('texts.white_label_header') }}</h4>
-          </div>
-
-          <div class="panel-body">
-            <p>{{ trans('texts.white_label_text')}}</p>
-            <div class="row">
-                <div class="col-md-6">
-                    <h4>{{ trans('texts.before') }}</h4>
-                    <img src="{{ BLANK_IMAGE }}" data-src="http://ninja.dev/images/pro_plan/white_label_before.png" width="100%" alt="before">
-                </div>
-                <div class="col-md-6">
-                    <h4>{{ trans('texts.after') }}</h4>
-                    <img src="{{ BLANK_IMAGE }}" data-src="http://ninja.dev/images/pro_plan/white_label_after.png" width="100%" alt="after">
-                </div>
-            </div>
-          </div>
-
-          <div class="modal-footer" id="signUpFooter" style="margin-top: 0px">          
-            <button type="button" class="btn btn-default" data-dismiss="modal">{{ trans('texts.close') }} </button>
-            {{-- DropdownButton::success_lg(trans('texts.buy'), [
-                ['url' => URL::to(""), 'label' => trans('texts.pay_with_paypal')],
-                ['url' => URL::to(""), 'label' => trans('texts.pay_with_card')]
-            ])->addClass('btn-lg') --}}
-            <button type="button" class="btn btn-primary" onclick="buyProduct('{{ WHITE_LABEL_AFFILIATE_KEY }}', '{{ PRODUCT_WHITE_LABEL }}')">{{ trans('texts.buy') }} </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  @endif
+Custom Footer
 </div>
-@endif
 
 <p>&nbsp;</p>
 

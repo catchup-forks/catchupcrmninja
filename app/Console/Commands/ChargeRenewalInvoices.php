@@ -31,7 +31,7 @@ class ChargeRenewalInvoices extends Command
         $this->info(date('Y-m-d').' ChargeRenewalInvoices...');
 
         $organisation = $this->accountRepo->getNinjaAccount();
-        $invoices = Invoice::whereAccountId($organisation->id)
+        $invoices = Invoice::whereOrganisationId($organisation->id)
                         ->whereDueDate(date('Y-m-d'))
                         ->with('client')
                         ->orderBy('id')

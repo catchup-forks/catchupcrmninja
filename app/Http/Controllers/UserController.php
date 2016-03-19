@@ -345,9 +345,9 @@ class UserController extends BaseController
         return Redirect::to($referer);
     }
 
-    public function unlinkAccount($userAccountId, $userId)
+    public function unlinkAccount($userOrganisationId, $userId)
     {
-        $this->accountRepo->unlinkUser($userAccountId, $userId);
+        $this->accountRepo->unlinkUser($userOrganisationId, $userId);
         $referer = Request::header('referer');
 
         $users = $this->accountRepo->loadAccounts(Auth::user()->id);

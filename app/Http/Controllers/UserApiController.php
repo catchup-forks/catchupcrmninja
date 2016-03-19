@@ -25,10 +25,10 @@ class UserApiController extends BaseAPIController
     public function index()
     {
         $user = Auth::user();
-        $users = User::whereAccountId($user->organisation_id)->withTrashed();
+        $users = User::whereOrganisationId($user->organisation_id)->withTrashed();
         $users = $users->paginate();
 
-        $paginator = User::whereAccountId($user->organisation_id)->withTrashed()->paginate();
+        $paginator = User::whereOrganisationId($user->organisation_id)->withTrashed()->paginate();
 
         $transformer = new UserTransformer(Auth::user()->organisation, $this->serializer);
         $data = $this->createCollection($users, $transformer, 'users', $paginator);

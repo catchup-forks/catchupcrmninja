@@ -119,9 +119,9 @@ class InvoiceService extends BaseService
         }
     }
 
-    public function getDatatable($accountId, $clientPublicId = null, $entityType, $search)
+    public function getDatatable($organisationId, $clientPublicId = null, $entityType, $search)
     {
-        $query = $this->invoiceRepo->getInvoices($accountId, $clientPublicId, $entityType, $search)
+        $query = $this->invoiceRepo->getInvoices($organisationId, $clientPublicId, $entityType, $search)
                     ->where('invoices.is_quote', '=', $entityType == ENTITY_QUOTE ? true : false);
 
         if(!Utils::hasPermission('view_all')){

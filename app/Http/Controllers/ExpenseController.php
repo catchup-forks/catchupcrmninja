@@ -147,7 +147,7 @@ class ExpenseController extends BaseController
         $data = array_merge($data, self::getViewModel());
 
         if (Auth::user()->organisation->isNinjaAccount()) {
-            if ($organisation = Organisation::whereId($client->public_id)->first()) {
+            if ($organisation = Account::whereId($client->public_id)->first()) {
                 $data['proPlanPaid'] = $organisation['pro_plan_paid'];
             }
         }

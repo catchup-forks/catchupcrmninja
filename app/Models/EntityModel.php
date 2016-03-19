@@ -62,13 +62,13 @@ class EntityModel extends Eloquent
     }
     */
 
-    public function scopeScope($query, $publicId = false, $accountId = false)
+    public function scopeScope($query, $publicId = false, $organisationId = false)
     {
-        if (!$accountId) {
-            $accountId = Auth::user()->organisation_id;
+        if (!$organisationId) {
+            $organisationId = Auth::user()->organisation_id;
         }
 
-        $query->where($this->getTable() .'.organisation_id', '=', $accountId);
+        $query->where($this->getTable() .'.organisation_id', '=', $organisationId);
 
         if ($publicId) {
             if (is_array($publicId)) {

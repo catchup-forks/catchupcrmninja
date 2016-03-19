@@ -27,9 +27,9 @@ class UserService extends BaseService
     }
     */
 
-    public function getDatatable($accountId)
+    public function getDatatable($organisationId)
     {
-        $query = $this->userRepo->find($accountId);
+        $query = $this->userRepo->find($organisationId);
 
         return $this->createDatatable(ENTITY_USER, $query, false);
     }

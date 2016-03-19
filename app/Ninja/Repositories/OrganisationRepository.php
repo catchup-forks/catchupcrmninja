@@ -221,7 +221,7 @@ class OrganisationRepository
     public function createNinjaInvoice($client, $clientAccount)
     {
         $organisation = $this->getNinjaAccount();
-        $lastInvoice = Invoice::withTrashed()->whereAccountId($organisation->id)->orderBy('public_id', 'DESC')->first();
+        $lastInvoice = Invoice::withTrashed()->whereOrganisationId($organisation->id)->orderBy('public_id', 'DESC')->first();
         $publicId = $lastInvoice ? ($lastInvoice->public_id + 1) : 1;
         $invoice = new Invoice();
         $invoice->organisation_id = $organisation->id;
@@ -298,7 +298,7 @@ class OrganisationRepository
     {
         $organisation->load('users');
         $ninjaAccount = $this->getNinjaAccount();
-        $client = Client::whereAccountId($ninjaAccount->id)->wherePublicId($organisation->id)->first();
+        $client = Client::whereOrganisationId($ninjaAccount->id)->wherePublicId($organisation->id)->first();
 
         if (!$client) {
             $client = new Client();
@@ -510,16 +510,16 @@ class OrganisationRepository
             return;
         }
 
-        $accountIds = [];
+        $organisationIds = [];
         foreach ($users as $user) {
             if ($user->pro_plan_paid != $proPlanPaid) {
-                $accountIds[] = $user->organisation_id;
+                $organisationIds[] = $user->organisation_id;
             }
         }
 
-        if (count($accountIds)) {
+        if (count($organisationIds)) {
             DB::table('organisations')
-                ->whereIn('id', $accountIds)
+                ->whereIn('id', $organisationIds)
                 ->update(['pro_plan_paid' => $proPlanPaid]);
         }
     }
@@ -557,8 +557,8 @@ class OrganisationRepository
         }
     }
 
-    public function unlinkUser($userAccountId, $userId) {
-        $userAccount = UserAccount::whereId($userAccountId)->first();
+    public function unlinkUser($userOrganisationId, $userId) {
+        $userAccount = UserAccount::whereId($userOrganisationId)->first();
         if ($userAccount->hasUserId($userId)) {
             $userAccount->removeUserId($userId);
             $userAccount->save();
@@ -599,7 +599,7 @@ class OrganisationRepository
         }
     }
 
-    public function getUserAccountId($organisation)
+    public function getUserOrganisationId($organisation)
     {
         $user = $organisation->users()->first();
         $userAccount = $this->findUserAccounts($user->id);

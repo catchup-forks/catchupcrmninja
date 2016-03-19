@@ -51,13 +51,13 @@ class OrganisationController extends BaseController
 
     public function demo()
     {
-        $demoAccountId = Utils::getDemoAccountId();
+        $demoOrganisationId = Utils::getDemoOrganisationId();
 
-        if (!$demoAccountId) {
+        if (!$demoOrganisationId) {
             return Redirect::to('/');
         }
 
-        $organisation = Organisation::find($demoAccountId);
+        $organisation = Organisation::find($demoOrganisationId);
         $user = $organisation->users()->first();
 
         Auth::login($user, true);

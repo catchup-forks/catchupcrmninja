@@ -21,7 +21,7 @@ class PaymentTermService extends BaseService
         return $this->paymentTermRepo;
     }
 
-    public function getDatatable($accountId = 0)
+    public function getDatatable($organisationId = 0)
     {
         $query = $this->paymentTermRepo->find();
 

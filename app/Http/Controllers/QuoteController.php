@@ -72,10 +72,10 @@ class QuoteController extends BaseController
 
     public function getDatatable($clientPublicId = null)
     {
-        $accountId = Auth::user()->organisation_id;
+        $organisationId = Auth::user()->organisation_id;
         $search = Input::get('sSearch');
 
-        return $this->invoiceService->getDatatable($accountId, $clientPublicId, ENTITY_QUOTE, $search);
+        return $this->invoiceService->getDatatable($organisationId, $clientPublicId, ENTITY_QUOTE, $search);
     }
 
     public function create($clientPublicId = 0)

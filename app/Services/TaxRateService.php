@@ -28,9 +28,9 @@ class TaxRateService extends BaseService
     }
     */
 
-    public function getDatatable($accountId)
+    public function getDatatable($organisationId)
     {
-        $query = $this->taxRateRepo->find($accountId);
+        $query = $this->taxRateRepo->find($organisationId);
 
         return $this->createDatatable(ENTITY_TAX_RATE, $query, false);
     }

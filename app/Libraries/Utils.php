@@ -159,7 +159,7 @@ class Utils
         }
     }
 
-    public static function getDemoAccountId()
+    public static function getDemoOrganisationId()
     {
         return isset($_ENV[DEMO_ORGANISATION_ID]) ? $_ENV[DEMO_ORGANISATION_ID] : false;
     }

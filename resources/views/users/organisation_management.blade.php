@@ -67,9 +67,9 @@
 
 
     <script type="text/javascript">
-      function showUnlink(userAccountId, userId) {    
+      function showUnlink(userOrganisationId, userId) {
         NINJA.unlink = {
-            'userAccountId': userAccountId,
+            'userOrganisationId': userOrganisationId,
             'userId': userId
         };
         $('#unlinkModal').modal('show');    
@@ -77,7 +77,7 @@
       }
 
       function unlinkAccount() {    
-        window.location = '{{ URL::to('/unlink_account') }}' + '/' + NINJA.unlink.userAccountId + '/' + NINJA.unlink.userId;    
+        window.location = '{{ URL::to('/unlink_account') }}' + '/' + NINJA.unlink.userOrganisationId + '/' + NINJA.unlink.userId;
       }
 
     </script>

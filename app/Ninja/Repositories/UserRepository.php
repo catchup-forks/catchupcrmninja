@@ -13,10 +13,10 @@ class UserRepository extends BaseRepository
         return 'App\Models\User';
     }
 
-    public function find($accountId)
+    public function find($organisationId)
     {
         $query = DB::table('users')
-                  ->where('users.organisation_id', '=', $accountId);
+                  ->where('users.organisation_id', '=', $organisationId);
 
         if (!Session::get('show_trash:user')) {
             $query->where('users.deleted_at', '=', null);
