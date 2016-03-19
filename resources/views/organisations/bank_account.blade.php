@@ -398,7 +398,7 @@
                     self.title("{{ trans('texts.add_bank_account') }}");
                 @endif
             } else if (page == 'setup') {
-                self.title("{{ trans('texts.setup_account') }}");
+                self.title("{{ trans('texts.setup_bankaccount') }}");
             } else if (page == 'import') {
                 self.title("{{ trans('texts.import_expenses') }}");
             }

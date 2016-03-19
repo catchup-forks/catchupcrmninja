@@ -402,10 +402,10 @@ class OrganisationRepository
 
     public function findUsers($user, $with = null)
     {
-        $accounts = $this->findUserOrganisations($user->id);
+        $organisations = $this->findUserOrganisations($user->id);
 
-        if ($accounts) {
-            return $this->getUserOrganisations($accounts, $with);
+        if ($organisations) {
+            return $this->getUserOrganisations($organisations, $with);
         } else {
             return [$user];
         }

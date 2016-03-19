@@ -31,12 +31,12 @@ class SendRenewalInvoices extends Command
         $sentTo = [];
 
         // get all organisations with pro plans expiring in 10 days
-        $accounts = Organisation::whereRaw('datediff(curdate(), pro_plan_paid) = 355')
+        $organisations = Organisation::whereRaw('datediff(curdate(), pro_plan_paid) = 355')
                         ->orderBy('id')
                         ->get();
-        $this->info(count($accounts).' organisations found');
+        $this->info(count($organisations).' organisations found');
 
-        foreach ($accounts as $organisation) {
+        foreach ($organisations as $organisation) {
             // don't send multiple invoices to multi-company users
             if ($userOrganisationId = $this->organisationRepo->getUserOrganisationId($organisation)) {
                 if (isset($sentTo[$userOrganisationId])) {

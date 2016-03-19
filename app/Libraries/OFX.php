@@ -69,7 +69,7 @@ class Bank
 
 class Login
 {
-    public $accounts;
+    public $organisations;
     public $bank;
     public $id;
     public $pass;

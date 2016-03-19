@@ -32,10 +32,10 @@ class SendReminders extends Command
         $this->info(date('Y-m-d').' Running SendReminders...');
         $today = new DateTime();
 
-        $accounts = $this->organisationRepo->findWithReminders();
-        $this->info(count($accounts).' organisations found');
+        $organisations = $this->organisationRepo->findWithReminders();
+        $this->info(count($organisations).' organisations found');
 
-        foreach ($accounts as $organisation) {
+        foreach ($organisations as $organisation) {
             if (!$organisation->isPro()) {
                 continue;
             }

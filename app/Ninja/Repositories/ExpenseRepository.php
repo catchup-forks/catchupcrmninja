@@ -27,10 +27,10 @@ class ExpenseRepository extends BaseRepository
     public function findVendor($vendorPublicId)
     {
         $vendorId = Vendor::getPrivateId($vendorPublicId);
-        $accountid = \Auth::user()->organisation_id;
+        $organisationid = \Auth::user()->organisation_id;
         $query = DB::table('expenses')
                     ->join('organisations', 'organisations.id', '=', 'expenses.organisation_id')
-                    ->where('expenses.organisation_id', '=', $accountid)
+                    ->where('expenses.organisation_id', '=', $organisationid)
                     ->where('expenses.vendor_id', '=', $vendorId)
                     ->select(
                         'expenses.id',
@@ -49,14 +49,14 @@ class ExpenseRepository extends BaseRepository
 
     public function find($filter = null)
     {
-        $accountid = \Auth::user()->organisation_id;
+        $organisationid = \Auth::user()->organisation_id;
         $query = DB::table('expenses')
                     ->join('organisations', 'organisations.id', '=', 'expenses.organisation_id')
                     ->leftjoin('relations', 'relations.id', '=', 'expenses.relation_id')
                     ->leftJoin('contacts', 'contacts.relation_id', '=', 'relations.id')
                     ->leftjoin('vendors', 'vendors.id', '=', 'expenses.vendor_id')
                     ->leftJoin('invoices', 'invoices.id', '=', 'expenses.invoice_id')
-                    ->where('expenses.organisation_id', '=', $accountid)
+                    ->where('expenses.organisation_id', '=', $organisationid)
                     ->where('contacts.deleted_at', '=', null)
                     ->where('vendors.deleted_at', '=', null)
                     ->where('relations.deleted_at', '=', null)

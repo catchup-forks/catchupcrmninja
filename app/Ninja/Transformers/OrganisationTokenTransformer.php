@@ -7,11 +7,11 @@ use League\Fractal\TransformerAbstract;
 class OrganisationTokenTransformer extends TransformerAbstract
 {
 
-    public function transform(OrganisationToken $account_token)
+    public function transform(OrganisationToken $organisation_token)
     {
         return [
-            'name' => $account_token->name,
-            'token' => $account_token->token
+            'name' => $organisation_token->name,
+            'token' => $organisation_token->token
         ];
     }
 }

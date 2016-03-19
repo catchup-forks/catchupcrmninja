@@ -182,7 +182,7 @@ class ContactMailer extends Mailer
         $organisation->loadLocalizationSettings($relation);
 
         $invoice = $payment->invoice;
-        $accountName = $organisation->getDisplayName();
+        $organisationName = $organisation->getDisplayName();
         $emailTemplate = $organisation->getEmailTemplate(ENTITY_PAYMENT);
         $emailSubject = $invoice->organisation->getEmailSubject(ENTITY_PAYMENT);
 
@@ -228,7 +228,7 @@ class ContactMailer extends Mailer
         }
 
         if ($user->email && $contact->email) {
-            $this->sendTo($contact->email, $user->email, $accountName, $subject, $view, $data);
+            $this->sendTo($contact->email, $user->email, $organisationName, $subject, $view, $data);
         }
 
         $organisation->loadLocalizationSettings();
