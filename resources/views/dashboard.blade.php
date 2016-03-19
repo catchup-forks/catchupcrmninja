@@ -113,18 +113,6 @@
                         <th>{{ trans('texts.amount') }}</th>
                     </thead>
                     <tbody>
-                        @foreach ($payments as $payment)
-                        <tr>
-                            <td>{!! \App\Models\Invoice::calcLink($payment) !!}</td>
-                            @if (\App\Models\Client::canViewItemByOwner($payment->client_user_id))
-                                <td>{!! link_to('/clients/'.$payment->client_public_id, trim($payment->client_name) ?: (trim($payment->first_name . ' ' . $payment->last_name) ?: $payment->email)) !!}</td>
-                            @else
-                                <td>{{ trim($payment->client_name) ?: (trim($payment->first_name . ' ' . $payment->last_name) ?: $payment->email) }}</td>
-                            @endif
-                            <td>{{ Utils::fromSqlDate($payment->payment_date) }}</td>
-                            <td>{{ Utils::formatMoney($payment->amount, $payment->currency_id ?: ($account->currency_id ?: DEFAULT_CURRENCY)) }}</td>
-                        </tr>
-                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -152,14 +140,7 @@
                         @foreach ($upcoming as $invoice)
                             @if (!$invoice->is_quote)
                                 <tr>
-                                    <td>{!! \App\Models\Invoice::calcLink($invoice) !!}</td>
-                                    @if (\App\Models\Client::canViewItemByOwner($payment->client_user_id))
-                                        <td>{!! link_to('/clients/'.$payment->client_public_id, trim($payment->client_name) ?: (trim($payment->first_name . ' ' . $payment->last_name) ?: $payment->email)) !!}</td>
-                                    @else
-                                        <td>{{ trim($payment->client_name) ?: (trim($payment->first_name . ' ' . $payment->last_name) ?: $payment->email) }}</td>
-                                    @endif
-                                    <td>{{ Utils::fromSqlDate($invoice->due_date) }}</td>
-                                    <td>{{ Utils::formatMoney($invoice->balance, $invoice->currency_id ?: ($account->currency_id ?: DEFAULT_CURRENCY)) }}</td>
+                                    <td></td>
                                 </tr>
                             @endif
                         @endforeach

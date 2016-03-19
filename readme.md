@@ -1,36 +1,13 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/hillelcoren/invoice-ninja/master/public/images/round_logo.png" alt="Sublime's custom image"/>
-</p>
+### Invoice Ninja
+This is the fork of Invoice Ninja. I need to do something with tables
 
-# Invoice Ninja
-### [https://www.invoiceninja.com](https://www.invoiceninja.com)
 
-[![Build Status](https://travis-ci.org/invoiceninja/invoiceninja.svg?branch=develop)](https://travis-ci.org/invoiceninja/invoiceninja)
-[![Join the chat at https://gitter.im/hillelcoren/invoice-ninja](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/hillelcoren/invoice-ninja?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-Note: we've recently updated this branch to Laravel 5.2. If you're upgrading here are some things to note
-* Make sure to run composer install
-* If there are any strings with spaces in your .env file you'll need to enclose them in quotes to prevent error class log not found.
-
-### Affiliates Programs
-* Referral program (we pay you): $100 per signup paid over 3 years - [Learn more](https://www.invoiceninja.com/referral-program/)
-* White-label reseller (you pay us): 10% of revenue with a $100 sign up fee
-
-### Installation Options
-* [Self-Host Zip](https://www.invoiceninja.com/knowledgebase/self-host/) - Free
-* [Docker File](https://github.com/invoiceninja/dockerfiles) - Free
-* [Bitnami](https://bitnami.com/stack/invoice-ninja) - Free
-* [Softaculous](https://www.softaculous.com/apps/ecommerce/Invoice_Ninja) - $30
-
-### Requirements
-
-* PHP >= 5.5.9
-* MCrypt PHP Extension
-* MySQL
-
-### Recommended Providers
-* [Stripe](https://stripe.com/)
-* [Postmark](https://postmarkapp.com/)
+### Installation
+Clone
+Composer update
+copy .env.example .env
+php artisan key:generate
+run http://yourlocalinstall.local/ and you will be redirected to /setup
 
 ### Features
 * Built using Laravel 5.2
@@ -48,22 +25,8 @@ Note: we've recently updated this branch to Laravel 5.2. If you're upgrading her
 * [D3.js](http://d3js.org/) visualizations
 
 ### Documentation
-* [Ubuntu and Apache](http://blog.technerdservices.com/index.php/2015/04/techpop-how-to-install-invoice-ninja-on-ubuntu-14-04/)
-* [Debian and Nginx](https://www.rosehosting.com/blog/install-invoice-ninja-on-a-debian-7-vps/)
-* [User Guide](https://www.invoiceninja.com/app-user-guide/)
-* [Developer Guide](https://www.invoiceninja.com/knowledgebase/developer-guide/)
-* [API Documentation](https://www.invoiceninja.com/knowledgebase/api-documentation/)
-* [Support Forum](https://www.invoiceninja.com/forums/forum/support/)
-* [Feature Roadmap](https://trello.com/b/63BbiVVe/)
-
-### Pull Requests
-We're using the [Git-Flow](http://nvie.com/posts/a-successful-git-branching-model/) model of branching and releasing, **please create pull requests against the develop branch**.
 
 ### Contributors
-* [Troels Liebe Bentsen](https://github.com/tlbdk)
-* [Jeramy Simpson](https://github.com/JeramyMywork) - [MyWork](https://www.mywork.com.au)
-* [Sigitas Limontas](https://lt.linkedin.com/in/sigitaslimontas)
-* [Joshua Dwire](https://github.com/joshuadwire) - [Some Techie](https://www.sometechie.com)
 
 ### Frameworks/Libraries
 * [laravel/laravel](https://github.com/laravel/laravel) - A PHP Framework For Web Artisans
