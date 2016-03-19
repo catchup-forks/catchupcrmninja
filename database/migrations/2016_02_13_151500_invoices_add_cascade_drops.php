@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddDanishTranslation extends Migration {
+class InvoicesAddCascaseDrops extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,7 +12,11 @@ class AddDanishTranslation extends Migration {
 	 */
 	public function up()
 	{
-		DB::table('languages')->insert(['name' => 'Danish', 'locale' => 'da']);
+		Schema::table('invoices', function($table)
+		{
+	    $table->dropForeign('invoices_organisation_id_foreign');
+	    $table->foreign('organisation_id')->references('id')->on('organisations')->onDelete('cascade');
+		});
 	}
 
 	/**
@@ -22,8 +26,7 @@ class AddDanishTranslation extends Migration {
 	 */
 	public function down()
 	{
-        $language = \App\Models\Language::whereLocale('da')->first();
-		$language->delete();
+
 	}
 
 }

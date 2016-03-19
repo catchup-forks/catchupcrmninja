@@ -12,11 +12,6 @@ class TrackLastSeenMessage extends Migration {
 	 */
 	public function up()
 	{
-		Schema::table('users', function($table)
-		{
-			$table->unsignedInteger('news_feed_id')->nullable();
-		});
-
 		if (DB::table('payment_libraries')->count() > 0) {
 			DB::table('gateways')->update(['recommended' => 0]);
 			DB::table('gateways')->insert([

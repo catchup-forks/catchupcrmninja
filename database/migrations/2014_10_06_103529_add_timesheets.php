@@ -17,8 +17,6 @@ class AddTimesheets extends Migration {
             $t->unsignedInteger('user_id');
             $t->unsignedInteger('organisation_id')->index();
             $t->unsignedInteger('relation_id')->nullable();
-            $t->timestamps();
-            $t->softDeletes();
 
             $t->string('name');
             $t->string('description');
@@ -27,6 +25,9 @@ class AddTimesheets extends Migration {
             $t->foreign('organisation_id')->references('id')->on('organisations');
             
             $t->unique( array('organisation_id','name') );
+
+            $t->timestamps();
+            $t->softDeletes();
         });
         
         Schema::create('project_codes', function($t) {
@@ -34,8 +35,6 @@ class AddTimesheets extends Migration {
             $t->unsignedInteger('user_id');
             $t->unsignedInteger('organisation_id')->index();
             $t->unsignedInteger('project_id');
-            $t->timestamps();
-            $t->softDeletes();
 
             $t->string('name');
             $t->string('description');
@@ -45,6 +44,9 @@ class AddTimesheets extends Migration {
             $t->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
             
             $t->unique( array('organisation_id','name') );
+
+            $t->timestamps();
+            $t->softDeletes();
         });
         
         
@@ -52,9 +54,7 @@ class AddTimesheets extends Migration {
             $t->increments('id');
             $t->unsignedInteger('user_id');
             $t->unsignedInteger('organisation_id')->index();
-            $t->timestamps();
-            $t->softDeletes();
-                       
+
             $t->dateTime('start_date');
             $t->dateTime('end_date');
             $t->float('discount');
@@ -66,15 +66,16 @@ class AddTimesheets extends Migration {
             
             $t->unsignedInteger('public_id');
             $t->unique( array('organisation_id','public_id') );
+
+            $t->timestamps();
+            $t->softDeletes();
         });
         
         Schema::create('timesheet_event_sources', function($t) {
             $t->increments('id');
             $t->unsignedInteger('user_id');
             $t->unsignedInteger('organisation_id')->index();
-            $t->timestamps();
-            $t->softDeletes();
-            
+
             $t->string('owner');
             $t->string('name');
             $t->string('url');
@@ -85,6 +86,9 @@ class AddTimesheets extends Migration {
             
             $t->foreign('organisation_id')->references('id')->on('organisations');
             $t->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+
+            $t->timestamps();
+            $t->softDeletes();
         });
         
         Schema::create('timesheet_events', function($t) {
@@ -95,9 +99,7 @@ class AddTimesheets extends Migration {
             $t->unsignedInteger('timesheet_id')->nullable()->index();
             $t->unsignedInteger('project_id')->nullable()->index();
             $t->unsignedInteger('project_code_id')->nullable()->index();            
-            $t->timestamps();
-            $t->softDeletes();
-            
+
             // Basic fields
             $t->string('uid');
             $t->string('summary');
@@ -132,6 +134,10 @@ class AddTimesheets extends Migration {
             $t->foreign('timesheet_event_source_id')->references('id')->on('timesheet_event_sources')->onDelete('cascade');
 
             $t->unique( array('timesheet_event_source_id', 'uid') );
+
+
+            $t->timestamps();
+            $t->softDeletes();
         });
     }
 

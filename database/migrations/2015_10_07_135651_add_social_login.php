@@ -16,10 +16,6 @@ class AddSocialLogin extends Migration
             $table->unsignedInteger('oauth_provider_id')->nullable();
         });
 
-        Schema::table('organisations', function ($table) {
-            $table->string('custom_invoice_text_label1')->nullable();
-            $table->string('custom_invoice_text_label2')->nullable();
-        });
 
         Schema::table('invoices', function ($table) {
             $table->string('custom_text_value1')->nullable();

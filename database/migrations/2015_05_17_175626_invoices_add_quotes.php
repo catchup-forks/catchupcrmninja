@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddDiscountType extends Migration {
+class InvoicesAddQuotes extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -14,8 +14,10 @@ class AddDiscountType extends Migration {
 	{
 		Schema::table('invoices', function($table)
 		{
-			$table->boolean('is_amount_discount')->nullable();
-		});	
+			$table->boolean('is_quote')->default(0);			
+			$table->unsignedInteger('quote_id')->nullable();
+			$table->unsignedInteger('quote_invoice_id')->nullable();			
+		});
 	}
 
 	/**
@@ -26,8 +28,10 @@ class AddDiscountType extends Migration {
 	public function down()
 	{
 		Schema::table('invoices', function($table)
-		{			
-			$table->dropColumn('is_amount_discount');
+		{
+			$table->dropColumn('is_quote');
+			$table->dropColumn('quote_id');
+			$table->dropColumn('quote_invoice_id');
 		});
 	}
 

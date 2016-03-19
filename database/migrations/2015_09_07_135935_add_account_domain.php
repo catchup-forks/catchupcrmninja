@@ -11,12 +11,6 @@ class AddOrganisationDomain extends Migration
      */
     public function up()
     {
-        Schema::table('organisations', function ($table) {
-            $table->string('iframe_url')->nullable();
-            $table->boolean('military_time')->default(false);
-            $table->unsignedInteger('referral_user_id')->nullable();
-        });
-
         Schema::table('relations', function ($table) {
             $table->unsignedInteger('language_id')->nullable();
             $table->foreign('language_id')->references('id')->on('languages');

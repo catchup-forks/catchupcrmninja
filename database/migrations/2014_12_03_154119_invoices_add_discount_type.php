@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddCascaseDrops extends Migration {
+class InvoicesAddDiscountType extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -14,9 +14,8 @@ class AddCascaseDrops extends Migration {
 	{
 		Schema::table('invoices', function($table)
 		{
-	    $table->dropForeign('invoices_organisation_id_foreign');
-	    $table->foreign('organisation_id')->references('id')->on('organisations')->onDelete('cascade');
-		});
+			$table->boolean('is_amount_discount')->nullable();
+		});	
 	}
 
 	/**
@@ -26,7 +25,10 @@ class AddCascaseDrops extends Migration {
 	 */
 	public function down()
 	{
-
+		Schema::table('invoices', function($table)
+		{			
+			$table->dropColumn('is_amount_discount');
+		});
 	}
 
 }

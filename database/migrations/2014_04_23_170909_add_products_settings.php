@@ -12,14 +12,6 @@ class AddProductsSettings extends Migration {
 	 */
 	public function up()
 	{
-		Schema::table('organisations', function($table)
-		{
-			$table->boolean('fill_products')->default(true);
-			$table->boolean('update_products')->default(true);
-		});		
-
-		DB::table('organisations')->update(['fill_products' => true]);
-		DB::table('organisations')->update(['update_products' => true]);
 	}
 
 	/**

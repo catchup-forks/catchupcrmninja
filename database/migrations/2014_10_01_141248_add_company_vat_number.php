@@ -12,11 +12,7 @@ class AddCompanyVatNumber extends Migration {
 	 */
 	public function up()
 	{
-		Schema::table('organisations', function($table)
-		{
-			$table->string('vat_number')->nullable();
-		});
-        
+
         Schema::table('relations', function($table)
 		{
 			$table->string('vat_number')->nullable();

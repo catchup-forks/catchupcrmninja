@@ -31,10 +31,7 @@ class AddInvoiceFontSupport extends Migration
         //$seeder = new FontsSeeder();
         //$seeder->run();
 
-        Schema::table('organisations', function ($table) {
-            $table->unsignedInteger('header_font_id')->default(1);
-            $table->unsignedInteger('body_font_id')->default(1);
-        });
+
 
         /*
         Schema::table('organisations', function ($table) {
@@ -51,20 +48,6 @@ class AddInvoiceFontSupport extends Migration
      */
     public function down()
     {
-        if (Schema::hasColumn('organisations', 'header_font_id')) {
-            Schema::table('organisations', function ($table) {
-                //$table->dropForeign('accounts_header_font_id_foreign');
-                $table->dropColumn('header_font_id');
-            });
-        }
-
-        if (Schema::hasColumn('organisations', 'body_font_id')) {
-            Schema::table('organisations', function ($table) {
-                //$table->dropForeign('accounts_body_font_id_foreign');
-                $table->dropColumn('body_font_id');
-            });
-        }
-
         Schema::dropIfExists('fonts');
     }
 }

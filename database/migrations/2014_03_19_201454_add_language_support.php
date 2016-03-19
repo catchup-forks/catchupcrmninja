@@ -20,13 +20,7 @@ class AddLanguageSupport extends Migration {
     });
 
     DB::table('languages')->insert(['name' => 'English', 'locale' => 'en']);
-    DB::table('languages')->insert(['name' => 'Italian', 'locale' => 'it']);
-    DB::table('languages')->insert(['name' => 'German', 'locale' => 'de']);
-    DB::table('languages')->insert(['name' => 'French', 'locale' => 'fr']);
-    DB::table('languages')->insert(['name' => 'Brazilian Portuguese', 'locale' => 'pt_BR']);
     DB::table('languages')->insert(['name' => 'Dutch', 'locale' => 'nl']);
-    DB::table('languages')->insert(['name' => 'Spanish', 'locale' => 'es']);
-    DB::table('languages')->insert(['name' => 'Norwegian', 'locale' => 'nb_NO']);
 
 		Schema::table('organisations', function($table)
 		{
@@ -50,7 +44,7 @@ class AddLanguageSupport extends Migration {
 	{
 		Schema::table('organisations', function($table)
 		{
-			$table->dropForeign('accounts_language_id_foreign');
+			$table->dropForeign('organisations_language_id_foreign');
 			$table->dropColumn('language_id');
 		});
 

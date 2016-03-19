@@ -1,10 +1,8 @@
 <?php
-
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AllowNullRelationCurrency extends Migration {
-
+class TaxRatesAddSupportThreeDecimalTaxes extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -12,12 +10,10 @@ class AllowNullRelationCurrency extends Migration {
 	 */
 	public function up()
 	{
-    Schema::table('relations', function($table)
-    {
-			//DB::statement('ALTER TABLE `relations` MODIFY `currency_id` INTEGER UNSIGNED NULL;');
+		Schema::table('tax_rates', function($table) {
+			$table->decimal('rate', 13, 3)->change();
 		});
 	}
-
 	/**
 	 * Reverse the migrations.
 	 *
@@ -25,7 +21,8 @@ class AllowNullRelationCurrency extends Migration {
 	 */
 	public function down()
 	{
-
+		Schema::table('tax_rates', function($table) {
+			$table->decimal('rate', 13, 2)->change();
+		});
 	}
-
 }

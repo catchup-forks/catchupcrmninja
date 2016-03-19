@@ -14,8 +14,6 @@ class CreateVendorsTable extends Migration
     {
         Schema::create('vendors', function (Blueprint $table) {
             $table->increments('id');
-            $table->timestamps();
-            $table->softDeletes();
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('organisation_id');
             $table->unsignedInteger('currency_id')->nullable();
@@ -38,6 +36,10 @@ class CreateVendorsTable extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('country_id')->references('id')->on('countries');
             $table->foreign('currency_id')->references('id')->on('currencies');
+
+
+            $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('vendor_contacts', function (Blueprint $table) {

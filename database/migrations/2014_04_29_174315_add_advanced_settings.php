@@ -14,8 +14,6 @@ class AddAdvancedSettings extends Migration {
 	{
 		Schema::table('organisations', function($table)
 		{
-			$table->string('primary_color')->nullable();
-			$table->string('secondary_color')->nullable();
 		});
 
 		Schema::table('payments', function($table)

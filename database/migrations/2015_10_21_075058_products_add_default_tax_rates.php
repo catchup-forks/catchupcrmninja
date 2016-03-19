@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 
-class AddDefaultTaxRates extends Migration
+class ProductsAddDefaultTaxRates extends Migration
 {
     /**
      * Run the migrations.
@@ -11,11 +11,6 @@ class AddDefaultTaxRates extends Migration
      */
     public function up()
     {
-        Schema::table('organisations', function ($table) {
-            $table->unsignedInteger('default_tax_rate_id')->nullable();
-            $table->smallInteger('recurring_hour')->default(DEFAULT_SEND_RECURRING_HOUR);
-        });
-
         Schema::table('products', function ($table) {
             $table->unsignedInteger('default_tax_rate_id')->nullable();
         });
@@ -28,11 +23,6 @@ class AddDefaultTaxRates extends Migration
      */
     public function down()
     {
-        Schema::table('organisations', function ($table) {
-            $table->dropColumn('default_tax_rate_id');
-            $table->dropColumn('recurring_hour');
-        });
-
         Schema::table('products', function ($table) {
             $table->dropColumn('default_tax_rate_id');
         });

@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddFontSize extends Migration {
+class InvoicesAddInvoiceFooter extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,9 +12,9 @@ class AddFontSize extends Migration {
 	 */
 	public function up()
 	{
-        Schema::table('organisations', function($table)
+        Schema::table('invoices', function($table)
         {
-            $table->smallInteger('font_size')->default(DEFAULT_FONT_SIZE);
+            $table->text('invoice_footer')->nullable();
         });
 	}
 
@@ -25,9 +25,9 @@ class AddFontSize extends Migration {
 	 */
 	public function down()
 	{
-        Schema::table('organisations', function($table)
+        Schema::table('invoices', function($table)
         {
-            $table->dropColumn('font_size');
+            $table->dropColumn('invoice_footer');
         });
 	}
 

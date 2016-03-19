@@ -12,14 +12,6 @@ class AddHeaderFooterOption extends Migration {
 	 */
     public function up()
 	{
-        Schema::table('organisations', function($table)
-        {
-            $table->boolean('all_pages_footer');
-            $table->boolean('all_pages_header');
-            $table->boolean('show_currency_code');
-            $table->date('pro_plan_trial')->nullable();
-        });
-
         Schema::table('gateways', function($table)
         {
             $table->boolean('is_offsite');
@@ -46,14 +38,6 @@ class AddHeaderFooterOption extends Migration {
 	 */
 	public function down()
 	{
-        Schema::table('organisations', function($table)
-        {
-            $table->dropColumn('all_pages_footer');
-            $table->dropColumn('all_pages_header');
-            $table->dropColumn('show_currency_code');
-            $table->dropColumn('pro_plan_trial');
-        });
-
         Schema::table('gateways', function($table)
         {
             $table->dropColumn('is_offsite');
