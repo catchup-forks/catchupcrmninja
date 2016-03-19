@@ -17,18 +17,18 @@ class RecurringInvoiceService extends BaseService
         $this->datatableService = $datatableService;
     }
 
-    public function getDatatable($organisationId, $clientPublicId = null, $entityType, $search)
+    public function getDatatable($organisationId, $relationPublicId = null, $entityType, $search)
     {
-        $query = $this->invoiceRepo->getRecurringInvoices($organisationId, $clientPublicId, $search);
+        $query = $this->invoiceRepo->getRecurringInvoices($organisationId, $relationPublicId, $search);
 
         if(!Utils::hasPermission('view_all')){
             $query->where('invoices.user_id', '=', Auth::user()->id);
         }
         
-        return $this->createDatatable(ENTITY_RECURRING_INVOICE, $query, !$clientPublicId);
+        return $this->createDatatable(ENTITY_RECURRING_INVOICE, $query, !$relationPublicId);
     }
 
-    protected function getDatatableColumns($entityType, $hideClient)
+    protected function getDatatableColumns($entityType, $hideRelation)
     {
         return [
             [
@@ -38,11 +38,11 @@ class RecurringInvoiceService extends BaseService
                 }
             ],
             [
-                'client_name',
+                'relation_name',
                 function ($model) {
-                    return link_to("clients/{$model->client_public_id}", Utils::getClientDisplayName($model))->toHtml();
+                    return link_to("relations/{$model->relation_public_id}", Utils::getRelationDisplayName($model))->toHtml();
                 },
-                ! $hideClient
+                ! $hideRelation
             ],
             [
                 'start_date',

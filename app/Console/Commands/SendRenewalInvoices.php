@@ -46,8 +46,8 @@ class SendRenewalInvoices extends Command
                 }
             }
 
-            $client = $this->organisationRepo->getNinjaClient($organisation);
-            $invitation = $this->organisationRepo->createNinjaInvoice($client, $organisation);
+            $relation = $this->organisationRepo->getNinjaRelation($organisation);
+            $invitation = $this->organisationRepo->createNinjaInvoice($relation, $organisation);
 
             // set the due date to 10 days from now
             $invoice = $invitation->invoice;
@@ -55,7 +55,7 @@ class SendRenewalInvoices extends Command
             $invoice->save();
 
             $this->mailer->sendInvoice($invoice);
-            $this->info("Sent invoice to {$client->getDisplayName()}");
+            $this->info("Sent invoice to {$relation->getDisplayName()}");
         }
 
         $this->info('Done');

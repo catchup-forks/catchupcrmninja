@@ -10,7 +10,7 @@ use DatePeriod;
 use Session;
 use View;
 use App\Models\Organisation;
-use App\Models\Client;
+use App\Models\Relation;
 use App\Models\Payment;
 use App\Models\Expense;
 
@@ -23,19 +23,19 @@ class ReportController extends BaseController
 
         if (Auth::user()->organisation->isPro()) {
             $organisation = Organisation::where('id', '=', Auth::user()->organisation->id)
-                            ->with(['clients.invoices.invoice_items', 'clients.contacts'])
+                            ->with(['relations.invoices.invoice_items', 'relations.contacts'])
                             ->first();
             $organisation = $organisation->hideFieldsForViz();
-            $clients = $organisation->clients->toJson();
+            $relations = $organisation->relations->toJson();
         } elseif (file_exists($fileName)) {
-            $clients = file_get_contents($fileName);
+            $relations = file_get_contents($fileName);
             $message = trans('texts.sample_data');
         } else {
-            $clients = '[]';
+            $relations = '[]';
         }
 
         $data = [
-            'clients' => $clients,
+            'relations' => $relations,
             'message' => $message,
         ];
 
@@ -78,7 +78,7 @@ class ReportController extends BaseController
         ];
 
         $reportTypes = [
-            ENTITY_CLIENT => trans('texts.client'),
+            ENTITY_RELATION => trans('texts.relation'),
             ENTITY_INVOICE => trans('texts.invoice'),
             ENTITY_PAYMENT => trans('texts.payment'),
             ENTITY_EXPENSE => trans('texts.expenses'),
@@ -218,8 +218,8 @@ class ReportController extends BaseController
 
     private function generateReport($reportType, $startDate, $endDate, $dateField, $isExport)
     {
-        if ($reportType == ENTITY_CLIENT) {
-            return $this->generateClientReport($startDate, $endDate, $isExport);
+        if ($reportType == ENTITY_RELATION) {
+            return $this->generateRelationReport($startDate, $endDate, $isExport);
         } elseif ($reportType == ENTITY_INVOICE) {
             return $this->generateInvoiceReport($startDate, $endDate, $isExport);
         } elseif ($reportType == ENTITY_PAYMENT) {
@@ -239,7 +239,7 @@ class ReportController extends BaseController
         $displayData = [];
         $reportTotals = [];
 
-        $clients = Client::scope()
+        $relations = Relation::scope()
                         ->withArchived()
                         ->with('contacts')
                         ->with(['invoices' => function($query) use ($startDate, $endDate, $dateField) {
@@ -261,13 +261,13 @@ class ReportController extends BaseController
                             }
                         }]);
 
-        foreach ($clients->get() as $client) {
-            $currencyId = $client->currency_id ?: Auth::user()->organisation->getCurrencyId();
+        foreach ($relations->get() as $relation) {
+            $currencyId = $relation->currency_id ?: Auth::user()->organisation->getCurrencyId();
             $amount = 0;
             $paid = 0;
             $taxTotals = [];
 
-            foreach ($client->invoices as $invoice) {
+            foreach ($relation->invoices as $invoice) {
                 foreach ($invoice->getTaxes(true) as $key => $tax) {
                     if ( ! isset($taxTotals[$currencyId])) {
                         $taxTotals[$currencyId] = [];
@@ -289,13 +289,13 @@ class ReportController extends BaseController
                     $displayData[] = [
                         $tax['name'],
                         $tax['rate'] . '%',
-                        $organisation->formatMoney($tax['amount'], $client),
-                        $organisation->formatMoney($tax['paid'], $client)
+                        $organisation->formatMoney($tax['amount'], $relation),
+                        $organisation->formatMoney($tax['paid'], $relation)
                     ];
                 }
     
-                $reportTotals = $this->addToTotals($reportTotals, $client->currency_id, 'amount', $tax['amount']);
-                $reportTotals = $this->addToTotals($reportTotals, $client->currency_id, 'paid', $tax['paid']);
+                $reportTotals = $this->addToTotals($reportTotals, $relation->currency_id, 'amount', $tax['amount']);
+                $reportTotals = $this->addToTotals($reportTotals, $relation->currency_id, 'paid', $tax['paid']);
             }
         }
 
@@ -309,7 +309,7 @@ class ReportController extends BaseController
 
     private function generatePaymentReport($startDate, $endDate, $isExport)
     {
-        $columns = ['client', 'invoice_number', 'invoice_date', 'amount', 'payment_date', 'paid', 'method'];
+        $columns = ['relation', 'invoice_number', 'invoice_date', 'amount', 'payment_date', 'paid', 'method'];
 
         $organisation = Auth::user()->organisation;
         $displayData = [];
@@ -318,31 +318,31 @@ class ReportController extends BaseController
         $payments = Payment::scope()
                         ->withTrashed()
                         ->where('is_deleted', '=', false)
-                        ->whereHas('client', function($query) {
+                        ->whereHas('relation', function($query) {
                             $query->where('is_deleted', '=', false);
                         })
                         ->whereHas('invoice', function($query) {
                             $query->where('is_deleted', '=', false);
                         })
-                        ->with('client.contacts', 'invoice', 'payment_type', 'account_gateway.gateway')
+                        ->with('relation.contacts', 'invoice', 'payment_type', 'account_gateway.gateway')
                         ->where('payment_date', '>=', $startDate)
                         ->where('payment_date', '<=', $endDate);
 
         foreach ($payments->get() as $payment) {
             $invoice = $payment->invoice;
-            $client = $payment->client;
+            $relation = $payment->relation;
             $displayData[] = [
-                $isExport ? $client->getDisplayName() : $client->present()->link,
+                $isExport ? $relation->getDisplayName() : $relation->present()->link,
                 $isExport ? $invoice->invoice_number : $invoice->present()->link,
                 $invoice->present()->invoice_date,
-                $organisation->formatMoney($invoice->amount, $client),
+                $organisation->formatMoney($invoice->amount, $relation),
                 $payment->present()->payment_date,
-                $organisation->formatMoney($payment->amount, $client),
+                $organisation->formatMoney($payment->amount, $relation),
                 $payment->present()->method,
             ];
 
-            $reportTotals = $this->addToTotals($reportTotals, $client->currency_id, 'amount', $invoice->amount);
-            $reportTotals = $this->addToTotals($reportTotals, $client->currency_id, 'paid', $payment->amount);
+            $reportTotals = $this->addToTotals($reportTotals, $relation->currency_id, 'amount', $invoice->amount);
+            $reportTotals = $this->addToTotals($reportTotals, $relation->currency_id, 'paid', $payment->amount);
         }
         
         return [
@@ -354,13 +354,13 @@ class ReportController extends BaseController
 
     private function generateInvoiceReport($startDate, $endDate, $isExport)
     {
-        $columns = ['client', 'invoice_number', 'invoice_date', 'amount', 'paid', 'balance'];
+        $columns = ['relation', 'invoice_number', 'invoice_date', 'amount', 'paid', 'balance'];
 
         $organisation = Auth::user()->organisation;
         $displayData = [];
         $reportTotals = [];
         
-        $clients = Client::scope()
+        $relations = Relation::scope()
                         ->withTrashed()
                         ->with('contacts')
                         ->where('is_deleted', '=', false)
@@ -378,21 +378,21 @@ class ReportController extends BaseController
                                   ->withTrashed();
                         }]);
         
-        foreach ($clients->get() as $client) {
-            $currencyId = $client->currency_id ?: Auth::user()->organisation->getCurrencyId();
+        foreach ($relations->get() as $relation) {
+            $currencyId = $relation->currency_id ?: Auth::user()->organisation->getCurrencyId();
 
-            foreach ($client->invoices as $invoice) {
+            foreach ($relation->invoices as $invoice) {
                 $displayData[] = [
-                    $isExport ? $client->getDisplayName() : $client->present()->link,
+                    $isExport ? $relation->getDisplayName() : $relation->present()->link,
                     $isExport ? $invoice->invoice_number : $invoice->present()->link,
                     $invoice->present()->invoice_date,
-                    $organisation->formatMoney($invoice->amount, $client),
-                    $organisation->formatMoney($invoice->getAmountPaid(), $client),
-                    $organisation->formatMoney($invoice->balance, $client),
+                    $organisation->formatMoney($invoice->amount, $relation),
+                    $organisation->formatMoney($invoice->getAmountPaid(), $relation),
+                    $organisation->formatMoney($invoice->balance, $relation),
                 ];
-                $reportTotals = $this->addToTotals($reportTotals, $client->currency_id, 'amount', $invoice->amount);
-                $reportTotals = $this->addToTotals($reportTotals, $client->currency_id, 'paid', $invoice->getAmountPaid());
-                $reportTotals = $this->addToTotals($reportTotals, $client->currency_id, 'balance', $invoice->balance);
+                $reportTotals = $this->addToTotals($reportTotals, $relation->currency_id, 'amount', $invoice->amount);
+                $reportTotals = $this->addToTotals($reportTotals, $relation->currency_id, 'paid', $invoice->getAmountPaid());
+                $reportTotals = $this->addToTotals($reportTotals, $relation->currency_id, 'balance', $invoice->balance);
             }
         }
         
@@ -403,15 +403,15 @@ class ReportController extends BaseController
         ];
     }
 
-    private function generateClientReport($startDate, $endDate, $isExport)
+    private function generateRelationReport($startDate, $endDate, $isExport)
     {
-        $columns = ['client', 'amount', 'paid', 'balance'];
+        $columns = ['relation', 'amount', 'paid', 'balance'];
 
         $organisation = Auth::user()->organisation;
         $displayData = [];
         $reportTotals = [];
 
-        $clients = Client::scope()
+        $relations = Relation::scope()
                         ->withArchived()
                         ->with('contacts')
                         ->with(['invoices' => function($query) use ($startDate, $endDate) {
@@ -422,25 +422,25 @@ class ReportController extends BaseController
                                   ->withArchived();
                         }]);
 
-        foreach ($clients->get() as $client) {
+        foreach ($relations->get() as $relation) {
             $amount = 0;
             $paid = 0;
 
-            foreach ($client->invoices as $invoice) {
+            foreach ($relation->invoices as $invoice) {
                 $amount += $invoice->amount;
                 $paid += $invoice->getAmountPaid();
             }
 
             $displayData[] = [
-                $isExport ? $client->getDisplayName() : $client->present()->link,
-                $organisation->formatMoney($amount, $client),
-                $organisation->formatMoney($paid, $client),
-                $organisation->formatMoney($amount - $paid, $client)
+                $isExport ? $relation->getDisplayName() : $relation->present()->link,
+                $organisation->formatMoney($amount, $relation),
+                $organisation->formatMoney($paid, $relation),
+                $organisation->formatMoney($amount - $paid, $relation)
             ];
 
-            $reportTotals = $this->addToTotals($reportTotals, $client->currency_id, 'amount', $amount);
-            $reportTotals = $this->addToTotals($reportTotals, $client->currency_id, 'paid', $paid);
-            $reportTotals = $this->addToTotals($reportTotals, $client->currency_id, 'balance', $amount - $paid);
+            $reportTotals = $this->addToTotals($reportTotals, $relation->currency_id, 'amount', $amount);
+            $reportTotals = $this->addToTotals($reportTotals, $relation->currency_id, 'paid', $paid);
+            $reportTotals = $this->addToTotals($reportTotals, $relation->currency_id, 'balance', $amount - $paid);
         }
 
         return [
@@ -452,7 +452,7 @@ class ReportController extends BaseController
 
     private function generateExpenseReport($startDate, $endDate, $isExport)
     {
-        $columns = ['vendor', 'client', 'date', 'expense_amount', 'invoiced_amount'];
+        $columns = ['vendor', 'relation', 'date', 'expense_amount', 'invoiced_amount'];
 
         $organisation = Auth::user()->organisation;
         $displayData = [];
@@ -460,7 +460,7 @@ class ReportController extends BaseController
 
         $expenses = Expense::scope()
                         ->withTrashed()
-                        ->with('client.contacts', 'vendor')
+                        ->with('relation.contacts', 'vendor')
                         ->where('expense_date', '>=', $startDate)
                         ->where('expense_date', '<=', $endDate);
 
@@ -471,7 +471,7 @@ class ReportController extends BaseController
 
             $displayData[] = [
                 $expense->vendor ? ($isExport ? $expense->vendor->name : $expense->vendor->present()->link) : '',
-                $expense->client ? ($isExport ? $expense->client->getDisplayName() : $expense->client->present()->link) : '',
+                $expense->relation ? ($isExport ? $expense->relation->getDisplayName() : $expense->relation->present()->link) : '',
                 $expense->present()->expense_date,
                 Utils::formatMoney($amount, $expense->currency_id),
                 Utils::formatMoney($invoiced, $expense->invoice_currency_id),

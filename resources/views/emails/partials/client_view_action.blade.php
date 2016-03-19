@@ -19,7 +19,7 @@
   },
   "totalPaymentDue": {
     "@type": "PriceSpecification",
-    "price": "{{ $organisation->formatMoney(isset($payment) ? $payment->amount : $invoice->getRequestedAmount(), $client) }}"
+    "price": "{{ $organisation->formatMoney(isset($payment) ? $payment->amount : $invoice->getRequestedAmount(), $relation) }}"
   },
   "action": {
     "@type": "ViewAction",

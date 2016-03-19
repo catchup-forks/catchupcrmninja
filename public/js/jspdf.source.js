@@ -2076,8 +2076,8 @@ jsPDFAPI.addImage = function(imageData, format, x, y, w, h) {
 	'use strict'
 	if (typeof imageData === 'object' && imageData.nodeType === 1) {
         var canvas = document.createElement('canvas');
-        canvas.width = imageData.clientWidth;
-	    canvas.height = imageData.clientHeight;
+        canvas.width = imageData.relationWidth;
+	    canvas.height = imageData.relationHeight;
 
         var ctx = canvas.getContext('2d');
         if (!ctx) {

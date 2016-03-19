@@ -12,8 +12,8 @@
 {!! Former::open_for_files()
 ->addClass('warn-on-exit') !!}
 
-{!! Former::populateField('enable_client_portal', intval($organisation->enable_client_portal)) !!}
-{!! Former::populateField('client_view_css', $client_view_css) !!}
+{!! Former::populateField('enable_relation_portal', intval($organisation->enable_relation_portal)) !!}
+{!! Former::populateField('relation_view_css', $relation_view_css) !!}
 {!! Former::populateField('enable_portal_password', intval($enable_portal_password)) !!}
 {!! Former::populateField('send_portal_password', intval($send_portal_password)) !!}
 
@@ -25,18 +25,18 @@
 </div>
 @endif
 
-@include('organisations.nav', ['selected' => ORGANISATION_CLIENT_PORTAL])
+@include('organisations.nav', ['selected' => ORGANISATION_RELATION_PORTAL])
 
 <div class="row">
 	<div class="panel panel-default">
 		<div class="panel-heading">
-			<h3 class="panel-title">{!! trans('texts.client_portal') !!}</h3>
+			<h3 class="panel-title">{!! trans('texts.relation_portal') !!}</h3>
 		</div>
 		<div class="panel-body">
 			<div class="col-md-10 col-md-offset-1">
-				{!! Former::checkbox('enable_client_portal')
+				{!! Former::checkbox('enable_relation_portal')
 					->text(trans('texts.enable'))
-					->help(trans('texts.enable_client_portal_help')) !!}
+					->help(trans('texts.enable_relation_portal_help')) !!}
 			</div>
 			<div class="col-md-10 col-md-offset-1">
 				{!! Former::checkbox('enable_portal_password')
@@ -58,7 +58,7 @@
 		</div>
 		<div class="panel-body">
 			<div class="col-md-10 col-md-offset-1">
-				{!! Former::textarea('client_view_css')
+				{!! Former::textarea('relation_view_css')
 				->label(trans('texts.custom_css'))
 				->rows(10)
 				->raw()

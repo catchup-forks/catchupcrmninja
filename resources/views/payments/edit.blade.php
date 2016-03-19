@@ -15,7 +15,7 @@
 @section('content')
 	
 	{!! Former::open($url)->addClass('col-md-10 col-md-offset-1 warn-on-exit')->method($method)->rules(array(
-		'client' => 'required',
+		'relation' => 'required',
 		'invoice' => 'required',		
 		'amount' => 'required',		
 	)) !!}
@@ -35,7 +35,7 @@
             <div class="panel-body">
 
             @if (!$payment)
-			 {!! Former::select('client')->addOption('', '')->addGroupClass('client-select') !!}
+			 {!! Former::select('relation')->addOption('', '')->addGroupClass('relation-select') !!}
 			 {!! Former::select('invoice')->addOption('', '')->addGroupClass('invoice-select') !!}
 			 {!! Former::text('amount') !!}
 
@@ -78,7 +78,7 @@
 	<script type="text/javascript">
 
 	var invoices = {!! $invoices !!};
-	var clients = {!! $clients !!};
+	var relations = {!! $relations !!};
 
 	$(function() {
 
@@ -86,13 +86,13 @@
           $('#payment_date').datepicker('update', '{{ $payment->payment_date }}')
         @else
           $('#payment_date').datepicker('update', new Date());
-		  populateInvoiceComboboxes({{ $clientPublicId }}, {{ $invoicePublicId }});
+		  populateInvoiceComboboxes({{ $relationPublicId }}, {{ $invoicePublicId }});
         @endif
 
 		$('#payment_type_id').combobox();		
 
-        @if (!$payment && !$clientPublicId)
-            $('.client-select input.form-control').focus();
+        @if (!$payment && !$relationPublicId)
+            $('.relation-select input.form-control').focus();
         @elseif (!$payment && !$invoicePublicId)
             $('.invoice-select input.form-control').focus();
         @elseif (!$payment)

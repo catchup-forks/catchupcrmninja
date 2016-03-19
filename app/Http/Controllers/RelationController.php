@@ -12,7 +12,7 @@ use Redirect;
 use Cache;
 
 use App\Models\Activity;
-use App\Models\Client;
+use App\Models\Relation;
 use App\Models\Organisation;
 use App\Models\Contact;
 use App\Models\Invoice;
@@ -25,24 +25,24 @@ use App\Models\Credit;
 use App\Models\Expense;
 use App\Models\Country;
 use App\Models\Task;
-use App\Ninja\Repositories\ClientRepository;
-use App\Services\ClientService;
+use App\Ninja\Repositories\RelationRepository;
+use App\Services\RelationService;
 
-use App\Http\Requests\CreateClientRequest;
-use App\Http\Requests\UpdateClientRequest;
+use App\Http\Requests\CreateRelationRequest;
+use App\Http\Requests\UpdateRelationRequest;
 
-class ClientController extends BaseController
+class RelationController extends BaseController
 {
-    protected $clientService;
-    protected $clientRepo;
-    protected $model = 'App\Models\Client';
+    protected $relationService;
+    protected $relationRepo;
+    protected $model = 'App\Models\Relation';
 
-    public function __construct(ClientRepository $clientRepo, ClientService $clientService)
+    public function __construct(RelationRepository $relationRepo, RelationService $relationService)
     {
         //parent::__construct();
 
-        $this->clientRepo = $clientRepo;
-        $this->clientService = $clientService;
+        $this->relationRepo = $relationRepo;
+        $this->relationService = $relationService;
     }
 
     /**
@@ -53,12 +53,12 @@ class ClientController extends BaseController
     public function index()
     {
         return View::make('list', array(
-            'entityType' => ENTITY_CLIENT,
-            'title' => trans('texts.clients'),
+            'entityType' => ENTITY_RELATION,
+            'title' => trans('texts.relations'),
             'sortCol' => '4',
             'columns' => Utils::trans([
               'checkbox',
-              'client',
+              'relation',
               'contact',
               'email',
               'date_created',
@@ -71,7 +71,7 @@ class ClientController extends BaseController
 
     public function getDatatable()
     {
-        return $this->clientService->getDatatable(Input::get('sSearch'));
+        return $this->relationService->getDatatable(Input::get('sSearch'));
     }
 
     /**
@@ -79,7 +79,7 @@ class ClientController extends BaseController
      *
      * @return Response
      */
-    public function store(CreateClientRequest $request)
+    public function store(CreateRelationRequest $request)
     {
         $data = $request->input();
         
@@ -87,11 +87,11 @@ class ClientController extends BaseController
             return $response;
         }
                 
-        $client = $this->clientService->save($data);
+        $relation = $this->relationService->save($data);
 
-        Session::flash('message', trans('texts.created_client'));
+        Session::flash('message', trans('texts.created_relation'));
 
-        return redirect()->to($client->getRoute());
+        return redirect()->to($relation->getRoute());
     }
 
     /**
@@ -102,20 +102,20 @@ class ClientController extends BaseController
      */
     public function show($publicId)
     {
-        $client = Client::withTrashed()->scope($publicId)->with('contacts', 'size', 'industry')->firstOrFail();
+        $relation = Relation::withTrashed()->scope($publicId)->with('contacts', 'size', 'industry')->firstOrFail();
         
-        if(!$this->checkViewPermission($client, $response)){
+        if(!$this->checkViewPermission($relation, $response)){
             return $response;
         }
         
-        Utils::trackViewed($client->getDisplayName(), ENTITY_CLIENT);
+        Utils::trackViewed($relation->getDisplayName(), ENTITY_RELATION);
 
         $actionLinks = [];
         if(Task::canCreate()){
-            $actionLinks[] = ['label' => trans('texts.new_task'), 'url' => '/tasks/create/'.$client->public_id];
+            $actionLinks[] = ['label' => trans('texts.new_task'), 'url' => '/tasks/create/'.$relation->public_id];
         }
         if (Utils::isPro() && Invoice::canCreate()) {
-            $actionLinks[] = ['label' => trans('texts.new_quote'), 'url' => '/quotes/create/'.$client->public_id];
+            $actionLinks[] = ['label' => trans('texts.new_quote'), 'url' => '/quotes/create/'.$relation->public_id];
         }
         
         if(!empty($actionLinks)){
@@ -123,30 +123,30 @@ class ClientController extends BaseController
         }
         
         if(Payment::canCreate()){
-            $actionLinks[] = ['label' => trans('texts.enter_payment'), 'url' => '/payments/create/'.$client->public_id];
+            $actionLinks[] = ['label' => trans('texts.enter_payment'), 'url' => '/payments/create/'.$relation->public_id];
         }
         
         if(Credit::canCreate()){
-            $actionLinks[] = ['label' => trans('texts.enter_credit'), 'url' => '/credits/create/'.$client->public_id];
+            $actionLinks[] = ['label' => trans('texts.enter_credit'), 'url' => '/credits/create/'.$relation->public_id];
         }
         
         if(Expense::canCreate()){
-            $actionLinks[] = ['label' => trans('texts.enter_expense'), 'url' => '/expenses/create/0/'.$client->public_id];
+            $actionLinks[] = ['label' => trans('texts.enter_expense'), 'url' => '/expenses/create/0/'.$relation->public_id];
         }
 
         $data = array(
             'actionLinks' => $actionLinks,
             'showBreadcrumbs' => false,
-            'client' => $client,
-            'credit' => $client->getTotalCredit(),
-            'title' => trans('texts.view_client'),
-            'hasRecurringInvoices' => Invoice::scope()->where('is_recurring', '=', true)->whereClientId($client->id)->count() > 0,
-            'hasQuotes' => Invoice::scope()->where('is_quote', '=', true)->whereClientId($client->id)->count() > 0,
-            'hasTasks' => Task::scope()->whereClientId($client->id)->count() > 0,
-            'gatewayLink' => $client->getGatewayLink(),
+            'relation' => $relation,
+            'credit' => $relation->getTotalCredit(),
+            'title' => trans('texts.view_relation'),
+            'hasRecurringInvoices' => Invoice::scope()->where('is_recurring', '=', true)->whereRelationId($relation->id)->count() > 0,
+            'hasQuotes' => Invoice::scope()->where('is_quote', '=', true)->whereRelationId($relation->id)->count() > 0,
+            'hasTasks' => Task::scope()->whereRelationId($relation->id)->count() > 0,
+            'gatewayLink' => $relation->getGatewayLink(),
         );
 
-        return View::make('clients.show', $data);
+        return View::make('relations.show', $data);
     }
 
     /**
@@ -160,20 +160,20 @@ class ClientController extends BaseController
             return $response;
         }
         
-        if (Client::scope()->withTrashed()->count() > Auth::user()->getMaxNumClients()) {
-            return View::make('error', ['hideHeader' => true, 'error' => "Sorry, you've exceeded the limit of ".Auth::user()->getMaxNumClients()." clients"]);
+        if (Relation::scope()->withTrashed()->count() > Auth::user()->getMaxNumRelations()) {
+            return View::make('error', ['hideHeader' => true, 'error' => "Sorry, you've exceeded the limit of ".Auth::user()->getMaxNumRelations()." relations"]);
         }
 
         $data = [
-            'client' => null,
+            'relation' => null,
             'method' => 'POST',
-            'url' => 'clients',
-            'title' => trans('texts.new_client'),
+            'url' => 'relations',
+            'title' => trans('texts.new_relation'),
         ];
 
         $data = array_merge($data, self::getViewModel());
 
-        return View::make('clients.edit', $data);
+        return View::make('relations.edit', $data);
     }
 
     /**
@@ -184,28 +184,28 @@ class ClientController extends BaseController
      */
     public function edit($publicId)
     {
-        $client = Client::scope($publicId)->with('contacts')->firstOrFail();
+        $relation = Relation::scope($publicId)->with('contacts')->firstOrFail();
         
-        if(!$this->checkEditPermission($client, $response)){
+        if(!$this->checkEditPermission($relation, $response)){
             return $response;
         }
         
         $data = [
-            'client' => $client,
+            'relation' => $relation,
             'method' => 'PUT',
-            'url' => 'clients/'.$publicId,
-            'title' => trans('texts.edit_client'),
+            'url' => 'relations/'.$publicId,
+            'title' => trans('texts.edit_relation'),
         ];
 
         $data = array_merge($data, self::getViewModel());
 
         if (Auth::user()->organisation->isNinjaOrganisation()) {
-            if ($organisation = Organisation::whereId($client->public_id)->first()) {
+            if ($organisation = Organisation::whereId($relation->public_id)->first()) {
                 $data['proPlanPaid'] = $organisation['pro_plan_paid'];
             }
         }
 
-        return View::make('clients.edit', $data);
+        return View::make('relations.edit', $data);
     }
 
     private static function getViewModel()
@@ -219,8 +219,8 @@ class ClientController extends BaseController
             'currencies' => Cache::get('currencies'),
             'languages' => Cache::get('languages'),
             'countries' => Cache::get('countries'),
-            'customLabel1' => Auth::user()->organisation->custom_client_label1,
-            'customLabel2' => Auth::user()->organisation->custom_client_label2,
+            'customLabel1' => Auth::user()->organisation->custom_relation_label1,
+            'customLabel2' => Auth::user()->organisation->custom_relation_label2,
         ];
     }
 
@@ -230,7 +230,7 @@ class ClientController extends BaseController
      * @param  int      $id
      * @return Response
      */
-    public function update(UpdateClientRequest $request)
+    public function update(UpdateRelationRequest $request)
     {
         $data = $request->input();
         
@@ -238,26 +238,26 @@ class ClientController extends BaseController
             return $response;
         }
                 
-        $client = $this->clientService->save($data);
+        $relation = $this->relationService->save($data);
 
-        Session::flash('message', trans('texts.updated_client'));
+        Session::flash('message', trans('texts.updated_relation'));
 
-        return redirect()->to($client->getRoute());
+        return redirect()->to($relation->getRoute());
     }
 
     public function bulk()
     {
         $action = Input::get('action');
         $ids = Input::get('public_id') ? Input::get('public_id') : Input::get('ids');
-        $count = $this->clientService->bulk($ids, $action);
+        $count = $this->relationService->bulk($ids, $action);
 
-        $message = Utils::pluralize($action.'d_client', $count);
+        $message = Utils::pluralize($action.'d_relation', $count);
         Session::flash('message', $message);
 
         if ($action == 'restore' && $count == 1) {
-            return Redirect::to('clients/'.Utils::getFirst($ids));
+            return Redirect::to('relations/'.Utils::getFirst($ids));
         } else {
-            return Redirect::to('clients');
+            return Redirect::to('relations');
         }
     }
 }

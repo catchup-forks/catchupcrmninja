@@ -36,9 +36,9 @@ class Contact extends EntityModel implements AuthenticatableContract, CanResetPa
         return $this->belongsTo('App\Models\User');
     }
 
-    public function client()
+    public function relation()
     {
-        return $this->belongsTo('App\Models\Client')->withTrashed();
+        return $this->belongsTo('App\Models\Relation')->withTrashed();
     }
 
     public function getPersonType()

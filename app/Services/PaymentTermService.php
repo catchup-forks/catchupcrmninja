@@ -28,7 +28,7 @@ class PaymentTermService extends BaseService
         return $this->createDatatable(ENTITY_PAYMENT_TERM, $query, false);
     }
 
-    protected function getDatatableColumns($entityType, $hideClient)
+    protected function getDatatableColumns($entityType, $hideRelation)
     {
         return [
             [

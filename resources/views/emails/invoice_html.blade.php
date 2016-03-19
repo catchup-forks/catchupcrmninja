@@ -5,7 +5,7 @@
 </head>
 <body>
     @if ($organisation->enable_email_markup)
-        @include('emails.partials.client_view_action')
+        @include('emails.partials.relation_view_action')
     @endif
     {!! $body !!}
 </body>

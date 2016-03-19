@@ -1,6 +1,6 @@
 <?php namespace App\Ninja\Repositories;
 
-use App\Models\Client;
+use App\Models\Relation;
 use App\Models\Contact;
 
 class ContactRepository extends BaseRepository
@@ -12,8 +12,8 @@ class ContactRepository extends BaseRepository
         if (!$publicId || $publicId == '-1') {
             $contact = Contact::createNew();
             $contact->send_invoice = true;
-            $contact->client_id = $data['client_id'];
-            $contact->is_primary = Contact::scope()->where('client_id', '=', $contact->client_id)->count() == 0;
+            $contact->relation_id = $data['relation_id'];
+            $contact->is_primary = Contact::scope()->where('relation_id', '=', $contact->relation_id)->count() == 0;
         } else {
             $contact = Contact::scope($publicId)->firstOrFail();
         }

@@ -1,15 +1,15 @@
 <?php namespace App\Ninja\Transformers;
 
 use App\Models\Organisation;
-use App\Models\Client;
+use App\Models\Relation;
 use App\Models\Contact;
 use League\Fractal;
 
 /**
- * @SWG\Definition(definition="Client", @SWG\Xml(name="Client"))
+ * @SWG\Definition(definition="Relation", @SWG\Xml(name="Relation"))
  */
 
-class ClientTransformer extends EntityTransformer
+class RelationTransformer extends EntityTransformer
 {
     /**
     * @SWG\Property(property="id", type="integer", example=1, readOnly=true)
@@ -50,62 +50,62 @@ class ClientTransformer extends EntityTransformer
         'expenses',
     ];
     
-    public function includeContacts(Client $client)
+    public function includeContacts(Relation $relation)
     {
         $transformer = new ContactTransformer($this->organisation, $this->serializer);
-        return $this->includeCollection($client->contacts, $transformer, ENTITY_CONTACT);
+        return $this->includeCollection($relation->contacts, $transformer, ENTITY_CONTACT);
     }
 
-    public function includeInvoices(Client $client)
+    public function includeInvoices(Relation $relation)
     {
         $transformer = new InvoiceTransformer($this->organisation, $this->serializer);
-        return $this->includeCollection($client->invoices, $transformer, ENTITY_INVOICE);
+        return $this->includeCollection($relation->invoices, $transformer, ENTITY_INVOICE);
     }
 
-    public function includeCredits(Client $client)
+    public function includeCredits(Relation $relation)
     {
         $transformer = new CreditTransformer($this->organisation, $this->serializer);
-        return $this->includeCollection($client->credits, $transformer, ENTITY_CREDIT);
+        return $this->includeCollection($relation->credits, $transformer, ENTITY_CREDIT);
     }
 
-    public function includeExpenses(Client $client)
+    public function includeExpenses(Relation $relation)
     {
         $transformer = new ExpenseTransformer($this->organisation, $this->serializer);
-        return $this->includeCollection($client->expenses, $transformer, ENTITY_EXPENSE);
+        return $this->includeCollection($relation->expenses, $transformer, ENTITY_EXPENSE);
     }
 
 
-    public function transform(Client $client)
+    public function transform(Relation $relation)
     {
         return [
-            'id' => (int) $client->public_id,
-            'name' => $client->name,
-            'balance' => (float) $client->balance,
-            'paid_to_date' => (float) $client->paid_to_date,
-            'user_id' => (int) $client->user->public_id + 1,
+            'id' => (int) $relation->public_id,
+            'name' => $relation->name,
+            'balance' => (float) $relation->balance,
+            'paid_to_date' => (float) $relation->paid_to_date,
+            'user_id' => (int) $relation->user->public_id + 1,
             'organisation_key' => $this->organisation->organisation_key,
-            'updated_at' => $this->getTimestamp($client->updated_at),
-            'archived_at' => $this->getTimestamp($client->deleted_at),
-            'address1' => $client->address1,
-            'housenumber' => $client->housenumber,
-            'city' => $client->city,
-            'state' => $client->state,
-            'postal_code' => $client->postal_code,
-            'country_id' => (int) $client->country_id,
-            'work_phone' => $client->work_phone,
-            'private_notes' => $client->private_notes,
-            'last_login' => $client->last_login,
-            'website' => $client->website,
-            'industry_id' => (int) $client->industry_id,
-            'size_id' => (int) $client->size_id,
-            'is_deleted' => (bool) $client->is_deleted,
-            'payment_terms' => (int) $client->payment_terms,
-            'vat_number' => $client->vat_number,
-            'id_number' => $client->id_number,
-            'language_id' => (int) $client->language_id,
-            'currency_id' => (int) $client->currency_id,
-            'custom_value1' => $client->custom_value1,
-            'custom_value2' => $client->custom_value2,
+            'updated_at' => $this->getTimestamp($relation->updated_at),
+            'archived_at' => $this->getTimestamp($relation->deleted_at),
+            'address1' => $relation->address1,
+            'housenumber' => $relation->housenumber,
+            'city' => $relation->city,
+            'state' => $relation->state,
+            'postal_code' => $relation->postal_code,
+            'country_id' => (int) $relation->country_id,
+            'work_phone' => $relation->work_phone,
+            'private_notes' => $relation->private_notes,
+            'last_login' => $relation->last_login,
+            'website' => $relation->website,
+            'industry_id' => (int) $relation->industry_id,
+            'size_id' => (int) $relation->size_id,
+            'is_deleted' => (bool) $relation->is_deleted,
+            'payment_terms' => (int) $relation->payment_terms,
+            'vat_number' => $relation->vat_number,
+            'id_number' => $relation->id_number,
+            'language_id' => (int) $relation->language_id,
+            'currency_id' => (int) $relation->currency_id,
+            'custom_value1' => $relation->custom_value1,
+            'custom_value2' => $relation->custom_value2,
         ];
     }
 }

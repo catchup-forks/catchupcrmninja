@@ -23,7 +23,7 @@ class CreateCreditRequest extends Request
     public function rules()
     {
         return [
-            'client' => 'required',
+            'relation' => 'required',
             'amount' => 'required|positive',
         ];
     }

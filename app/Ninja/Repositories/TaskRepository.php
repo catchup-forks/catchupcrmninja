@@ -3,18 +3,18 @@
 use Auth;
 use Carbon;
 use Session;
-use App\Models\Client;
+use App\Models\Relation;
 use App\Models\Contact;
 use App\Models\Activity;
 use App\Models\Task;
 
 class TaskRepository
 {
-    public function find($clientPublicId = null, $filter = null)
+    public function find($relationPublicId = null, $filter = null)
     {
         $query = \DB::table('tasks')
-                    ->leftJoin('clients', 'tasks.client_id', '=', 'clients.id')
-                    ->leftJoin('contacts', 'contacts.client_id', '=', 'clients.id')
+                    ->leftJoin('relations', 'tasks.relation_id', '=', 'relations.id')
+                    ->leftJoin('contacts', 'contacts.relation_id', '=', 'relations.id')
                     ->leftJoin('invoices', 'invoices.id', '=', 'tasks.invoice_id')
                     ->where('tasks.organisation_id', '=', Auth::user()->organisation_id)
                     ->where(function ($query) {
@@ -22,12 +22,12 @@ class TaskRepository
                                 ->orWhere('contacts.is_primary', '=', null);
                     })
                     ->where('contacts.deleted_at', '=', null)
-                    ->where('clients.deleted_at', '=', null)
+                    ->where('relations.deleted_at', '=', null)
                     ->select(
                         'tasks.public_id',
-                        'clients.name as client_name',
-                        'clients.public_id as client_public_id',
-                        'clients.user_id as client_user_id',
+                        'relations.name as relation_name',
+                        'relations.public_id as relation_public_id',
+                        'relations.user_id as relation_user_id',
                         'contacts.first_name',
                         'contacts.email',
                         'contacts.last_name',
@@ -44,8 +44,8 @@ class TaskRepository
                         'tasks.user_id'
                     );
 
-        if ($clientPublicId) {
-            $query->where('clients.public_id', '=', $clientPublicId);
+        if ($relationPublicId) {
+            $query->where('relations.public_id', '=', $relationPublicId);
         }
 
         if (!Session::get('show_trash:task')) {
@@ -54,7 +54,7 @@ class TaskRepository
 
         if ($filter) {
             $query->where(function ($query) use ($filter) {
-                $query->where('clients.name', 'like', '%'.$filter.'%')
+                $query->where('relations.name', 'like', '%'.$filter.'%')
                       ->orWhere('contacts.first_name', 'like', '%'.$filter.'%')
                       ->orWhere('contacts.last_name', 'like', '%'.$filter.'%')
                       ->orWhere('tasks.description', 'like', '%'.$filter.'%');
@@ -86,8 +86,8 @@ class TaskRepository
             $task = Task::createNew();
         }
 
-        if (isset($data['client']) && $data['client']) {
-            $task->client_id = Client::getPrivateId($data['client']);
+        if (isset($data['relation']) && $data['relation']) {
+            $task->relation_id = Relation::getPrivateId($data['relation']);
         }
         if (isset($data['description'])) {
             $task->description = trim($data['description']);

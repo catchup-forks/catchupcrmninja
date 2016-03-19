@@ -16,7 +16,7 @@ class AddTasks extends Migration {
             $table->increments('id');
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('organisation_id')->index();
-            $table->unsignedInteger('client_id')->nullable();
+            $table->unsignedInteger('relation_id')->nullable();
             $table->unsignedInteger('invoice_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
@@ -29,7 +29,7 @@ class AddTasks extends Migration {
             $table->foreign('organisation_id')->references('id')->on('organisations')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
-            $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
+            $table->foreign('relation_id')->references('id')->on('relations')->onDelete('cascade');
             
             $table->unsignedInteger('public_id')->index();
             $table->unique( array('organisation_id','public_id') );

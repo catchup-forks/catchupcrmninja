@@ -11,8 +11,8 @@ function ViewModel(data) {
     self.tax_rates.push(new TaxRateModel());  // add blank row
     self.products = {!! $products !!};
 
-    self.loadClient = function(client) {
-        ko.mapping.fromJS(client, model.invoice().client().mapping, model.invoice().client);
+    self.loadRelation = function(relation) {
+        ko.mapping.fromJS(relation, model.invoice().relation().mapping, model.invoice().relation);
         @if (!$invoice->id)
             self.setDueDate();
         @endif
@@ -24,7 +24,7 @@ function ViewModel(data) {
 
     self.setDueDate = function() {
         @if ($entityType == ENTITY_INVOICE)
-            var paymentTerms = parseInt(self.invoice().client().payment_terms());
+            var paymentTerms = parseInt(self.invoice().relation().payment_terms());
             if (paymentTerms && paymentTerms != 0 && !self.invoice().due_date())
             {
                 if (paymentTerms == -1) paymentTerms = 0;
@@ -115,21 +115,21 @@ function ViewModel(data) {
         return taxRate;
     }
 
-    self.showClientForm = function() {
-        trackEvent('/activity', '/view_client_form');
-        self.clientBackup = ko.mapping.toJS(self.invoice().client);
+    self.showRelationForm = function() {
+        trackEvent('/activity', '/view_relation_form');
+        self.relationBackup = ko.mapping.toJS(self.invoice().relation);
 
         $('#emailError').css( "display", "none" );
-        $('#clientModal').modal('show');
+        $('#relationModal').modal('show');
     }
 
-    self.clientFormComplete = function() {
-        trackEvent('/activity', '/save_client_form');
+    self.relationFormComplete = function() {
+        trackEvent('/activity', '/save_relation_form');
 
-        var email = $("[name='client[contacts][0][email]']").val();
-        var firstName = $("[name='client[contacts][0][first_name]']").val();
-        var lastName = $("[name='client[contacts][0][last_name]']").val();
-        var name = $("[name='client[name]']").val();
+        var email = $("[name='relation[contacts][0][email]']").val();
+        var firstName = $("[name='relation[contacts][0][first_name]']").val();
+        var lastName = $("[name='relation[contacts][0][last_name]']").val();
+        var name = $("[name='relation[name]']").val();
 
         if (name) {
             //
@@ -140,7 +140,7 @@ function ViewModel(data) {
         }
 
         var isValid = true;
-        $('input.client-email').each(function(item, value) {
+        $('input.relation-email').each(function(item, value) {
             var email = $(value).val();
             if (!firstName && (!email || !isValidEmailAddress(email))) {
                 isValid = false;
@@ -152,43 +152,43 @@ function ViewModel(data) {
             return;
         }
 
-        if (self.invoice().client().public_id() == 0) {
-            self.invoice().client().public_id(-1);
-            self.invoice().client().invoice_number_counter = 1;
-            self.invoice().client().quote_number_counter = 1;
+        if (self.invoice().relation().public_id() == 0) {
+            self.invoice().relation().public_id(-1);
+            self.invoice().relation().invoice_number_counter = 1;
+            self.invoice().relation().quote_number_counter = 1;
         }
 
         model.setDueDate();
-        setComboboxValue($('.client_select'), -1, name);
+        setComboboxValue($('.relation_select'), -1, name);
 
-        var client = $.parseJSON(ko.toJSON(self.invoice().client()));
-        setInvoiceNumber(client);
+        var relation = $.parseJSON(ko.toJSON(self.invoice().relation()));
+        setInvoiceNumber(relation);
 
-        //$('.client_select select').combobox('setSelected');
-        //$('.client_select input.form-control').val(name);
-        //$('.client_select .combobox-container').addClass('combobox-selected');
+        //$('.relation_select select').combobox('setSelected');
+        //$('.relation_select input.form-control').val(name);
+        //$('.relation_select .combobox-container').addClass('combobox-selected');
 
         $('#emailError').css( "display", "none" );
 
         refreshPDF(true);
-        model.clientBackup = false;
-        $('#clientModal').modal('hide');
+        model.relationBackup = false;
+        $('#relationModal').modal('hide');
     }
 
-    self.clientLinkText = ko.computed(function() {
-        if (self.invoice().client().public_id())
+    self.relationLinkText = ko.computed(function() {
+        if (self.invoice().relation().public_id())
         {
-            return "{{ trans('texts.edit_client') }}";
+            return "{{ trans('texts.edit_relation') }}";
         }
         else
         {
-            if (clients.length > {{ Auth::user()->getMaxNumClients() }})
+            if (relations.length > {{ Auth::user()->getMaxNumRelations() }})
             {
                 return '';
             }
             else
             {
-                return "{{ trans('texts.create_new_client') }}";
+                return "{{ trans('texts.create_new_relation') }}";
             }
         }
     });
@@ -196,7 +196,7 @@ function ViewModel(data) {
 
 function InvoiceModel(data) {
     var self = this;
-    this.client = ko.observable(data ? false : new ClientModel());
+    this.relation = ko.observable(data ? false : new RelationModel());
     self.organisation = {!! $organisation !!};
     self.id = ko.observable('');
     self.discount = ko.observable('');
@@ -241,9 +241,9 @@ function InvoiceModel(data) {
     self.custom_text_value2 = ko.observable();
 
     self.mapping = {
-        'client': {
+        'relation': {
             create: function(options) {
-                return new ClientModel(options.data);
+                return new RelationModel(options.data);
             }
         },
         'invoice_items': {
@@ -340,8 +340,8 @@ function InvoiceModel(data) {
     }
 
     self.formatMoney = function(amount) {
-        var client = $.parseJSON(ko.toJSON(self.client()));
-        return formatMoneyOrganisation(amount, self.organisation, client);
+        var relation = $.parseJSON(ko.toJSON(self.relation()));
+        return formatMoneyOrganisation(amount, self.organisation, relation);
     }
 
     self.totals = ko.observable();
@@ -532,7 +532,7 @@ function InvoiceModel(data) {
     }
 }
 
-function ClientModel(data) {
+function RelationModel(data) {
     var self = this;
     self.public_id = ko.observable(0);
     self.name = ko.observable('');

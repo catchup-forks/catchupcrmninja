@@ -5,7 +5,7 @@ use URL;
 use Utils;
 use App\Models\Task;
 use App\Models\Invoice;
-use App\Models\Client;
+use App\Models\Relation;
 use App\Ninja\Repositories\TaskRepository;
 use App\Services\BaseService;
 
@@ -32,30 +32,30 @@ class TaskService extends BaseService
     }
     */
 
-    public function getDatatable($clientPublicId, $search)
+    public function getDatatable($relationPublicId, $search)
     {
-        $query = $this->taskRepo->find($clientPublicId, $search);
+        $query = $this->taskRepo->find($relationPublicId, $search);
 
         if(!Utils::hasPermission('view_all')){
             $query->where('tasks.user_id', '=', Auth::user()->id);
         }
 
-        return $this->createDatatable(ENTITY_TASK, $query, !$clientPublicId);
+        return $this->createDatatable(ENTITY_TASK, $query, !$relationPublicId);
     }
 
-    protected function getDatatableColumns($entityType, $hideClient)
+    protected function getDatatableColumns($entityType, $hideRelation)
     {
         return [
             [
-                'client_name',
+                'relation_name',
                 function ($model) {
-                    if(!Client::canViewItemByOwner($model->client_user_id)){
-                        return Utils::getClientDisplayName($model);
+                    if(!Relation::canViewItemByOwner($model->relation_user_id)){
+                        return Utils::getRelationDisplayName($model);
                     }
                     
-                    return $model->client_public_id ? link_to("clients/{$model->client_public_id}", Utils::getClientDisplayName($model))->toHtml() : '';
+                    return $model->relation_public_id ? link_to("relations/{$model->relation_public_id}", Utils::getRelationDisplayName($model))->toHtml() : '';
                 },
-                ! $hideClient
+                ! $hideRelation
             ],
             [
                 'created_at',

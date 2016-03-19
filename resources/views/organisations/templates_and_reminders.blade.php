@@ -94,11 +94,11 @@
                         @foreach (\App\Ninja\Mailers\ContactMailer::$variableFields as $field)
                             <li>${{ $field }}</li>
                         @endforeach
-                        @if ($organisation->custom_client_label1)
-                            <li>$customClient1</li>
+                        @if ($organisation->custom_relation_label1)
+                            <li>$customRelation1</li>
                         @endif
-                        @if ($organisation->custom_client_label2)
-                            <li>$customClient2</li>
+                        @if ($organisation->custom_relation_label2)
+                            <li>$customRelation2</li>
                         @endif
                         @if ($organisation->custom_invoice_text_label1)
                             <li>$customInvoice1</li>
@@ -206,7 +206,7 @@
                 "{{ $organisation->getDisplayName() }}",
                 "{{ $organisation->formatDate($organisation->getDateTime()) }}",
                 "{{ $organisation->formatDate($organisation->getDateTime()) }}",
-                "Client Name", 
+                "Relation Name",
                 formatMoney(100), 
                 "Contact Name", 
                 "First Name",
@@ -220,7 +220,7 @@
             ];
 
             // Add blanks for custom values
-            keys.push('customClient1', 'customClient2', 'customInvoice1', 'customInvoice2');
+            keys.push('customRelation1', 'customRelation2', 'customInvoice1', 'customInvoice2');
             vals.push('custom value', 'custom value', 'custom value', 'custom value');
 
             // Add any available payment method links

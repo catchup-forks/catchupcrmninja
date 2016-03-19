@@ -16,7 +16,7 @@ class Expense extends EntityModel
     protected $presenter = 'App\Ninja\Presenters\ExpensePresenter';
 
     protected $fillable = [
-        'client_id',
+        'relation_id',
         'vendor_id',
         'expense_currency_id',
         'invoice_currency_id',
@@ -43,9 +43,9 @@ class Expense extends EntityModel
         return $this->belongsTo('App\Models\Vendor')->withTrashed();
     }
 
-    public function client()
+    public function relation()
     {
-        return $this->belongsTo('App\Models\Client')->withTrashed();
+        return $this->belongsTo('App\Models\Relation')->withTrashed();
     }
 
     public function invoice()

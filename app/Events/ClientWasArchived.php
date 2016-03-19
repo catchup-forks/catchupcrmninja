@@ -3,19 +3,19 @@
 use App\Events\Event;
 use Illuminate\Queue\SerializesModels;
 
-class ClientWasArchived extends Event
+class RelationWasArchived extends Event
 {
     use SerializesModels;
 
-    public $client;
+    public $relation;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($client)
+    public function __construct($relation)
     {
-        $this->client = $client;
+        $this->relation = $relation;
     }
 }

@@ -46,14 +46,14 @@ class PaymentApiController extends BaseAPIController
     {
         $paginator = Payment::scope();
         $payments = Payment::scope()
-                        ->with('client.contacts', 'invitation', 'user', 'invoice')->withTrashed();
+                        ->with('relation.contacts', 'invitation', 'user', 'invoice')->withTrashed();
 
-        if ($clientPublicId = Input::get('client_id')) {
-            $filter = function($query) use ($clientPublicId) {
-                $query->where('public_id', '=', $clientPublicId);
+        if ($relationPublicId = Input::get('relation_id')) {
+            $filter = function($query) use ($relationPublicId) {
+                $query->where('public_id', '=', $relationPublicId);
             };
-            $payments->whereHas('client', $filter);
-            $paginator->whereHas('client', $filter);
+            $payments->whereHas('relation', $filter);
+            $paginator->whereHas('relation', $filter);
         }
 
         $payments = $payments->orderBy('created_at', 'desc')->paginate();
@@ -111,7 +111,7 @@ class PaymentApiController extends BaseAPIController
             }
 
             /*
-            $invoice = Invoice::scope($data['invoice_id'])->with('client', 'invoice_items', 'invitations')->with(['payments' => function($query) {
+            $invoice = Invoice::scope($data['invoice_id'])->with('relation', 'invoice_items', 'invitations')->with(['payments' => function($query) {
                 $query->withTrashed();
             }])->withTrashed()->first();
             */
@@ -151,11 +151,11 @@ class PaymentApiController extends BaseAPIController
         $error = false;
 
         if (isset($data['invoice_id'])) {
-            $invoice = Invoice::scope($data['invoice_id'])->with('client')->first();
+            $invoice = Invoice::scope($data['invoice_id'])->with('relation')->first();
 
             if ($invoice) {
                 $data['invoice_id'] = $invoice->id;
-                $data['client_id'] = $invoice->client->id;
+                $data['relation_id'] = $invoice->relation->id;
             } else {
                 $error = trans('validation.not_in', ['attribute' => 'invoice_id']);
             }
@@ -178,7 +178,7 @@ class PaymentApiController extends BaseAPIController
         }
 
         /*
-        $invoice = Invoice::scope($invoice->public_id)->with('client', 'invoice_items', 'invitations')->with(['payments' => function($query) {
+        $invoice = Invoice::scope($invoice->public_id)->with('relation', 'invoice_items', 'invitations')->with(['payments' => function($query) {
             $query->withTrashed();
         }])->first();
         */
@@ -221,7 +221,7 @@ class PaymentApiController extends BaseAPIController
             $this->paymentRepo->delete($payment);
 
             /*
-            $invoice = Invoice::scope($invoiceId)->with('client', 'invoice_items', 'invitations')->with(['payments' => function($query) {
+            $invoice = Invoice::scope($invoiceId)->with('relation', 'invoice_items', 'invitations')->with(['payments' => function($query) {
                 $query->withTrashed();
             }])->first();
             */

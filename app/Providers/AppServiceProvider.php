@@ -66,7 +66,7 @@ class AppServiceProvider extends ServiceProvider {
                     $items[] = '<li><a href="'.URL::to('quotes').'">'.trans("texts.quotes").'</a></li>';
                     if(Invoice::canCreate())$items[] = '<li><a href="'.URL::to('quotes/create').'">'.trans("texts.new_quote").'</a></li>';
                 }
-            } else if ($type == ENTITY_CLIENT) {
+            } else if ($type == ENTITY_RELATION) {
                 if(!empty($items))$items[] = '<li class="divider"></li>';
                 $items[] = '<li><a href="'.URL::to('credits').'">'.trans("texts.credits").'</a></li>';
                 if(Credit::canCreate())$items[] = '<li><a href="'.URL::to('credits/create').'">'.trans("texts.new_credit").'</a></li>';
@@ -153,11 +153,11 @@ class AppServiceProvider extends ServiceProvider {
         });
 
         Validator::extend('has_credit', function($attribute, $value, $parameters) {
-            $publicClientId = $parameters[0];
+            $publicRelationId = $parameters[0];
             $amount = $parameters[1];
 
-            $client = \App\Models\Client::scope($publicClientId)->firstOrFail();
-            $credit = $client->getTotalCredit();
+            $relation = \App\Models\Relation::scope($publicRelationId)->firstOrFail();
+            $credit = $relation->getTotalCredit();
 
             return $credit >= $amount;
         });

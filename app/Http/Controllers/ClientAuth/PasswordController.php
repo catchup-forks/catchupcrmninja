@@ -1,4 +1,4 @@
-<?php namespace App\Http\Controllers\ClientAuth;
+<?php namespace App\Http\Controllers\RelationAuth;
 
 use Config;
 use App\Http\Controllers\Controller;
@@ -24,7 +24,7 @@ class PasswordController extends Controller {
 
 	use ResetsPasswords;
 
-    protected $redirectTo = '/client/dashboard';
+    protected $redirectTo = '/relation/dashboard';
     
 	/**
 	 * Create a new password controller instance.
@@ -36,7 +36,7 @@ class PasswordController extends Controller {
 	public function __construct()
 	{
 		$this->middleware('guest');
-        Config::set("auth.defaults.passwords","client");
+        Config::set("auth.defaults.passwords","relation");
 	}
 
 	public function showLinkRequestForm()
@@ -47,16 +47,16 @@ class PasswordController extends Controller {
             $invitation = Invitation::where('invitation_key', '=', $invitation_key)->first();
             if ($invitation && !$invitation->is_deleted) {
                 $invoice = $invitation->invoice;
-                $client = $invoice->client;
-                $organisation = $client->organisation;
+                $relation = $invoice->relation;
+                $organisation = $relation->organisation;
                 
                 $data['hideLogo'] = $organisation->isWhiteLabel();
-                $data['clientViewCSS'] = $organisation->clientViewCSS();
-                $data['clientFontUrl'] = $organisation->getFontsUrl();
+                $data['relationViewCSS'] = $organisation->relationViewCSS();
+                $data['relationFontUrl'] = $organisation->getFontsUrl();
             }
         }
         
-		return view('clientauth.password')->with($data);
+		return view('relationauth.password')->with($data);
 	}
 	
 	/**
@@ -114,16 +114,16 @@ class PasswordController extends Controller {
             $invitation = Invitation::where('invitation_key', '=', $invitation_key)->first();
             if ($invitation && !$invitation->is_deleted) {
                 $invoice = $invitation->invoice;
-                $client = $invoice->client;
-                $organisation = $client->organisation;
+                $relation = $invoice->relation;
+                $organisation = $relation->organisation;
                 
                 $data['hideLogo'] = $organisation->isWhiteLabel();
-                $data['clientViewCSS'] = $organisation->clientViewCSS();
-                $data['clientFontUrl'] = $organisation->getFontsUrl();
+                $data['relationViewCSS'] = $organisation->relationViewCSS();
+                $data['relationFontUrl'] = $organisation->getFontsUrl();
             }
         }
 
-        return view('clientauth.reset')->with($data);
+        return view('relationauth.reset')->with($data);
     }
     
     

@@ -3,7 +3,7 @@
 use App\Http\Requests\Request;
 use Illuminate\Validation\Factory;
 
-class CreateClientRequest extends Request
+class CreateRelationRequest extends Request
 {
     /**
      * Determine if the user is authorized to make this request.

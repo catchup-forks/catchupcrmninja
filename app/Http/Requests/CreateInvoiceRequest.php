@@ -25,8 +25,8 @@ class CreateInvoiceRequest extends Request
     public function rules()
     {
         $rules = [
-            'email' => 'required_without:client_id',
-            'client_id' => 'required_without:email',
+            'email' => 'required_without:relation_id',
+            'relation_id' => 'required_without:email',
             'invoice_items' => 'valid_invoice_items',
             'invoice_number' => 'unique:invoices,invoice_number,,id,organisation_id,'.Auth::user()->organisation_id,
             'discount' => 'positive',

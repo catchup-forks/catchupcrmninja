@@ -146,7 +146,7 @@ NINJA.decodeJavascript = function(invoice, javascript)
         'invoiceLineItemColumns': NINJA.invoiceColumns(invoice),
         'quantityWidth': NINJA.quantityWidth(invoice),
         'taxWidth': NINJA.taxWidth(invoice),
-        'clientDetails': NINJA.clientDetails(invoice),
+        'relationDetails': NINJA.relationDetails(invoice),
         'notesAndTerms': NINJA.notesAndTerms(invoice),
         'subtotals': NINJA.subtotals(invoice),
         'subtotalsHeight': (NINJA.subtotals(invoice).length * 16) + 16,
@@ -567,21 +567,21 @@ NINJA.invoiceDetails = function(invoice) {
     return NINJA.prepareDataPairs(data, 'invoiceDetails');
 }
 
-NINJA.clientDetails = function(invoice) {
-    var client = invoice.client;
+NINJA.relationDetails = function(invoice) {
+    var relation = invoice.relation;
     var data;
-    if (!client) {
+    if (!relation) {
         return;
     }
     var organisation = invoice.organisation;
-    var contact = client.contacts[0];
-    var clientName = client.name || (contact.first_name || contact.last_name ? (contact.first_name + ' ' + contact.last_name) : contact.email);
-    var clientEmail = client.contacts[0].email == clientName ? '' : client.contacts[0].email; 
+    var contact = relation.contacts[0];
+    var relationName = relation.name || (contact.first_name || contact.last_name ? (contact.first_name + ' ' + contact.last_name) : contact.email);
+    var relationEmail = relation.contacts[0].email == relationName ? '' : relation.contacts[0].email;
 
     var cityStatePostal = '';
-    if (client.city || client.state || client.postal_code) {
-        var swap = client.country && client.country.swap_postal_code;
-        cityStatePostal = formatAddress(client.city, client.state, client.postal_code, swap);
+    if (relation.city || relation.state || relation.postal_code) {
+        var swap = relation.country && relation.country.swap_postal_code;
+        cityStatePostal = formatAddress(relation.city, relation.state, relation.postal_code, swap);
     }
 
     // if a custom field is used in the invoice/quote number then we'll hide it from the PDF
@@ -590,19 +590,19 @@ NINJA.clientDetails = function(invoice) {
     var custom2InPattern = (pattern && pattern.indexOf('{$custom2}') >= 0);
 
     data = [
-        {text:clientName || ' ', style: ['clientName']},
-        {text:client.id_number},
-        {text:client.vat_number},
-        {text:client.address1},
-        {text:client.housenumber},
+        {text:relationName || ' ', style: ['relationName']},
+        {text:relation.id_number},
+        {text:relation.vat_number},
+        {text:relation.address1},
+        {text:relation.housenumber},
         {text:cityStatePostal},
-        {text:client.country ? client.country.name : ''},
-        {text:clientEmail},
-        {text: client.custom_value1 && !custom1InPattern ? organisation.custom_client_label1 + ' ' + client.custom_value1 : false},
-        {text: client.custom_value2 && !custom2InPattern ? organisation.custom_client_label2 + ' ' + client.custom_value2 : false}
+        {text:relation.country ? relation.country.name : ''},
+        {text:relationEmail},
+        {text: relation.custom_value1 && !custom1InPattern ? organisation.custom_relation_label1 + ' ' + relation.custom_value1 : false},
+        {text: relation.custom_value2 && !custom2InPattern ? organisation.custom_relation_label2 + ' ' + relation.custom_value2 : false}
     ];
 
-    return NINJA.prepareDataList(data, 'clientDetails');
+    return NINJA.prepareDataList(data, 'relationDetails');
 }
 
 NINJA.getPrimaryColor = function(defaultColor) {

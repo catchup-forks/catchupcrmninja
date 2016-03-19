@@ -52,14 +52,14 @@ class ExpenseRepository extends BaseRepository
         $accountid = \Auth::user()->organisation_id;
         $query = DB::table('expenses')
                     ->join('organisations', 'organisations.id', '=', 'expenses.organisation_id')
-                    ->leftjoin('clients', 'clients.id', '=', 'expenses.client_id')
-                    ->leftJoin('contacts', 'contacts.client_id', '=', 'clients.id')
+                    ->leftjoin('relations', 'relations.id', '=', 'expenses.relation_id')
+                    ->leftJoin('contacts', 'contacts.relation_id', '=', 'relations.id')
                     ->leftjoin('vendors', 'vendors.id', '=', 'expenses.vendor_id')
                     ->leftJoin('invoices', 'invoices.id', '=', 'expenses.invoice_id')
                     ->where('expenses.organisation_id', '=', $accountid)
                     ->where('contacts.deleted_at', '=', null)
                     ->where('vendors.deleted_at', '=', null)
-                    ->where('clients.deleted_at', '=', null)
+                    ->where('relations.deleted_at', '=', null)
                     ->where(function ($query) {
                         $query->where('contacts.is_primary', '=', true)
                               ->orWhere('contacts.is_primary', '=', null);
@@ -87,13 +87,13 @@ class ExpenseRepository extends BaseRepository
                         'vendors.name as vendor_name',
                         'vendors.public_id as vendor_public_id',
                         'vendors.user_id as vendor_user_id',
-                        'clients.name as client_name',
-                        'clients.public_id as client_public_id',
-                        'clients.user_id as client_user_id',
+                        'relations.name as relation_name',
+                        'relations.public_id as relation_public_id',
+                        'relations.user_id as relation_user_id',
                         'contacts.first_name',
                         'contacts.email',
                         'contacts.last_name',
-                        'clients.country_id as client_country_id'
+                        'relations.country_id as relation_country_id'
                     );
 
         $showTrashed = \Session::get('show_trash:expense');
@@ -105,7 +105,7 @@ class ExpenseRepository extends BaseRepository
         if ($filter) {
             $query->where(function ($query) use ($filter) {
                 $query->where('expenses.public_notes', 'like', '%'.$filter.'%')
-                      ->orWhere('clients.name', 'like', '%'.$filter.'%')
+                      ->orWhere('relations.name', 'like', '%'.$filter.'%')
                       ->orWhere('vendors.name', 'like', '%'.$filter.'%');
             });
         }
@@ -132,7 +132,7 @@ class ExpenseRepository extends BaseRepository
             $expense->private_notes = trim($input['private_notes']);
         }
         $expense->public_notes = trim($input['public_notes']);
-        $expense->should_be_invoiced = isset($input['should_be_invoiced']) || $expense->client_id ? true : false;
+        $expense->should_be_invoiced = isset($input['should_be_invoiced']) || $expense->relation_id ? true : false;
 
         if ( ! $expense->expense_currency_id) {
             $expense->expense_currency_id = \Auth::user()->organisation->getCurrencyId();

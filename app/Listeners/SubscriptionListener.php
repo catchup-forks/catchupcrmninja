@@ -3,7 +3,7 @@
 use Auth;
 use Utils;
 
-use App\Events\ClientWasCreated;
+use App\Events\RelationWasCreated;
 use App\Events\QuoteWasCreated;
 use App\Events\InvoiceWasCreated;
 use App\Events\CreditWasCreated;
@@ -13,7 +13,7 @@ use App\Events\VendorWasCreated;
 use App\Events\ExpenseWasCreated;
 
 use App\Ninja\Transformers\InvoiceTransformer;
-use App\Ninja\Transformers\ClientTransformer;
+use App\Ninja\Transformers\RelationTransformer;
 use App\Ninja\Transformers\PaymentTransformer;
 
 use League\Fractal\Manager;
@@ -22,28 +22,28 @@ use App\Ninja\Serializers\ArraySerializer;
 
 class SubscriptionListener
 {
-    public function createdClient(ClientWasCreated $event)
+    public function createdRelation(RelationWasCreated $event)
     {
-        $transformer = new ClientTransformer($event->client->organisation);
-        $this->checkSubscriptions(EVENT_CREATE_CLIENT, $event->client, $transformer);
+        $transformer = new RelationTransformer($event->relation->organisation);
+        $this->checkSubscriptions(EVENT_CREATE_RELATION, $event->relation, $transformer);
     }
 
     public function createdQuote(QuoteWasCreated $event)
     {
         $transformer = new InvoiceTransformer($event->quote->organisation);
-        $this->checkSubscriptions(EVENT_CREATE_QUOTE, $event->quote, $transformer, ENTITY_CLIENT);
+        $this->checkSubscriptions(EVENT_CREATE_QUOTE, $event->quote, $transformer, ENTITY_RELATION);
     }
 
     public function createdPayment(PaymentWasCreated $event)
     {
         $transformer = new PaymentTransformer($event->payment->organisation);
-        $this->checkSubscriptions(EVENT_CREATE_PAYMENT, $event->payment, $transformer, [ENTITY_CLIENT, ENTITY_INVOICE]);
+        $this->checkSubscriptions(EVENT_CREATE_PAYMENT, $event->payment, $transformer, [ENTITY_RELATION, ENTITY_INVOICE]);
     }
 
     public function createdInvoice(InvoiceWasCreated $event)
     {
         $transformer = new InvoiceTransformer($event->invoice->organisation);
-        $this->checkSubscriptions(EVENT_CREATE_INVOICE, $event->invoice, $transformer, ENTITY_CLIENT);
+        $this->checkSubscriptions(EVENT_CREATE_INVOICE, $event->invoice, $transformer, ENTITY_RELATION);
     }
 
     public function createdCredit(CreditWasCreated $event)
@@ -74,8 +74,8 @@ class SubscriptionListener
             $data = $manager->createData($resource)->toArray();
 
             // For legacy Zapier support
-            if (isset($data['client_id'])) {
-                $data['client_name'] = $entity->client->getDisplayName();
+            if (isset($data['relation_id'])) {
+                $data['relation_name'] = $entity->relation->getDisplayName();
             }
 
             Utils::notifyZapier($subscription, $data);

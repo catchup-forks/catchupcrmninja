@@ -2,7 +2,7 @@
 
 use App\Models\Organisation;
 use App\Models\Task;
-use App\Models\Client;
+use App\Models\Relation;
 use League\Fractal;
 
 /**
@@ -17,7 +17,7 @@ class TaskTransformer extends EntityTransformer
     * @SWG\Property(property="invoice_id", type="integer", example=1)
     */
     protected $availableIncludes = [
-        'client',
+        'relation',
     ];
 
 
@@ -27,11 +27,11 @@ class TaskTransformer extends EntityTransformer
 
     }
 
-    public function includeClient(Task $task)
+    public function includeRelation(Task $task)
     {
-        if ($task->client) {
-            $transformer = new ClientTransformer($this->organisation, $this->serializer);
-            return $this->includeItem($task->client, $transformer, 'client');
+        if ($task->relation) {
+            $transformer = new RelationTransformer($this->organisation, $this->serializer);
+            return $this->includeItem($task->relation, $transformer, 'relation');
         } else {
             return null;
         }

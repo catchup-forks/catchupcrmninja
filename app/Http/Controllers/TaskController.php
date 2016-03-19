@@ -12,7 +12,7 @@ use Session;
 use DropdownButton;
 use DateTime;
 use DateTimeZone;
-use App\Models\Client;
+use App\Models\Relation;
 use App\Models\Task;
 use App\Ninja\Repositories\TaskRepository;
 use App\Ninja\Repositories\InvoiceRepository;
@@ -46,7 +46,7 @@ class TaskController extends BaseController
             'sortCol' => '2',
             'columns' => Utils::trans([
               'checkbox',
-              'client',
+              'relation',
               'date',
               'duration',
               'description',
@@ -56,9 +56,9 @@ class TaskController extends BaseController
         ));
     }
 
-    public function getDatatable($clientPublicId = null)
+    public function getDatatable($relationPublicId = null)
     {
-        return $this->taskService->getDatatable($clientPublicId, Input::get('sSearch'));
+        return $this->taskService->getDatatable($relationPublicId, Input::get('sSearch'));
     }
 
     /**
@@ -83,7 +83,7 @@ class TaskController extends BaseController
      *
      * @return Response
      */
-    public function create($clientPublicId = 0)
+    public function create($relationPublicId = 0)
     {
         if(!$this->checkCreatePermission($response)){
             return $response;
@@ -92,7 +92,7 @@ class TaskController extends BaseController
 
         $data = [
             'task' => null,
-            'clientPublicId' => Input::old('client') ? Input::old('client') : $clientPublicId,
+            'relationPublicId' => Input::old('relation') ? Input::old('relation') : $relationPublicId,
             'method' => 'POST',
             'url' => 'tasks',
             'title' => trans('texts.new_task'),
@@ -115,7 +115,7 @@ class TaskController extends BaseController
     {
         $this->checkTimezone();
 
-        $task = Task::scope($publicId)->with('client', 'invoice')->withTrashed()->firstOrFail();
+        $task = Task::scope($publicId)->with('relation', 'invoice')->withTrashed()->firstOrFail();
 
         if(!$this->checkEditPermission($task, $response)){
             return $response;
@@ -128,7 +128,7 @@ class TaskController extends BaseController
             $actions[] = ['url' => 'javascript:submitAction("invoice")', 'label' => trans("texts.invoice_task")];
 
             // check for any open invoices
-            $invoices = $task->client_id ? $this->invoiceRepo->findOpenInvoices($task->client_id) : [];
+            $invoices = $task->relation_id ? $this->invoiceRepo->findOpenInvoices($task->relation_id) : [];
 
             foreach ($invoices as $invoice) {
                 $actions[] = ['url' => 'javascript:submitAction("add_to_invoice", '.$invoice->public_id.')', 'label' => trans("texts.add_to_invoice", ["invoice" => $invoice->invoice_number])];
@@ -145,7 +145,7 @@ class TaskController extends BaseController
 
         $data = [
             'task' => $task,
-            'clientPublicId' => $task->client ? $task->client->public_id : 0,
+            'relationPublicId' => $task->relation ? $task->relation->public_id : 0,
             'method' => 'PUT',
             'url' => 'tasks/'.$publicId,
             'title' => trans('texts.edit_task'),
@@ -175,7 +175,7 @@ class TaskController extends BaseController
     private static function getViewModel()
     {
         return [
-            'clients' => Client::scope()->with('contacts')->orderBy('name')->get(),
+            'relations' => Relation::scope()->with('contacts')->orderBy('name')->get(),
             'organisation' => Auth::user()->organisation,
         ];
     }
@@ -220,16 +220,16 @@ class TaskController extends BaseController
             Session::flash('message', trans('texts.stopped_task'));
             return Redirect::to('tasks');
         } else if ($action == 'invoice' || $action == 'add_to_invoice') {
-            $tasks = Task::scope($ids)->with('client')->get();
-            $clientPublicId = false;
+            $tasks = Task::scope($ids)->with('relation')->get();
+            $relationPublicId = false;
             $data = [];
             
             foreach ($tasks as $task) {
-                if ($task->client) {
-                    if (!$clientPublicId) {
-                        $clientPublicId = $task->client->public_id;
-                    } else if ($clientPublicId != $task->client->public_id) {
-                        Session::flash('error', trans('texts.task_error_multiple_clients'));
+                if ($task->relation) {
+                    if (!$relationPublicId) {
+                        $relationPublicId = $task->relation->public_id;
+                    } else if ($relationPublicId != $task->relation->public_id) {
+                        Session::flash('error', trans('texts.task_error_multiple_relations'));
                         return Redirect::to('tasks');
                     }
                 }
@@ -251,7 +251,7 @@ class TaskController extends BaseController
             }
 
             if ($action == 'invoice') {
-                return Redirect::to("invoices/create/{$clientPublicId}")->with('tasks', $data);
+                return Redirect::to("invoices/create/{$relationPublicId}")->with('tasks', $data);
             } else {
                 $invoiceId = Input::get('invoice_id');
                 return Redirect::to("invoices/{$invoiceId}/edit")->with('tasks', $data);

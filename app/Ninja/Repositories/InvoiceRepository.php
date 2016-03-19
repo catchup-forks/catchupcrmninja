@@ -26,33 +26,33 @@ class InvoiceRepository extends BaseRepository
     public function all()
     {
         return Invoice::scope()
-                ->with('user', 'client.contacts', 'invoice_status')
+                ->with('user', 'relation.contacts', 'invoice_status')
                 ->withTrashed()
                 ->where('is_quote', '=', false)
                 ->where('is_recurring', '=', false)
                 ->get();
     }
 
-    public function getInvoices($organisationId, $clientPublicId = false, $entityType = ENTITY_INVOICE, $filter = false)
+    public function getInvoices($organisationId, $relationPublicId = false, $entityType = ENTITY_INVOICE, $filter = false)
     {
         $query = DB::table('invoices')
             ->join('organisations', 'organisations.id', '=', 'invoices.organisation_id')
-            ->join('clients', 'clients.id', '=', 'invoices.client_id')
+            ->join('relations', 'relations.id', '=', 'invoices.relation_id')
             ->join('invoice_statuses', 'invoice_statuses.id', '=', 'invoices.invoice_status_id')
-            ->join('contacts', 'contacts.client_id', '=', 'clients.id')
+            ->join('contacts', 'contacts.relation_id', '=', 'relations.id')
             ->where('invoices.organisation_id', '=', $organisationId)
-            ->where('clients.deleted_at', '=', null)
+            ->where('relations.deleted_at', '=', null)
             ->where('contacts.deleted_at', '=', null)
             ->where('invoices.is_recurring', '=', false)
             ->where('contacts.is_primary', '=', true)
             ->select(
-                DB::raw('COALESCE(clients.currency_id, organisations.currency_id) currency_id'),
-                DB::raw('COALESCE(clients.country_id, organisations.country_id) country_id'),
-                'clients.public_id as client_public_id',
-                'clients.user_id as client_user_id',
+                DB::raw('COALESCE(relations.currency_id, organisations.currency_id) currency_id'),
+                DB::raw('COALESCE(relations.country_id, organisations.country_id) country_id'),
+                'relations.public_id as relation_public_id',
+                'relations.user_id as relation_user_id',
                 'invoice_number',
                 'invoice_status_id',
-                'clients.name as client_name',
+                'relations.name as relation_name',
                 'invoices.public_id',
                 'invoices.amount',
                 'invoices.balance',
@@ -74,13 +74,13 @@ class InvoiceRepository extends BaseRepository
             $query->where('invoices.deleted_at', '=', null);
         }
 
-        if ($clientPublicId) {
-            $query->where('clients.public_id', '=', $clientPublicId);
+        if ($relationPublicId) {
+            $query->where('relations.public_id', '=', $relationPublicId);
         }
 
         if ($filter) {
             $query->where(function ($query) use ($filter) {
-                $query->where('clients.name', 'like', '%'.$filter.'%')
+                $query->where('relations.name', 'like', '%'.$filter.'%')
                       ->orWhere('invoices.invoice_number', 'like', '%'.$filter.'%')
                       ->orWhere('invoice_statuses.name', 'like', '%'.$filter.'%')
                   ->orWhere('contacts.first_name', 'like', '%'.$filter.'%')
@@ -92,24 +92,24 @@ class InvoiceRepository extends BaseRepository
         return $query;
     }
 
-    public function getRecurringInvoices($organisationId, $clientPublicId = false, $filter = false)
+    public function getRecurringInvoices($organisationId, $relationPublicId = false, $filter = false)
     {
         $query = DB::table('invoices')
                     ->join('organisations', 'organisations.id', '=', 'invoices.organisation_id')
-                    ->join('clients', 'clients.id', '=', 'invoices.client_id')
+                    ->join('relations', 'relations.id', '=', 'invoices.relation_id')
                     ->join('frequencies', 'frequencies.id', '=', 'invoices.frequency_id')
-                    ->join('contacts', 'contacts.client_id', '=', 'clients.id')
+                    ->join('contacts', 'contacts.relation_id', '=', 'relations.id')
                     ->where('invoices.organisation_id', '=', $organisationId)
                     ->where('invoices.is_quote', '=', false)
                     ->where('contacts.deleted_at', '=', null)
                     ->where('invoices.is_recurring', '=', true)
                     ->where('contacts.is_primary', '=', true)
-                    ->where('clients.deleted_at', '=', null)
+                    ->where('relations.deleted_at', '=', null)
                     ->select(
-                        DB::raw('COALESCE(clients.currency_id, organisations.currency_id) currency_id'),
-                        DB::raw('COALESCE(clients.country_id, organisations.country_id) country_id'),
-                        'clients.public_id as client_public_id',
-                        'clients.name as client_name',
+                        DB::raw('COALESCE(relations.currency_id, organisations.currency_id) currency_id'),
+                        DB::raw('COALESCE(relations.country_id, organisations.country_id) country_id'),
+                        'relations.public_id as relation_public_id',
+                        'relations.name as relation_name',
                         'invoices.public_id',
                         'invoices.amount',
                         'frequencies.name as frequency',
@@ -122,8 +122,8 @@ class InvoiceRepository extends BaseRepository
                         'invoices.is_deleted'
                     );
 
-        if ($clientPublicId) {
-            $query->where('clients.public_id', '=', $clientPublicId);
+        if ($relationPublicId) {
+            $query->where('relations.public_id', '=', $relationPublicId);
         }
 
         if (!\Session::get('show_trash:recurring_invoice')) {
@@ -132,7 +132,7 @@ class InvoiceRepository extends BaseRepository
 
         if ($filter) {
             $query->where(function ($query) use ($filter) {
-                $query->where('clients.name', 'like', '%'.$filter.'%')
+                $query->where('relations.name', 'like', '%'.$filter.'%')
                       ->orWhere('invoices.invoice_number', 'like', '%'.$filter.'%');
             });
         }
@@ -140,30 +140,30 @@ class InvoiceRepository extends BaseRepository
         return $query;
     }
 
-    public function getClientDatatable($contactId, $entityType, $search)
+    public function getRelationDatatable($contactId, $entityType, $search)
     {
         $query = DB::table('invitations')
           ->join('organisations', 'organisations.id', '=', 'invitations.organisation_id')
           ->join('invoices', 'invoices.id', '=', 'invitations.invoice_id')
-          ->join('clients', 'clients.id', '=', 'invoices.client_id')
+          ->join('relations', 'relations.id', '=', 'invoices.relation_id')
           ->where('invitations.contact_id', '=', $contactId)
           ->where('invitations.deleted_at', '=', null)
           ->where('invoices.is_quote', '=', $entityType == ENTITY_QUOTE)
           ->where('invoices.is_deleted', '=', false)
-          ->where('clients.deleted_at', '=', null)
+          ->where('relations.deleted_at', '=', null)
           ->where('invoices.is_recurring', '=', false)
           // This needs to be a setting to also hide the activity on the dashboard page
           //->where('invoices.invoice_status_id', '>=', INVOICE_STATUS_SENT) 
           ->select(
-                DB::raw('COALESCE(clients.currency_id, organisations.currency_id) currency_id'),
-                DB::raw('COALESCE(clients.country_id, organisations.country_id) country_id'),
+                DB::raw('COALESCE(relations.currency_id, organisations.currency_id) currency_id'),
+                DB::raw('COALESCE(relations.country_id, organisations.country_id) country_id'),
                 'invitations.invitation_key',
                 'invoices.invoice_number',
                 'invoices.invoice_date',
                 'invoices.balance as balance',
                 'invoices.due_date',
-                'clients.public_id as client_public_id',
-                'clients.name as client_name',
+                'relations.public_id as relation_public_id',
+                'relations.name as relation_name',
                 'invoices.public_id',
                 'invoices.amount',
                 'invoices.start_date',
@@ -205,7 +205,7 @@ class InvoiceRepository extends BaseRepository
             } elseif (isset($data['is_quote']) && filter_var($data['is_quote'], FILTER_VALIDATE_BOOLEAN)) {
                 $entityType = ENTITY_QUOTE;
             }
-            $invoice = $organisation->createInvoice($entityType, $data['client_id']);
+            $invoice = $organisation->createInvoice($entityType, $data['relation_id']);
             if (isset($data['has_tasks']) && filter_var($data['has_tasks'], FILTER_VALIDATE_BOOLEAN)) {
                 $invoice->has_tasks = true;
             }
@@ -409,7 +409,7 @@ class InvoiceRepository extends BaseRepository
                 $task = Task::scope($item['task_public_id'])->where('invoice_id', '=', null)->firstOrFail();
                 if(!$checkSubPermissions || $task->canEdit()){
                     $task->invoice_id = $invoice->id;
-                    $task->client_id = $invoice->client_id;
+                    $task->relation_id = $invoice->relation_id;
                     $task->save();
                 }
             }
@@ -419,7 +419,7 @@ class InvoiceRepository extends BaseRepository
                 $expense = Expense::scope($item['expense_public_id'])->where('invoice_id', '=', null)->firstOrFail();
                 if(!$checkSubPermissions || $expense->canEdit()){
                     $expense->invoice_id = $invoice->id;
-                    $expense->client_id = $invoice->client_id;
+                    $expense->relation_id = $invoice->relation_id;
                     $expense->save();
                 }
             }
@@ -496,7 +496,7 @@ class InvoiceRepository extends BaseRepository
         $clone->invoice_number = $invoiceNumber ?: $organisation->getNextInvoiceNumber($clone);
 
         foreach ([
-          'client_id',
+          'relation_id',
           'discount',
           'is_amount_discount',
           'invoice_date',
@@ -581,20 +581,20 @@ class InvoiceRepository extends BaseRepository
             return false;
         }
 
-        $invoice->load('user', 'invoice_items', 'invoice_design', 'organisation.country', 'client.contacts', 'client.country');
-        $client = $invoice->client;
+        $invoice->load('user', 'invoice_items', 'invoice_design', 'organisation.country', 'relation.contacts', 'relation.country');
+        $relation = $invoice->relation;
 
-        if (!$client || $client->is_deleted) {
+        if (!$relation || $relation->is_deleted) {
             return false;
         }
 
         return $invitation;
     }
 
-    public function findOpenInvoices($clientId)
+    public function findOpenInvoices($relationId)
     {
         return Invoice::scope()
-                ->whereClientId($clientId)
+                ->whereRelationId($relationId)
                 ->whereIsQuote(false)
                 ->whereIsRecurring(false)
                 ->whereDeletedAt(null)
@@ -606,9 +606,9 @@ class InvoiceRepository extends BaseRepository
 
     public function createRecurringInvoice($recurInvoice)
     {
-        $recurInvoice->load('organisation.timezone', 'invoice_items', 'client', 'user');
+        $recurInvoice->load('organisation.timezone', 'invoice_items', 'relation', 'user');
 
-        if ($recurInvoice->client->deleted_at) {
+        if ($recurInvoice->relation->deleted_at) {
             return false;
         }
 
@@ -621,7 +621,7 @@ class InvoiceRepository extends BaseRepository
         }
 
         $invoice = Invoice::createNew($recurInvoice);
-        $invoice->client_id = $recurInvoice->client_id;
+        $invoice->relation_id = $recurInvoice->relation_id;
         $invoice->recurring_invoice_id = $recurInvoice->id;
         $invoice->invoice_number = $recurInvoice->organisation->recurring_invoice_number_prefix . $recurInvoice->organisation->getNextInvoiceNumber($recurInvoice);
         $invoice->amount = $recurInvoice->amount;

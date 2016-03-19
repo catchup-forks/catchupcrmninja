@@ -5,9 +5,9 @@ use Laracasts\Presenter\Presenter;
 
 class TaskPresenter extends Presenter {
 
-    public function client()
+    public function relation()
     {
-        return $this->entity->client ? $this->entity->client->getDisplayName() : '';
+        return $this->entity->relation ? $this->entity->relation->getDisplayName() : '';
     }
 
     public function user()

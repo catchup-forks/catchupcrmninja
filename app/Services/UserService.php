@@ -34,7 +34,7 @@ class UserService extends BaseService
         return $this->createDatatable(ENTITY_USER, $query, false);
     }
 
-    protected function getDatatableColumns($entityType, $hideClient)
+    protected function getDatatableColumns($entityType, $hideRelation)
     {
         return [
             [

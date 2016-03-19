@@ -14,7 +14,7 @@ use Redirect;
 use Cache;
 use App\Models\Vendor;
 use App\Models\Expense;
-use App\Models\Client;
+use App\Models\Relation;
 use App\Services\ExpenseService;
 use App\Ninja\Repositories\ExpenseRepository;
 use App\Http\Requests\CreateExpenseRequest;
@@ -49,7 +49,7 @@ class ExpenseController extends BaseController
             'columns' => Utils::trans([
               'checkbox',
               'vendor',
-              'client',
+              'relation',
               'expense_date',
               'amount',
               'public_notes',
@@ -69,7 +69,7 @@ class ExpenseController extends BaseController
         return $this->expenseService->getDatatableVendor($vendorPublicId);
     }
 
-    public function create($vendorPublicId = null, $clientPublicId = null)
+    public function create($vendorPublicId = null, $relationPublicId = null)
     {
         if(!$this->checkCreatePermission($response)){
             return $response;
@@ -88,8 +88,8 @@ class ExpenseController extends BaseController
             'title' => trans('texts.new_expense'),
             'vendors' => Vendor::scope()->with('vendorcontacts')->orderBy('name')->get(),
             'vendor' => $vendor,
-            'clients' => Client::scope()->with('contacts')->orderBy('name')->get(),
-            'clientPublicId' => $clientPublicId,
+            'relations' => Relation::scope()->with('contacts')->orderBy('name')->get(),
+            'relationPublicId' => $relationPublicId,
             );
 
         $data = array_merge($data, self::getViewModel());
@@ -115,7 +115,7 @@ class ExpenseController extends BaseController
 
             /*
             // check for any open invoices
-            $invoices = $task->client_id ? $this->invoiceRepo->findOpenInvoices($task->client_id) : [];
+            $invoices = $task->relation_id ? $this->invoiceRepo->findOpenInvoices($task->relation_id) : [];
 
             foreach ($invoices as $invoice) {
                 $actions[] = ['url' => 'javascript:submitAction("add_to_invoice", '.$invoice->public_id.')', 'label' => trans("texts.add_to_invoice", ["invoice" => $invoice->invoice_number])];
@@ -140,14 +140,14 @@ class ExpenseController extends BaseController
             'actions' => $actions,
             'vendors' => Vendor::scope()->with('vendorcontacts')->orderBy('name')->get(),
             'vendorPublicId' => $expense->vendor ? $expense->vendor->public_id : null,
-            'clients' => Client::scope()->with('contacts')->orderBy('name')->get(),
-            'clientPublicId' => $expense->client ? $expense->client->public_id : null,
+            'relations' => Relation::scope()->with('contacts')->orderBy('name')->get(),
+            'relationPublicId' => $expense->relation ? $expense->relation->public_id : null,
         );
 
         $data = array_merge($data, self::getViewModel());
 
         if (Auth::user()->organisation->isNinjaOrganisation()) {
-            if ($organisation = Organisation::whereId($client->public_id)->first()) {
+            if ($organisation = Organisation::whereId($relation->public_id)->first()) {
                 $data['proPlanPaid'] = $organisation['pro_plan_paid'];
             }
         }
@@ -192,19 +192,19 @@ class ExpenseController extends BaseController
         switch($action)
         {
             case 'invoice':
-                $expenses = Expense::scope($ids)->with('client')->get();
-                $clientPublicId = null;
+                $expenses = Expense::scope($ids)->with('relation')->get();
+                $relationPublicId = null;
                 $currencyId = null;
                 $data = [];
 
-                // Validate that either all expenses do not have a client or if there is a client, it is the same client
+                // Validate that either all expenses do not have a relation or if there is a relation, it is the same relation
                 foreach ($expenses as $expense)
                 {
-                    if ($expense->client) {
-                        if (!$clientPublicId) {
-                            $clientPublicId = $expense->client->public_id;
-                        } elseif ($clientPublicId != $expense->client->public_id) {
-                            Session::flash('error', trans('texts.expense_error_multiple_clients'));
+                    if ($expense->relation) {
+                        if (!$relationPublicId) {
+                            $relationPublicId = $expense->relation->public_id;
+                        } elseif ($relationPublicId != $expense->relation->public_id) {
+                            Session::flash('error', trans('texts.expense_error_multiple_relations'));
                             return Redirect::to('expenses');
                         }
                     }
@@ -230,7 +230,7 @@ class ExpenseController extends BaseController
                     ];
                 }
 
-                return Redirect::to("invoices/create/{$clientPublicId}")
+                return Redirect::to("invoices/create/{$relationPublicId}")
                         ->with('expenseCurrencyId', $currencyId)
                         ->with('expenses', $data);
                 break;

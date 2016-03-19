@@ -24,7 +24,7 @@ class CreditListener
         }
 
         $credit = Credit::createNew();
-        $credit->client_id = $payment->client_id;
+        $credit->relation_id = $payment->relation_id;
         $credit->credit_date = Carbon::now()->toDateTimeString();
         $credit->balance = $credit->amount = $payment->amount;
         $credit->private_notes = $payment->transaction_reference;

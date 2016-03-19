@@ -29,7 +29,7 @@ class BaseService
         return count($entities);
     }
 
-    public function createDatatable($entityType, $query, $showCheckbox = true, $hideClient = false)
+    public function createDatatable($entityType, $query, $showCheckbox = true, $hideRelation = false)
     {
         $columns = $this->getDatatableColumns($entityType, !$showCheckbox);
         $actions = $this->getDatatableActions($entityType);
@@ -37,7 +37,7 @@ class BaseService
         return $this->datatableService->createDatatable($entityType, $query, $columns, $actions, $showCheckbox);
     }
 
-    protected function getDatatableColumns($entityType, $hideClient)
+    protected function getDatatableColumns($entityType, $hideRelation)
     {
         return [];
     }

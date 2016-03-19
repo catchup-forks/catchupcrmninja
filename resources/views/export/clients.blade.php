@@ -11,33 +11,33 @@
     <td>{{ trans('texts.state') }}</td>
     <td>{{ trans('texts.postal_code') }}</td>
     <td>{{ trans('texts.country') }}</td>
-    @if ($organisation->custom_client_label1)
-        <td>{{ $organisation->custom_client_label1 }}</td>
+    @if ($organisation->custom_relation_label1)
+        <td>{{ $organisation->custom_relation_label1 }}</td>
     @endif
-    @if ($organisation->custom_client_label2)
-        <td>{{ $organisation->custom_client_label2 }}</td>
+    @if ($organisation->custom_relation_label2)
+        <td>{{ $organisation->custom_relation_label2 }}</td>
     @endif
 </tr>
 
-@foreach ($clients as $client)
+@foreach ($relations as $relation)
     <tr>
-        <td>{{ $client->getDisplayName() }}</td>
+        <td>{{ $relation->getDisplayName() }}</td>
         @if ($multiUser)
-            <td>{{ $client->user->getDisplayName() }}</td>
+            <td>{{ $relation->user->getDisplayName() }}</td>
         @endif
-        <td>{{ $organisation->formatMoney($client->balance, $client) }}</td>
-        <td>{{ $organisation->formatMoney($client->paid_to_date, $client) }}</td>
-        <td>{{ $client->address1 }}</td>
-        <td>{{ $client->housenumber }}</td>
-        <td>{{ $client->city }}</td>
-        <td>{{ $client->state }}</td>
-        <td>{{ $client->postal_code }}</td>
-        <td>{{ $client->present()->country }}</td>
-        @if ($organisation->custom_client_label1)
-            <td>{{ $client->custom_value1 }}</td>
+        <td>{{ $organisation->formatMoney($relation->balance, $relation) }}</td>
+        <td>{{ $organisation->formatMoney($relation->paid_to_date, $relation) }}</td>
+        <td>{{ $relation->address1 }}</td>
+        <td>{{ $relation->housenumber }}</td>
+        <td>{{ $relation->city }}</td>
+        <td>{{ $relation->state }}</td>
+        <td>{{ $relation->postal_code }}</td>
+        <td>{{ $relation->present()->country }}</td>
+        @if ($organisation->custom_relation_label1)
+            <td>{{ $relation->custom_value1 }}</td>
         @endif
-        @if ($organisation->custom_client_label2)
-            <td>{{ $client->custom_value2 }}</td>
+        @if ($organisation->custom_relation_label2)
+            <td>{{ $relation->custom_value2 }}</td>
         @endif
     </tr>
 @endforeach

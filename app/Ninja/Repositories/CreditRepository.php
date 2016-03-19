@@ -3,7 +3,7 @@
 use DB;
 use Utils;
 use App\Models\Credit;
-use App\Models\Client;
+use App\Models\Relation;
 use App\Ninja\Repositories\BaseRepository;
 
 class CreditRepository extends BaseRepository
@@ -13,23 +13,23 @@ class CreditRepository extends BaseRepository
         return 'App\Models\Credit';
     }
 
-    public function find($clientPublicId = null, $filter = null)
+    public function find($relationPublicId = null, $filter = null)
     {
         $query = DB::table('credits')
                     ->join('organisations', 'organisations.id', '=', 'credits.organisation_id')
-                    ->join('clients', 'clients.id', '=', 'credits.client_id')
-                    ->join('contacts', 'contacts.client_id', '=', 'clients.id')
-                    ->where('clients.organisation_id', '=', \Auth::user()->organisation_id)
-                    ->where('clients.deleted_at', '=', null)
+                    ->join('relations', 'relations.id', '=', 'credits.relation_id')
+                    ->join('contacts', 'contacts.relation_id', '=', 'relations.id')
+                    ->where('relations.organisation_id', '=', \Auth::user()->organisation_id)
+                    ->where('relations.deleted_at', '=', null)
                     ->where('contacts.deleted_at', '=', null)
                     ->where('contacts.is_primary', '=', true)
                     ->select(
-                        DB::raw('COALESCE(clients.currency_id, organisations.currency_id) currency_id'),
-                        DB::raw('COALESCE(clients.country_id, organisations.country_id) country_id'),
+                        DB::raw('COALESCE(relations.currency_id, organisations.currency_id) currency_id'),
+                        DB::raw('COALESCE(relations.country_id, organisations.country_id) country_id'),
                         'credits.public_id',
-                        'clients.name as client_name',
-                        'clients.public_id as client_public_id',
-                        'clients.user_id as client_user_id',
+                        'relations.name as relation_name',
+                        'relations.public_id as relation_public_id',
+                        'relations.user_id as relation_user_id',
                         'credits.amount',
                         'credits.balance',
                         'credits.credit_date',
@@ -42,8 +42,8 @@ class CreditRepository extends BaseRepository
                         'credits.user_id'
                     );
 
-        if ($clientPublicId) {
-            $query->where('clients.public_id', '=', $clientPublicId);
+        if ($relationPublicId) {
+            $query->where('relations.public_id', '=', $relationPublicId);
         }
 
         if (!\Session::get('show_trash:credit')) {
@@ -52,7 +52,7 @@ class CreditRepository extends BaseRepository
 
         if ($filter) {
             $query->where(function ($query) use ($filter) {
-                $query->where('clients.name', 'like', '%'.$filter.'%');
+                $query->where('relations.name', 'like', '%'.$filter.'%');
             });
         }
 
@@ -69,7 +69,7 @@ class CreditRepository extends BaseRepository
             $credit = Credit::createNew();
         }
 
-        $credit->client_id = Client::getPrivateId($input['client']);
+        $credit->relation_id = Relation::getPrivateId($input['relation']);
         $credit->credit_date = Utils::toSqlDate($input['credit_date']);
         $credit->amount = Utils::parseFloat($input['amount']);
         $credit->balance = Utils::parseFloat($input['amount']);

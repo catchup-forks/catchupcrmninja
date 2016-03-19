@@ -95,7 +95,7 @@ class Login
 		"<OFX>\n".
 			"<SIGNONMSGSRQV1>\n".
 				"<SONRQ>\n".
-					"<DTCLIENT>20110412162900.000[-7:MST]\n".
+					"<DTRELATION>20110412162900.000[-7:MST]\n".
 					"<USERID>".$this->id."\n".
 					"<USERPASS>".$this->pass."\n".
 					"<GENUSERKEY>N\n".
@@ -163,7 +163,7 @@ class Organisation
 			"<OFX>\n".
 				"<SIGNONMSGSRQV1>\n".
 					"<SONRQ>\n".
-						"<DTCLIENT>20110412162900.000[-7:MST]\n".
+						"<DTRELATION>20110412162900.000[-7:MST]\n".
 						"<USERID>".$this->login->id."\n".
 						"<USERPASS>".$this->login->pass."\n".
 						"<LANGUAGE>ENG\n".

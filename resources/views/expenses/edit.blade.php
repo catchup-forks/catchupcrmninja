@@ -53,16 +53,16 @@
                             ->addGroupClass('amount')
                             ->append('<span data-bind="html: expenseCurrencyCode"></span>') !!}
 
-                    {!! Former::select('client_id')
+                    {!! Former::select('relation_id')
                             ->addOption('', '')
-                            ->label(trans('texts.client'))
-                            ->data_bind('combobox: client_id')
-                            ->addGroupClass('client-select') !!}
+                            ->label(trans('texts.relation'))
+                            ->data_bind('combobox: relation_id')
+                            ->addGroupClass('relation-select') !!}
 
-                    @if (!$expense || ($expense && !$expense->invoice_id && !$expense->client_id))
+                    @if (!$expense || ($expense && !$expense->invoice_id && !$expense->relation_id))
                         {!! Former::checkbox('should_be_invoiced')
                                 ->text(trans('texts.should_be_invoiced'))
-                                ->data_bind('checked: should_be_invoiced() || client_id(), enable: !client_id()')
+                                ->data_bind('checked: should_be_invoiced() || relation_id(), enable: !relation_id()')
                                 ->label(' ') !!}
                     @endif
 
@@ -75,14 +75,14 @@
                     <br/>
 
                     <div style="display:none" data-bind="visible: enableExchangeRate">
-                        <span style="display:none" data-bind="visible: !client_id()">
+                        <span style="display:none" data-bind="visible: !relation_id()">
                             {!! Former::select('invoice_currency_id')->addOption('','')
                                     ->label(trans('texts.invoice_currency'))
                                     ->data_placeholder(Utils::getFromCache($organisation->getCurrencyId(), 'currencies')->name)
                                     ->data_bind('combobox: invoice_currency_id, disable: true')
                                     ->fromQuery($currencies, 'name', 'id') !!}
                         </span>
-                        <span style="display:none;" data-bind="visible: client_id">
+                        <span style="display:none;" data-bind="visible: relation_id">
                             {!! Former::plaintext('test')
                                     ->value('<span data-bind="html: invoiceCurrencyName"></span>')
                                     ->style('min-height:46px')
@@ -124,19 +124,19 @@
     <script type="text/javascript">
 
         var vendors = {!! $vendors !!};
-        var clients = {!! $clients !!};
+        var relations = {!! $relations !!};
 
-        var clientMap = {};
-        for (var i=0; i<clients.length; i++) {
-            var client = clients[i];
-            clientMap[client.public_id] = client;
+        var relationMap = {};
+        for (var i=0; i<relations.length; i++) {
+            var relation = relations[i];
+            relationMap[relation.public_id] = relation;
         }
 
-        function onClientChange() {
-            var clientId = $('select#client_id').val();
-            var client = clientMap[clientId];
-            if (client) {
-                model.invoice_currency_id(client.currency_id);
+        function onRelationChange() {
+            var relationId = $('select#relation_id').val();
+            var relation = relationMap[relationId];
+            if (relation) {
+                model.invoice_currency_id(relation.currency_id);
             }
         }
 
@@ -156,7 +156,7 @@
             var $vendorSelect = $('select#vendor_id');
             for (var i = 0; i < vendors.length; i++) {
                 var vendor = vendors[i];
-                $vendorSelect.append(new Option(getClientDisplayName(vendor), vendor.public_id));
+                $vendorSelect.append(new Option(getRelationDisplayName(vendor), vendor.public_id));
             }
             $vendorSelect.combobox();
 
@@ -166,13 +166,13 @@
                 toggleDatePicker('expense_date');
             });
 
-            var $clientSelect = $('select#client_id');
-            for (var i=0; i<clients.length; i++) {
-                var client = clients[i];
-                $clientSelect.append(new Option(getClientDisplayName(client), client.public_id));
+            var $relationSelect = $('select#relation_id');
+            for (var i=0; i<relations.length; i++) {
+                var relation = relations[i];
+                $relationSelect.append(new Option(getRelationDisplayName(relation), relation.public_id));
             }
-            $clientSelect.combobox().change(function() {
-                onClientChange();
+            $relationSelect.combobox().change(function() {
+                onRelationChange();
             });
 
             @if ($data)
@@ -185,8 +185,8 @@
                 ko.applyBindings(model);
             @endif
 
-            @if (!$expense && $clientPublicId)
-                onClientChange();
+            @if (!$expense && $relationPublicId)
+                onRelationChange();
             @endif
 
             @if (!$vendorPublicId)
@@ -211,7 +211,7 @@
             }
 
             self.account_currency_id = ko.observable({{ $organisation->getCurrencyId() }});
-            self.client_id = ko.observable({{ $clientPublicId }});
+            self.relation_id = ko.observable({{ $relationPublicId }});
             self.vendor_id = ko.observable({{ $vendorPublicId }});
 
             self.convertedAmount = ko.computed({

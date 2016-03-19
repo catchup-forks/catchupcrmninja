@@ -4,7 +4,7 @@ use URL;
 use Utils;
 use Laracasts\Presenter\Presenter;
 
-class ClientPresenter extends Presenter {
+class RelationPresenter extends Presenter {
 
     public function country()
     {
@@ -31,11 +31,11 @@ class ClientPresenter extends Presenter {
 
     public function url()
     {
-        return URL::to('/clients/' . $this->entity->public_id);
+        return URL::to('/relations/' . $this->entity->public_id);
     }
 
     public function link()
     {
-        return link_to('/clients/' . $this->entity->public_id, $this->entity->getDisplayName());
+        return link_to('/relations/' . $this->entity->public_id, $this->entity->getDisplayName());
     }
 }

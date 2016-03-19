@@ -8,7 +8,7 @@ use App\Services\BaseService;
 use App\Ninja\Repositories\ExpenseRepository;
 use App\Models\Expense;
 use App\Models\Invoice;
-use App\Models\Client;
+use App\Models\Relation;
 use App\Models\Vendor;
 
 class ExpenseService extends BaseService
@@ -30,8 +30,8 @@ class ExpenseService extends BaseService
 
     public function save($data)
     {
-        if (isset($data['client_id']) && $data['client_id']) {
-            $data['client_id'] = Client::getPrivateId($data['client_id']);
+        if (isset($data['relation_id']) && $data['relation_id']) {
+            $data['relation_id'] = Relation::getPrivateId($data['relation_id']);
         }
 
         if (isset($data['vendor_id']) && $data['vendor_id']) {
@@ -62,7 +62,7 @@ class ExpenseService extends BaseService
                                                         false);
     }
 
-    protected function getDatatableColumns($entityType, $hideClient)
+    protected function getDatatableColumns($entityType, $hideRelation)
     {
         return [
             [
@@ -81,15 +81,15 @@ class ExpenseService extends BaseService
                 }
             ],
             [
-                'client_name',
+                'relation_name',
                 function ($model)
                 {
-                    if ($model->client_public_id) {
-                        if(!Client::canViewItemByOwner($model->client_user_id)){
-                            return Utils::getClientDisplayName($model);
+                    if ($model->relation_public_id) {
+                        if(!Relation::canViewItemByOwner($model->relation_user_id)){
+                            return Utils::getRelationDisplayName($model);
                         }
                         
-                        return link_to("clients/{$model->client_public_id}", Utils::getClientDisplayName($model))->toHtml();
+                        return link_to("relations/{$model->relation_public_id}", Utils::getRelationDisplayName($model))->toHtml();
                     } else {
                         return '';
                     }
@@ -133,7 +133,7 @@ class ExpenseService extends BaseService
         ];
     }
 
-    protected function getDatatableColumnsVendor($entityType, $hideClient)
+    protected function getDatatableColumnsVendor($entityType, $hideRelation)
     {
         return [
             [

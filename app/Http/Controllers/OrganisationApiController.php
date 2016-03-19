@@ -6,7 +6,7 @@ use Response;
 use Input;
 use Validator;
 use Cache;
-use App\Models\Client;
+use App\Models\Relation;
 use App\Models\Organisation;
 use App\Models\OrganisationToken;
 use App\Ninja\Repositories\OrganisationRepository;

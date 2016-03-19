@@ -35,7 +35,7 @@ class OrganisationGatewayService extends BaseService
         return $this->createDatatable(ENTITY_ORGANISATION_GATEWAY, $query, false);
     }
 
-    protected function getDatatableColumns($entityType, $hideClient)
+    protected function getDatatableColumns($entityType, $hideRelation)
     {
         return [
             [

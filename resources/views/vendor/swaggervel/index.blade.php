@@ -89,10 +89,10 @@ header("Access-Control-Allow-Headers: X-Requested-With");
                 function addApiKeyAuthorization() {
                     var key = encodeURIComponent($('#input_apiKey')[0].value);
                     if (key && key.trim() != "") {
-                        var apiKeyAuth = new SwaggerClient.ApiKeyAuthorization("X-Ninja-Token", key, "header");
-                        window.swaggerUi.api.clientAuthorizations.add("api_key", apiKeyAuth);
-                        var ajaxRequest = new SwaggerClient.ApiKeyAuthorization("X-Requested-With", "XMLHttpRequest", "header");
-                        window.swaggerUi.api.clientAuthorizations.add("ajax", ajaxRequest);
+                        var apiKeyAuth = new SwaggerRelation.ApiKeyAuthorization("X-Ninja-Token", key, "header");
+                        window.swaggerUi.api.relationAuthorizations.add("api_key", apiKeyAuth);
+                        var ajaxRequest = new SwaggerRelation.ApiKeyAuthorization("X-Requested-With", "XMLHttpRequest", "header");
+                        window.swaggerUi.api.relationAuthorizations.add("ajax", ajaxRequest);
                         log("added key " + key);
                     }
                 }

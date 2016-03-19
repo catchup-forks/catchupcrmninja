@@ -4,7 +4,7 @@
 
 	
 	{!! Former::open($url)->addClass('col-md-10 col-md-offset-1 warn-on-exit')->method($method)->rules(array(
-			'client' => 'required',
+			'relation' => 'required',
   		'amount' => 'required',		
 	)) !!}
 	
@@ -14,7 +14,7 @@
             <div class="panel panel-default">
             <div class="panel-body">
 
-			{!! Former::select('client')->addOption('', '')->addGroupClass('client-select') !!}
+			{!! Former::select('relation')->addOption('', '')->addGroupClass('relation-select') !!}
 			{!! Former::text('amount') !!}
 			{!! Former::text('credit_date')
                         ->data_date_format(Session::get(SESSION_DATE_PICKER_FORMAT, DEFAULT_DATE_PICKER_FORMAT))
@@ -39,27 +39,27 @@
 	<script type="text/javascript">
 
 	
-	var clients = {!! $clients !!};
+	var relations = {!! $relations !!};
 
 	$(function() {
 
-		var $clientSelect = $('select#client');		
-		for (var i=0; i<clients.length; i++) {
-			var client = clients[i];
-			$clientSelect.append(new Option(getClientDisplayName(client), client.public_id));
+		var $relationSelect = $('select#relation');
+		for (var i=0; i<relations.length; i++) {
+			var relation = relations[i];
+			$relationSelect.append(new Option(getRelationDisplayName(relation), relation.public_id));
 		}	
 
-		if ({{ $clientPublicId ? 'true' : 'false' }}) {
-			$clientSelect.val({{ $clientPublicId }});
+		if ({{ $relationPublicId ? 'true' : 'false' }}) {
+			$relationSelect.val({{ $relationPublicId }});
 		}
 
-		$clientSelect.combobox();
+		$relationSelect.combobox();
 		
 		$('#currency_id').combobox();
 		$('#credit_date').datepicker('update', new Date());
 
-        @if (!$clientPublicId)
-            $('.client-select input.form-control').focus();
+        @if (!$relationPublicId)
+            $('.relation-select input.form-control').focus();
         @else
             $('#amount').focus();
         @endif

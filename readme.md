@@ -20,7 +20,7 @@ run http://yourlocalinstall.local/ and you will be redirected to /setup
 * Tax rates and payment terms
 * Reminder emails
 * Partial payments
-* Client portal
+* Relation portal
 * Custom email templates
 * [D3.js](http://d3js.org/) visualizations
 
@@ -40,12 +40,12 @@ run http://yourlocalinstall.local/ and you will be redirected to /setup
 * [krisk/Fuse](https://github.com/krisk/Fuse) - Lightweight fuzzy-search, in JavaScript
 * [knockout/knockout](https://github.com/knockout/knockout) - Knockout makes it easier to create rich, responsive UIs with JavaScript
 * [rniemeyer/knockout-sortable](https://github.com/rniemeyer/knockout-sortable) - A Knockout.js binding to connect observableArrays with jQuery UI sortable functionality
-* [bpampuch/pdfmake](https://github.com/bpampuch/pdfmake) - Client/server side PDF printing in pure JavaScript
+* [bpampuch/pdfmake](https://github.com/bpampuch/pdfmake) - Relation/server side PDF printing in pure JavaScript
 * [FortAwesome/Font-Awesome](https://github.com/FortAwesome/Font-Awesome) - The iconic font designed for Bootstrap that works with twitter bootstrap
 * [Anahkiasen/former](https://github.com/Anahkiasen/former) - A powerful form builder, for Laravel and other frameworks (stand-alone too)
 * [barryvdh/laravel-debugbar](https://github.com/barryvdh/laravel-debugbar) - Laravel debugbar
 * [DataTables/DataTables](https://github.com/DataTables/DataTables) - Tables plug-in for jQuery
-* [Chumper/Datatable](https://github.com/Chumper/Datatable) - This is a laravel 4 package for the server and client side of datatables
+* [Chumper/Datatable](https://github.com/Chumper/Datatable) - This is a laravel 4 package for the server and relation side of datatables
 * [omnipay/omnipay](https://github.com/omnipay/omnipay) - A framework agnostic, multi-gateway payment processing library for PHP 5.3+
 * [Intervention/image](https://github.com/Intervention/image) - PHP Image Manipulation
 * [webpatser/laravel-countries](https://github.com/webpatser/laravel-countries) - Almost ISO 3166_2, 3166_3, currency, Capital and more for all countries

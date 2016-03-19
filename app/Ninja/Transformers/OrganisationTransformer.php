@@ -18,7 +18,7 @@ class OrganisationTransformer extends EntityTransformer
     ];
 
     protected $availableIncludes = [
-        'clients',
+        'relations',
         'invoices',
     ];
 
@@ -28,10 +28,10 @@ class OrganisationTransformer extends EntityTransformer
         return $this->includeCollection($organisation->users, $transformer, 'users');
     }
 
-    public function includeClients(Organisation $organisation)
+    public function includeRelations(Organisation $organisation)
     {
-        $transformer = new ClientTransformer($organisation, $this->serializer);
-        return $this->includeCollection($organisation->clients, $transformer, 'clients');
+        $transformer = new RelationTransformer($organisation, $this->serializer);
+        return $this->includeCollection($organisation->relations, $transformer, 'relations');
     }
 
     public function includeInvoices(Organisation $organisation)
@@ -82,7 +82,7 @@ class OrganisationTransformer extends EntityTransformer
             'invoice_taxes' => (bool) $organisation->invoice_taxes,
             'invoice_item_taxes' => (bool) $organisation->invoice_item_taxes,
             'invoice_design_id' => (int) $organisation->invoice_design_id,
-            'client_view_css' => (string) $organisation->client_view_css,
+            'relation_view_css' => (string) $organisation->relation_view_css,
             'work_phone' => $organisation->work_phone,
             'work_email' => $organisation->work_email,
             'language_id' => (int) $organisation->language_id,

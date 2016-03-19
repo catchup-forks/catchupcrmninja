@@ -1,14 +1,14 @@
 @extends('master')
 
 @section('head')
-    @if (!empty($clientFontUrl))
-    <link href="{!! $clientFontUrl !!}" rel="stylesheet" type="text/css">
+    @if (!empty($relationFontUrl))
+    <link href="{!! $relationFontUrl !!}" rel="stylesheet" type="text/css">
     @else
     <link href="//fonts.googleapis.com/css?family=Roboto:400,700,900,100" rel="stylesheet" type="text/css">
     @endif
     <link href="{{ asset('css/built.public.css') }}?no_cache={{ NINJA_VERSION }}" rel="stylesheet" type="text/css"/>
-    @if (!empty($clientViewCSS))
-        <style type="text/css">{!! $clientViewCSS !!}</style>
+    @if (!empty($relationViewCSS))
+        <style type="text/css">{!! $relationViewCSS !!}</style>
     @endif
 @stop
 
@@ -77,18 +77,18 @@
             @if (!isset($hideHeader) || !$hideHeader)
             <ul class="nav navbar-nav navbar-right">
                 @if (!isset($hideDashboard) || !$hideDashboard)
-                    <li {{ Request::is('*client/dashboard') ? 'class="active"' : '' }}>
-                        {!! link_to('/client/dashboard', trans('texts.dashboard') ) !!}
+                    <li {{ Request::is('*relation/dashboard') ? 'class="active"' : '' }}>
+                        {!! link_to('/relation/dashboard', trans('texts.dashboard') ) !!}
                     </li>
                 @endif
-                <li {{ Request::is('*client/quotes') ? 'class="active"' : '' }}>
-                    {!! link_to('/client/quotes', trans('texts.quotes') ) !!}
+                <li {{ Request::is('*relation/quotes') ? 'class="active"' : '' }}>
+                    {!! link_to('/relation/quotes', trans('texts.quotes') ) !!}
                 </li>
-                <li {{ Request::is('*client/invoices') ? 'class="active"' : '' }}>
-                    {!! link_to('/client/invoices', trans('texts.invoices') ) !!}
+                <li {{ Request::is('*relation/invoices') ? 'class="active"' : '' }}>
+                    {!! link_to('/relation/invoices', trans('texts.invoices') ) !!}
                 </li>
-                <li {{ Request::is('*client/payments') ? 'class="active"' : '' }}>
-                    {!! link_to('/client/payments', trans('texts.payments') ) !!}
+                <li {{ Request::is('*relation/payments') ? 'class="active"' : '' }}>
+                    {!! link_to('/relation/payments', trans('texts.payments') ) !!}
                 </li>                
             </ul>
             @endif

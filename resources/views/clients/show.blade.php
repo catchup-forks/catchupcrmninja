@@ -3,7 +3,7 @@
 @section('head')
     @parent
 
-    @if ($client->hasAddress())
+    @if ($relation->hasAddress())
         <style>
           #map {
             width: 100%;
@@ -24,35 +24,35 @@
     <div class="row">
         <div class="col-md-7">
             <div>
-                <span style="font-size:28px">{{ $client->getDisplayName() }}</span>
-                @if ($client->trashed())
-                    &nbsp;&nbsp;{!! $client->present()->status !!}
+                <span style="font-size:28px">{{ $relation->getDisplayName() }}</span>
+                @if ($relation->trashed())
+                    &nbsp;&nbsp;{!! $relation->present()->status !!}
                 @endif
             </div>
         </div>
         <div class="col-md-5">
             <div class="pull-right">
-                {!! Former::open('clients/bulk')->addClass('mainForm') !!}
+                {!! Former::open('relations/bulk')->addClass('mainForm') !!}
                 <div style="display:none">
                     {!! Former::text('action') !!}
-                    {!! Former::text('public_id')->value($client->public_id) !!}
+                    {!! Former::text('public_id')->value($relation->public_id) !!}
                 </div>
 
                 @if ($gatewayLink)
                     {!! Button::normal(trans('texts.view_in_stripe'))->asLinkTo($gatewayLink)->withAttributes(['target' => '_blank']) !!}
                 @endif
 
-                @if ($client->trashed())
-                    @if ($client->canEdit())
-                        {!! Button::primary(trans('texts.restore_client'))->withAttributes(['onclick' => 'onRestoreClick()']) !!}
+                @if ($relation->trashed())
+                    @if ($relation->canEdit())
+                        {!! Button::primary(trans('texts.restore_relation'))->withAttributes(['onclick' => 'onRestoreClick()']) !!}
                     @endif
                 @else
-                    @if ($client->canEdit())
-                    {!! DropdownButton::normal(trans('texts.edit_client'))
+                    @if ($relation->canEdit())
+                    {!! DropdownButton::normal(trans('texts.edit_relation'))
                         ->withAttributes(['class'=>'normalDropDown'])
                         ->withContents([
-                          ['label' => trans('texts.archive_client'), 'url' => "javascript:onArchiveClick()"],
-                          ['label' => trans('texts.delete_client'), 'url' => "javascript:onDeleteClick()"],
+                          ['label' => trans('texts.archive_relation'), 'url' => "javascript:onArchiveClick()"],
+                          ['label' => trans('texts.delete_relation'), 'url' => "javascript:onDeleteClick()"],
                         ]
                       )->split() !!}
                     @endif
@@ -68,9 +68,9 @@
         </div>
     </div>
 
-	@if ($client->last_login > 0)
+	@if ($relation->last_login > 0)
 	<h3 style="margin-top:0px"><small>
-		{{ trans('texts.last_logged_in') }} {{ Utils::timestampToDateTimeString(strtotime($client->last_login)) }}
+		{{ trans('texts.last_logged_in') }} {{ Utils::timestampToDateTimeString(strtotime($relation->last_login)) }}
 	</small></h3>
 	@endif
     <br/>
@@ -81,62 +81,62 @@
 
 		<div class="col-md-3">
 			<h3>{{ trans('texts.details') }}</h3>
-            @if ($client->id_number)
-                <p><i class="fa fa-id-number" style="width: 20px"></i>{{ trans('texts.id_number').': '.$client->id_number }}</p>
+            @if ($relation->id_number)
+                <p><i class="fa fa-id-number" style="width: 20px"></i>{{ trans('texts.id_number').': '.$relation->id_number }}</p>
             @endif
-            @if ($client->vat_number)
-		  	   <p><i class="fa fa-vat-number" style="width: 20px"></i>{{ trans('texts.vat_number').': '.$client->vat_number }}</p>
-            @endif
-
-            @if ($client->address1)
-                {{ $client->address1 }}<br/>
-            @endif
-            @if ($client->housenumber)
-                {{ $client->housenumber }}<br/>
-            @endif
-            @if ($client->getCityState())
-                {{ $client->getCityState() }}<br/>
-            @endif
-            @if ($client->country)
-                {{ $client->country->name }}<br/>
+            @if ($relation->vat_number)
+		  	   <p><i class="fa fa-vat-number" style="width: 20px"></i>{{ trans('texts.vat_number').': '.$relation->vat_number }}</p>
             @endif
 
-            @if ($client->organisation->custom_client_label1 && $client->custom_value1)
-                {{ $client->organisation->custom_client_label1 . ': ' . $client->custom_value1 }}<br/>
+            @if ($relation->address1)
+                {{ $relation->address1 }}<br/>
             @endif
-            @if ($client->organisation->custom_client_label2 && $client->custom_value2)
-                {{ $client->organisation->custom_client_label2 . ': ' . $client->custom_value2 }}<br/>
+            @if ($relation->housenumber)
+                {{ $relation->housenumber }}<br/>
+            @endif
+            @if ($relation->getCityState())
+                {{ $relation->getCityState() }}<br/>
+            @endif
+            @if ($relation->country)
+                {{ $relation->country->name }}<br/>
             @endif
 
-            @if ($client->work_phone)
-                <i class="fa fa-phone" style="width: 20px"></i>{{ $client->work_phone }}
+            @if ($relation->organisation->custom_relation_label1 && $relation->custom_value1)
+                {{ $relation->organisation->custom_relation_label1 . ': ' . $relation->custom_value1 }}<br/>
+            @endif
+            @if ($relation->organisation->custom_relation_label2 && $relation->custom_value2)
+                {{ $relation->organisation->custom_relation_label2 . ': ' . $relation->custom_value2 }}<br/>
             @endif
 
-            @if ($client->private_notes)
-                <p><i>{{ $client->private_notes }}</i></p>
+            @if ($relation->work_phone)
+                <i class="fa fa-phone" style="width: 20px"></i>{{ $relation->work_phone }}
+            @endif
+
+            @if ($relation->private_notes)
+                <p><i>{{ $relation->private_notes }}</i></p>
             @endif
 		  	
-  	        @if ($client->client_industry)
-                {{ $client->client_industry->name }}<br/>
+  	        @if ($relation->relation_industry)
+                {{ $relation->relation_industry->name }}<br/>
             @endif
-            @if ($client->client_size)
-                {{ $client->client_size->name }}<br/>
+            @if ($relation->relation_size)
+                {{ $relation->relation_size->name }}<br/>
             @endif            
 
-		  	@if ($client->website)
-		  	   <p>{!! Utils::formatWebsite($client->website) !!}</p>
+		  	@if ($relation->website)
+		  	   <p>{!! Utils::formatWebsite($relation->website) !!}</p>
             @endif
 
-            @if ($client->language)
-                <p><i class="fa fa-language" style="width: 20px"></i>{{ $client->language->name }}</p>
+            @if ($relation->language)
+                <p><i class="fa fa-language" style="width: 20px"></i>{{ $relation->language->name }}</p>
             @endif
 
-		  	<p>{{ $client->payment_terms ? trans('texts.payment_terms') . ": Net " . $client->payment_terms : '' }}</p>
+		  	<p>{{ $relation->payment_terms ? trans('texts.payment_terms') . ": Net " . $relation->payment_terms : '' }}</p>
 		</div>
 
 		<div class="col-md-3">
 			<h3>{{ trans('texts.contacts') }}</h3>
-		  	@foreach ($client->contacts as $contact)
+		  	@foreach ($relation->contacts as $contact)
                 @if ($contact->first_name || $contact->last_name)
                     <b>{{ $contact->first_name.' '.$contact->last_name }}</b><br/>
                 @endif
@@ -154,16 +154,16 @@
 			<table class="table" style="width:100%">
 				<tr>
 					<td><small>{{ trans('texts.paid_to_date') }}</small></td>
-					<td style="text-align: right">{{ Utils::formatMoney($client->paid_to_date, $client->getCurrencyId()) }}</td>
+					<td style="text-align: right">{{ Utils::formatMoney($relation->paid_to_date, $relation->getCurrencyId()) }}</td>
 				</tr>
 				<tr>
 					<td><small>{{ trans('texts.balance') }}</small></td>
-					<td style="text-align: right">{{ Utils::formatMoney($client->balance, $client->getCurrencyId()) }}</td>
+					<td style="text-align: right">{{ Utils::formatMoney($relation->balance, $relation->getCurrencyId()) }}</td>
 				</tr>
 				@if ($credit > 0)
 				<tr>
 					<td><small>{{ trans('texts.credit') }}</small></td>
-					<td style="text-align: right">{{ Utils::formatMoney($credit, $client->getCurrencyId()) }}</td>
+					<td style="text-align: right">{{ Utils::formatMoney($credit, $relation->getCurrencyId()) }}</td>
 				</tr>
 				@endif
 			</table>
@@ -173,7 +173,7 @@
     </div>
     </div>
 
-    @if ($client->hasAddress())
+    @if ($relation->hasAddress())
         <div id="map"></div>
         <br/>
     @endif
@@ -201,7 +201,7 @@
 		    		trans('texts.message'),
 		    		trans('texts.balance'),
 		    		trans('texts.adjustment'))
-		    	->setUrl(url('api/activities/'. $client->public_id))
+		    	->setUrl(url('api/activities/'. $relation->public_id))
                 ->setCustomValues('entityType', 'activity')
 		    	->setOptions('sPaginationType', 'bootstrap')
 		    	->setOptions('bFilter', false)
@@ -219,7 +219,7 @@
                     trans('texts.duration'),
                     trans('texts.description'),
                     trans('texts.status'))
-                ->setUrl(url('api/tasks/'. $client->public_id))
+                ->setUrl(url('api/tasks/'. $relation->public_id))
                 ->setCustomValues('entityType', 'tasks')
                 ->setOptions('sPaginationType', 'bootstrap')
                 ->setOptions('bFilter', false)
@@ -240,7 +240,7 @@
 	    			trans('texts.total'),
 	    			trans('texts.valid_until'),
 	    			trans('texts.status'))
-		    	->setUrl(url('api/quotes/'. $client->public_id))
+		    	->setUrl(url('api/quotes/'. $relation->public_id))
                 ->setCustomValues('entityType', 'quotes')
 		    	->setOptions('sPaginationType', 'bootstrap')
 		    	->setOptions('bFilter', false)
@@ -259,7 +259,7 @@
 			    		trans('texts.start_date'),
 			    		trans('texts.end_date'),
 			    		trans('texts.invoice_total'))
-			    	->setUrl(url('api/recurring_invoices/' . $client->public_id))
+			    	->setUrl(url('api/recurring_invoices/' . $relation->public_id))
                     ->setCustomValues('entityType', 'recurring_invoices')
 			    	->setOptions('sPaginationType', 'bootstrap')
 			    	->setOptions('bFilter', false)
@@ -275,7 +275,7 @@
 		    			trans('texts.balance_due'),
 		    			trans('texts.due_date'),
 		    			trans('texts.status'))
-		    	->setUrl(url('api/invoices/' . $client->public_id))
+		    	->setUrl(url('api/invoices/' . $relation->public_id))
                 ->setCustomValues('entityType', 'invoices')
 		    	->setOptions('sPaginationType', 'bootstrap')
 		    	->setOptions('bFilter', false)
@@ -292,7 +292,7 @@
 			    			trans('texts.method'),
 			    			trans('texts.payment_amount'),
 			    			trans('texts.payment_date'))
-				->setUrl(url('api/payments/' . $client->public_id))
+				->setUrl(url('api/payments/' . $relation->public_id))
                 ->setCustomValues('entityType', 'payments')
 				->setOptions('sPaginationType', 'bootstrap')
 				->setOptions('bFilter', false)
@@ -308,7 +308,7 @@
 								trans('texts.credit_balance'),
 								trans('texts.credit_date'),
 								trans('texts.private_notes'))
-				->setUrl(url('api/credits/' . $client->public_id))
+				->setUrl(url('api/credits/' . $relation->public_id))
                 ->setCustomValues('entityType', 'credits')
 				->setOptions('sPaginationType', 'bootstrap')
 				->setOptions('bFilter', false)
@@ -324,17 +324,17 @@
 
 	$(function() {
 		$('.normalDropDown:not(.dropdown-toggle)').click(function() {
-			window.location = '{{ URL::to('clients/' . $client->public_id . '/edit') }}';
+			window.location = '{{ URL::to('relations/' . $relation->public_id . '/edit') }}';
 		});
 		$('.primaryDropDown:not(.dropdown-toggle)').click(function() {
-			window.location = '{{ URL::to('invoices/create/' . $client->public_id ) }}';
+			window.location = '{{ URL::to('invoices/create/' . $relation->public_id ) }}';
 		});
 
         // load datatable data when tab is shown and remember last tab selected
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
           var target = $(e.target).attr("href") // activated tab
           target = target.substring(1);
-          localStorage.setItem('client_tab', target);
+          localStorage.setItem('relation_tab', target);
           if (!loadedTabs.hasOwnProperty(target)) {
             loadedTabs[target] = true;
             window['load_' + target]();
@@ -343,7 +343,7 @@
             }
           }
         });
-        var tab = localStorage.getItem('client_tab') || '';
+        var tab = localStorage.getItem('relation_tab') || '';
         var selector = '.nav-tabs a[href="#' + tab.replace('#', '') + '"]';
         if (tab && tab != 'activity' && $(selector).length) {
             $(selector).tab('show');
@@ -369,7 +369,7 @@
 		}
 	}
 
-    @if ($client->hasAddress())
+    @if ($relation->hasAddress())
         function initialize() {
             var mapCanvas = document.getElementById('map');
             var mapOptions = {
@@ -379,7 +379,7 @@
             };
 
             var map = new google.maps.Map(mapCanvas, mapOptions)
-            var address = "{{ "{$client->address1} {$client->housenumber} {$client->city} {$client->state} {$client->postal_code} " . ($client->country ? $client->country->name : '') }}";
+            var address = "{{ "{$relation->address1} {$relation->housenumber} {$relation->city} {$relation->state} {$relation->postal_code} " . ($relation->country ? $relation->country->name : '') }}";
             
             geocoder = new google.maps.Geocoder();
             geocoder.geocode( { 'address': address}, function(results, status) {

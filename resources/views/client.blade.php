@@ -75,8 +75,8 @@ function ContactsModel() {
 	self.contacts = ko.observableArray();
 }
 
-@if ($client)
-	window.model = ko.mapping.fromJS({!! $client !!});			
+@if ($relation)
+	window.model = ko.mapping.fromJS({!! $relation !!});
 @else
 	window.model = new ContactsModel();
 	addContact();

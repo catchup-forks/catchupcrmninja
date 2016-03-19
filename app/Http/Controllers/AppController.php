@@ -296,11 +296,11 @@ class AppController extends BaseController
         if (Utils::getResllerType() == RESELLER_REVENUE_SHARE) {
             $data = DB::table('organisations')
                             ->leftJoin('payments', 'payments.organisation_id', '=', 'organisations.id')
-                            ->leftJoin('clients', 'clients.id', '=', 'payments.client_id')
+                            ->leftJoin('relations', 'relations.id', '=', 'payments.relation_id')
                             ->where('organisations.organisation_key', '=', NINJA_ORGANISATION_KEY)
                             ->where('payments.is_deleted', '=', false)
                             ->get([
-                                'clients.public_id as client_id',
+                                'relations.public_id as relation_id',
                                 'payments.public_id as payment_id',
                                 'payments.payment_date',
                                 'payments.amount'

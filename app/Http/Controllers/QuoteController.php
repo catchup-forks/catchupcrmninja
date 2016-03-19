@@ -9,7 +9,7 @@ use Cache;
 use Event;
 use Session;
 use App\Models\Organisation;
-use App\Models\Client;
+use App\Models\Relation;
 use App\Models\Country;
 use App\Models\Currency;
 use App\Models\Industry;
@@ -23,7 +23,7 @@ use App\Models\Activity;
 use App\Models\Invoice;
 use App\Ninja\Mailers\ContactMailer as Mailer;
 use App\Ninja\Repositories\InvoiceRepository;
-use App\Ninja\Repositories\ClientRepository;
+use App\Ninja\Repositories\RelationRepository;
 use App\Events\QuoteInvitationWasApproved;
 use App\Services\InvoiceService;
 
@@ -31,17 +31,17 @@ class QuoteController extends BaseController
 {
     protected $mailer;
     protected $invoiceRepo;
-    protected $clientRepo;
+    protected $relationRepo;
     protected $invoiceService;
     protected $model = 'App\Models\Invoice';
 
-    public function __construct(Mailer $mailer, InvoiceRepository $invoiceRepo, ClientRepository $clientRepo, InvoiceService $invoiceService)
+    public function __construct(Mailer $mailer, InvoiceRepository $invoiceRepo, RelationRepository $relationRepo, InvoiceService $invoiceService)
     {
         // parent::__construct();
 
         $this->mailer = $mailer;
         $this->invoiceRepo = $invoiceRepo;
-        $this->clientRepo = $clientRepo;
+        $this->relationRepo = $relationRepo;
         $this->invoiceService = $invoiceService;
     }
 
@@ -58,7 +58,7 @@ class QuoteController extends BaseController
           'columns' => Utils::trans([
             'checkbox',
             'quote_number',
-            'client',
+            'relation',
             'quote_date',
             'quote_total',
             'valid_until',
@@ -70,15 +70,15 @@ class QuoteController extends BaseController
         return response()->view('list', $data);
     }
 
-    public function getDatatable($clientPublicId = null)
+    public function getDatatable($relationPublicId = null)
     {
         $organisationId = Auth::user()->organisation_id;
         $search = Input::get('sSearch');
 
-        return $this->invoiceService->getDatatable($organisationId, $clientPublicId, ENTITY_QUOTE, $search);
+        return $this->invoiceService->getDatatable($organisationId, $relationPublicId, ENTITY_QUOTE, $search);
     }
 
-    public function create($clientPublicId = 0)
+    public function create($relationPublicId = 0)
     {
         if(!$this->checkCreatePermission($response)){
             return $response;
@@ -89,11 +89,11 @@ class QuoteController extends BaseController
         }
 
         $organisation = Auth::user()->organisation;
-        $clientId = null;
-        if ($clientPublicId) {
-            $clientId = Client::getPrivateId($clientPublicId);
+        $relationId = null;
+        if ($relationPublicId) {
+            $relationId = Relation::getPrivateId($relationPublicId);
         }
-        $invoice = $organisation->createInvoice(ENTITY_QUOTE, $clientId);
+        $invoice = $organisation->createInvoice(ENTITY_QUOTE, $relationId);
         $invoice->public_id = 0;
 
         $data = [
@@ -116,7 +116,7 @@ class QuoteController extends BaseController
           'organisation' => Auth::user()->organisation,
           'products' => Product::scope()->orderBy('id')->get(array('product_key', 'notes', 'cost', 'qty')),
           'countries' => Cache::get('countries'),
-          'clients' => Client::scope()->with('contacts', 'country')->orderBy('name')->get(),
+          'relations' => Relation::scope()->with('contacts', 'country')->orderBy('name')->get(),
           'taxRates' => TaxRate::scope()->orderBy('name')->get(),
           'currencies' => Cache::get('currencies'),
           'sizes' => Cache::get('sizes'),

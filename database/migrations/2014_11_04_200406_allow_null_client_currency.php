@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AllowNullClientCurrency extends Migration {
+class AllowNullRelationCurrency extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,9 +12,9 @@ class AllowNullClientCurrency extends Migration {
 	 */
 	public function up()
 	{
-    Schema::table('clients', function($table)
+    Schema::table('relations', function($table)
     {
-			//DB::statement('ALTER TABLE `clients` MODIFY `currency_id` INTEGER UNSIGNED NULL;');			
+			//DB::statement('ALTER TABLE `relations` MODIFY `currency_id` INTEGER UNSIGNED NULL;');
 		});
 	}
 

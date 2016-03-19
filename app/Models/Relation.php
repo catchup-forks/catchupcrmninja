@@ -6,12 +6,12 @@ use Carbon;
 use Laracasts\Presenter\PresentableTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Client extends EntityModel
+class Relation extends EntityModel
 {
     use PresentableTrait;
     use SoftDeletes;
 
-    protected $presenter = 'App\Ninja\Presenters\ClientPresenter';
+    protected $presenter = 'App\Ninja\Presenters\RelationPresenter';
 
     protected $dates = ['deleted_at'];
 
@@ -50,15 +50,15 @@ class Client extends EntityModel
     public static function getImportColumns()
     {
         return [
-            Client::$fieldName,
-            Client::$fieldPhone,
-            Client::$fieldAddress1,
-            Client::$fieldAddress2,
-            Client::$fieldCity,
-            Client::$fieldState,
-            Client::$fieldPostalCode,
-            Client::$fieldCountry,
-            Client::$fieldNotes,
+            Relation::$fieldName,
+            Relation::$fieldPhone,
+            Relation::$fieldAddress1,
+            Relation::$fieldAddress2,
+            Relation::$fieldCity,
+            Relation::$fieldState,
+            Relation::$fieldPostalCode,
+            Relation::$fieldCountry,
+            Relation::$fieldNotes,
             Contact::$fieldFirstName,
             Contact::$fieldLastName,
             Contact::$fieldPhone,
@@ -141,7 +141,7 @@ class Client extends EntityModel
 
     public function expenses()
     {
-        return $this->hasMany('App\Models\Expense','client_id','id')->withTrashed();
+        return $this->hasMany('App\Models\Expense','relation_id','id')->withTrashed();
     }
 
     public function addContact($data, $isPrimary = false)
@@ -183,13 +183,13 @@ class Client extends EntityModel
 
     public function getRoute()
     {
-        return "/clients/{$this->public_id}";
+        return "/relations/{$this->public_id}";
     }
 
     public function getTotalCredit()
     {
         return DB::table('credits')
-                ->where('client_id', '=', $this->id)
+                ->where('relation_id', '=', $this->id)
                 ->whereNull('deleted_at')
                 ->sum('balance');
     }
@@ -221,7 +221,7 @@ class Client extends EntityModel
 
     public function getEntityType()
     {
-        return ENTITY_CLIENT;
+        return ENTITY_RELATION;
     }
 
     public function hasAddress()
@@ -268,7 +268,7 @@ class Client extends EntityModel
             return false;
         }
 
-        $token = OrganisationGatewayToken::where('client_id', '=', $this->id)
+        $token = OrganisationGatewayToken::where('relation_id', '=', $this->id)
                     ->where('account_gateway_id', '=', $OrganisationGateway->id)->first();
 
         return $token ? $token->token : false;
@@ -310,10 +310,10 @@ class Client extends EntityModel
     }
 }
 
-Client::creating(function ($client) {
-    $client->setNullValues();
+Relation::creating(function ($relation) {
+    $relation->setNullValues();
 });
 
-Client::updating(function ($client) {
-    $client->setNullValues();
+Relation::updating(function ($relation) {
+    $relation->setNullValues();
 });

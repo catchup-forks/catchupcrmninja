@@ -22,9 +22,9 @@ class Payment extends EntityModel
         return $this->belongsTo('App\Models\Invitation');
     }
 
-    public function client()
+    public function relation()
     {
-        return $this->belongsTo('App\Models\Client')->withTrashed();
+        return $this->belongsTo('App\Models\Relation')->withTrashed();
     }
 
     public function user()
@@ -60,7 +60,7 @@ class Payment extends EntityModel
     /*
     public function getAmount()
     {
-        return Utils::formatMoney($this->amount, $this->client->getCurrencyId());
+        return Utils::formatMoney($this->amount, $this->relation->getCurrencyId());
     }
     */
 

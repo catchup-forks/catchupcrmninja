@@ -1,4 +1,4 @@
-<?php namespace App\Http\Controllers\ClientAuth;
+<?php namespace App\Http\Controllers\RelationAuth;
 
 use Auth;
 use Event;
@@ -15,8 +15,8 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class AuthController extends Controller {
 
-	protected $guard = 'client';
-    protected $redirectTo = '/client/dashboard';
+	protected $guard = 'relation';
+    protected $redirectTo = '/relation/dashboard';
 
 	use AuthenticatesUsers;
 
@@ -30,16 +30,16 @@ class AuthController extends Controller {
             $invitation = Invitation::where('invitation_key', '=', $invitation_key)->first();
             if ($invitation && !$invitation->is_deleted) {
                 $invoice = $invitation->invoice;
-                $client = $invoice->client;
-                $organisation = $client->organisation;
+                $relation = $invoice->relation;
+                $organisation = $relation->organisation;
                 
                 $data['hideLogo'] = $organisation->isWhiteLabel();
-                $data['clientViewCSS'] = $organisation->clientViewCSS();
-                $data['clientFontUrl'] = $organisation->getFontsUrl();
+                $data['relationViewCSS'] = $organisation->relationViewCSS();
+                $data['relationFontUrl'] = $organisation->getFontsUrl();
             }
         }
         
-		return view('clientauth.login')->with($data);
+		return view('relationauth.login')->with($data);
 	}
 
 	/**

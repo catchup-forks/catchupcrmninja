@@ -99,7 +99,7 @@ class Utils
         ];
 
         foreach ($providers as $provider) {
-            $key = strtoupper($provider) . '_CLIENT_ID';
+            $key = strtoupper($provider) . '_RELATION_ID';
             if (isset($_ENV[$key]) && $_ENV[$key]) {
                 return true;
             }
@@ -660,10 +660,10 @@ class Utils
         return ucwords(str_replace('_', ' ', $entityType));
     }
 
-    public static function getClientDisplayName($model)
+    public static function getRelationDisplayName($model)
     {
-        if ($model->client_name) {
-            return $model->client_name;
+        if ($model->relation_name) {
+            return $model->relation_name;
         } elseif ($model->first_name || $model->last_name) {
             return $model->first_name.' '.$model->last_name;
         } else {
@@ -705,8 +705,8 @@ class Utils
 
     public static function lookupEventId($eventName)
     {
-        if ($eventName == 'create_client') {
-            return EVENT_CREATE_CLIENT;
+        if ($eventName == 'create_relation') {
+            return EVENT_CREATE_RELATION;
         } elseif ($eventName == 'create_invoice') {
             return EVENT_CREATE_INVOICE;
         } elseif ($eventName == 'create_quote') {

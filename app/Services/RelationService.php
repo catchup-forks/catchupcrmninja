@@ -4,30 +4,30 @@ use Utils;
 use URL;
 use Auth;
 use App\Services\BaseService;
-use App\Models\Client;
+use App\Models\Relation;
 use App\Models\Invoice;
 use App\Models\Credit;
 use App\Models\Expense;
 use App\Models\Payment;
 use App\Models\Task;
-use App\Ninja\Repositories\ClientRepository;
+use App\Ninja\Repositories\RelationRepository;
 use App\Ninja\Repositories\NinjaRepository;
 
-class ClientService extends BaseService
+class RelationService extends BaseService
 {
-    protected $clientRepo;
+    protected $relationRepo;
     protected $datatableService;
 
-    public function __construct(ClientRepository $clientRepo, DatatableService $datatableService, NinjaRepository $ninjaRepo)
+    public function __construct(RelationRepository $relationRepo, DatatableService $datatableService, NinjaRepository $ninjaRepo)
     {
-        $this->clientRepo = $clientRepo;
+        $this->relationRepo = $relationRepo;
         $this->ninjaRepo = $ninjaRepo;
         $this->datatableService = $datatableService;
     }
 
     protected function getRepo()
     {
-        return $this->clientRepo;
+        return $this->relationRepo;
     }
 
     public function save($data)
@@ -36,43 +36,43 @@ class ClientService extends BaseService
             $this->ninjaRepo->updateProPlanPaid($data['public_id'], $data['pro_plan_paid']);
         }
 
-        return $this->clientRepo->save($data);
+        return $this->relationRepo->save($data);
     }
 
     public function getDatatable($search)
     {
-        $query = $this->clientRepo->find($search);
+        $query = $this->relationRepo->find($search);
 
         if(!Utils::hasPermission('view_all')){
-            $query->where('clients.user_id', '=', Auth::user()->id);
+            $query->where('relations.user_id', '=', Auth::user()->id);
         }
 
-        return $this->createDatatable(ENTITY_CLIENT, $query);
+        return $this->createDatatable(ENTITY_RELATION, $query);
     }
 
-    protected function getDatatableColumns($entityType, $hideClient)
+    protected function getDatatableColumns($entityType, $hideRelation)
     {
         return [
             [
                 'name',
                 function ($model) {
-                    return link_to("clients/{$model->public_id}", $model->name ?: '')->toHtml();
+                    return link_to("relations/{$model->public_id}", $model->name ?: '')->toHtml();
                 }
             ],
             [
                 'first_name',
                 function ($model) {
-                    return link_to("clients/{$model->public_id}", $model->first_name.' '.$model->last_name)->toHtml();
+                    return link_to("relations/{$model->public_id}", $model->first_name.' '.$model->last_name)->toHtml();
                 }
             ],
             [
                 'email',
                 function ($model) {
-                    return link_to("clients/{$model->public_id}", $model->email ?: '')->toHtml();
+                    return link_to("relations/{$model->public_id}", $model->email ?: '')->toHtml();
                 }
             ],
             [
-                'clients.created_at',
+                'relations.created_at',
                 function ($model) {
                     return Utils::timestampToDateString(strtotime($model->created_at));
                 }
@@ -96,18 +96,18 @@ class ClientService extends BaseService
     {
         return [
             [
-                trans('texts.edit_client'),
+                trans('texts.edit_relation'),
                 function ($model) {
-                    return URL::to("clients/{$model->public_id}/edit");
+                    return URL::to("relations/{$model->public_id}/edit");
                 },
                 function ($model) {
-                    return Client::canEditItem($model);
+                    return Relation::canEditItem($model);
                 }
             ],
             [
                 '--divider--', function(){return false;},
                 function ($model) {
-                    return Client::canEditItem($model) && (Task::canCreate() || Invoice::canCreate());
+                    return Relation::canEditItem($model) && (Task::canCreate() || Invoice::canCreate());
                 }
             ],
             [

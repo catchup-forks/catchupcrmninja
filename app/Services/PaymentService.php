@@ -11,7 +11,7 @@ use CreditCard;
 use App\Models\Payment;
 use App\Models\Organisation;
 use App\Models\Country;
-use App\Models\Client;
+use App\Models\Relation;
 use App\Models\Invoice;
 use App\Models\OrganisationGatewayToken;
 use App\Ninja\Repositories\PaymentRepository;
@@ -70,7 +70,7 @@ class PaymentService extends BaseService
         $invoice = $invitation->invoice;
         $organisation = $invoice->organisation;
         $key = $invoice->organisation_id.'-'.$invoice->invoice_number;
-        $currencyCode = $invoice->client->currency ? $invoice->client->currency->code : ($invoice->organisation->currency ? $invoice->organisation->currency->code : 'USD');
+        $currencyCode = $invoice->relation->currency ? $invoice->relation->currency->code : ($invoice->organisation->currency ? $invoice->organisation->currency->code : 'USD');
 
         if ($input) {
             $data = self::convertInputForOmnipay($input);
@@ -78,7 +78,7 @@ class PaymentService extends BaseService
         } elseif (Session::get($key)) {
             $data = Session::get($key);
         } else {
-            $data = $this->createDataForClient($invitation);
+            $data = $this->createDataForRelation($invitation);
         }
 
         $card = new CreditCard($data);
@@ -133,49 +133,49 @@ class PaymentService extends BaseService
         return $data;
     }
 
-    public function createDataForClient($invitation)
+    public function createDataForRelation($invitation)
     {
         $invoice = $invitation->invoice;
-        $client = $invoice->client;
-        $contact = $invitation->contact ?: $client->contacts()->first();
+        $relation = $invoice->relation;
+        $contact = $invitation->contact ?: $relation->contacts()->first();
 
         return [
             'email' => $contact->email,
-            'company' => $client->getDisplayName(),
+            'company' => $relation->getDisplayName(),
             'firstName' => $contact->first_name,
             'lastName' => $contact->last_name,
-            'billingAddress1' => $client->address1,
-            'billingAddress2' => $client->housenumber,
-            'billingCity' => $client->city,
-            'billingPostcode' => $client->postal_code,
-            'billingState' => $client->state,
-            'billingCountry' => $client->country ? $client->country->iso_3166_2 : '',
+            'billingAddress1' => $relation->address1,
+            'billingAddress2' => $relation->housenumber,
+            'billingCity' => $relation->city,
+            'billingPostcode' => $relation->postal_code,
+            'billingState' => $relation->state,
+            'billingCountry' => $relation->country ? $relation->country->iso_3166_2 : '',
             'billingPhone' => $contact->phone,
-            'shippingAddress1' => $client->address1,
-            'shippingAddress2' => $client->housenumber,
-            'shippingCity' => $client->city,
-            'shippingPostcode' => $client->postal_code,
-            'shippingState' => $client->state,
-            'shippingCountry' => $client->country ? $client->country->iso_3166_2 : '',
+            'shippingAddress1' => $relation->address1,
+            'shippingAddress2' => $relation->housenumber,
+            'shippingCity' => $relation->city,
+            'shippingPostcode' => $relation->postal_code,
+            'shippingState' => $relation->state,
+            'shippingCountry' => $relation->country ? $relation->country->iso_3166_2 : '',
             'shippingPhone' => $contact->phone,
         ];
     }
 
-    public function createToken($gateway, $details, $OrganisationGateway, $client, $contactId)
+    public function createToken($gateway, $details, $OrganisationGateway, $relation, $contactId)
     {
         $tokenResponse = $gateway->createCard($details)->send();
         $cardReference = $tokenResponse->getCustomerReference();
 
         if ($cardReference) {
-            $token = OrganisationGatewayToken::where('client_id', '=', $client->id)
+            $token = OrganisationGatewayToken::where('relation_id', '=', $relation->id)
             ->where('account_gateway_id', '=', $OrganisationGateway->id)->first();
 
             if (!$token) {
                 $token = new OrganisationGatewayToken();
-                $token->organisation_id = $client->organisation->id;
+                $token->organisation_id = $relation->organisation->id;
                 $token->contact_id = $contactId;
                 $token->account_gateway_id = $OrganisationGateway->id;
-                $token->client_id = $client->id;
+                $token->relation_id = $relation->id;
             }
 
             $token->token = $cardReference;
@@ -191,7 +191,7 @@ class PaymentService extends BaseService
     {
         $token = false;
         $invoice = $invitation->invoice;
-        $client = $invoice->client;
+        $relation = $invoice->relation;
         $organisation = $invoice->organisation;
 
         $OrganisationGateway = $organisation->getGatewayConfig(GATEWAY_CHECKOUT_COM);
@@ -199,7 +199,7 @@ class PaymentService extends BaseService
 
         $response = $gateway->purchase([
             'amount' => $invoice->getRequestedAmount(),
-            'currency' => $client->currency ? $client->currency->code : ($organisation->currency ? $organisation->currency->code : 'USD')
+            'currency' => $relation->currency ? $relation->currency->code : ($organisation->currency ? $organisation->currency->code : 'USD')
         ])->send();
 
         if ($response->isRedirect()) {
@@ -217,7 +217,7 @@ class PaymentService extends BaseService
 
         // enable pro plan for hosted users
         if ($invoice->organisation->organisation_key == NINJA_ORGANISATION_KEY && $invoice->amount == PRO_PLAN_PRICE) {
-            $organisation = Organisation::with('users')->find($invoice->client->public_id);
+            $organisation = Organisation::with('users')->find($invoice->relation->public_id);
             $organisation->pro_plan_paid = $organisation->getRenewalDate();
             $organisation->save();
 
@@ -231,7 +231,7 @@ class PaymentService extends BaseService
         $payment->account_gateway_id = $OrganisationGateway->id;
         $payment->invoice_id = $invoice->id;
         $payment->amount = $invoice->getRequestedAmount();
-        $payment->client_id = $invoice->client_id;
+        $payment->relation_id = $invoice->relation_id;
         $payment->contact_id = $invitation->contact_id;
         $payment->transaction_reference = $ref;
         $payment->payment_date = date_create()->format('Y-m-d');
@@ -259,11 +259,11 @@ class PaymentService extends BaseService
 
     public function autoBillInvoice($invoice)
     {
-        $client = $invoice->client;
+        $relation = $invoice->relation;
         $organisation = $invoice->organisation;
         $invitation = $invoice->invitations->first();
         $OrganisationGateway = $organisation->getGatewayConfig(GATEWAY_STRIPE);
-        $token = $client->getGatewayToken();
+        $token = $relation->getGatewayToken();
 
         if (!$invitation || !$OrganisationGateway || !$token) {
             return false;
@@ -285,18 +285,18 @@ class PaymentService extends BaseService
         }
     }
 
-    public function getDatatable($clientPublicId, $search)
+    public function getDatatable($relationPublicId, $search)
     {
-        $query = $this->paymentRepo->find($clientPublicId, $search);
+        $query = $this->paymentRepo->find($relationPublicId, $search);
 
         if(!Utils::hasPermission('view_all')){
             $query->where('payments.user_id', '=', Auth::user()->id);
         }
 
-        return $this->createDatatable(ENTITY_PAYMENT, $query, !$clientPublicId);
+        return $this->createDatatable(ENTITY_PAYMENT, $query, !$relationPublicId);
     }
 
-    protected function getDatatableColumns($entityType, $hideClient)
+    protected function getDatatableColumns($entityType, $hideRelation)
     {
         return [
             [
@@ -310,15 +310,15 @@ class PaymentService extends BaseService
                 }
             ],
             [
-                'client_name',
+                'relation_name',
                 function ($model) {
-                    if(!Client::canViewItemByOwner($model->client_user_id)){
-                        return Utils::getClientDisplayName($model);
+                    if(!Relation::canViewItemByOwner($model->relation_user_id)){
+                        return Utils::getRelationDisplayName($model);
                     }
                     
-                    return $model->client_public_id ? link_to("clients/{$model->client_public_id}", Utils::getClientDisplayName($model))->toHtml() : '';
+                    return $model->relation_public_id ? link_to("relations/{$model->relation_public_id}", Utils::getRelationDisplayName($model))->toHtml() : '';
                 },
-                ! $hideClient
+                ! $hideRelation
             ],
             [
                 'transaction_reference',

@@ -17,7 +17,7 @@ class AddCompanyVatNumber extends Migration {
 			$table->string('vat_number')->nullable();
 		});
         
-        Schema::table('clients', function($table)
+        Schema::table('relations', function($table)
 		{
 			$table->string('vat_number')->nullable();
 		});
@@ -35,7 +35,7 @@ class AddCompanyVatNumber extends Migration {
 			$table->dropColumn('vat_number');
 		});
 
-        Schema::table('clients', function($table)
+        Schema::table('relations', function($table)
 		{
 			$table->dropColumn('vat_number');
 		});	

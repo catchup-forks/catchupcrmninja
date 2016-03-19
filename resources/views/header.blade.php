@@ -272,27 +272,27 @@
             hint: true,
             highlight: true,
           }
-          @if (Auth::check() && Auth::user()->organisation->custom_client_label1)
+          @if (Auth::check() && Auth::user()->organisation->custom_relation_label1)
           ,{
             name: 'data',
             display: 'value',
-            source: searchData(data['{{ Auth::user()->organisation->custom_client_label1 }}'], 'tokens'),
+            source: searchData(data['{{ Auth::user()->organisation->custom_relation_label1 }}'], 'tokens'),
             templates: {
-              header: '&nbsp;<span style="font-weight:600;font-size:16px">{{ Auth::user()->organisation->custom_client_label1 }}</span>'
+              header: '&nbsp;<span style="font-weight:600;font-size:16px">{{ Auth::user()->organisation->custom_relation_label1 }}</span>'
             }
           }          
           @endif
-          @if (Auth::check() && Auth::user()->organisation->custom_client_label2)
+          @if (Auth::check() && Auth::user()->organisation->custom_relation_label2)
           ,{
             name: 'data',
             display: 'value',
-            source: searchData(data['{{ Auth::user()->organisation->custom_client_label2 }}'], 'tokens'),
+            source: searchData(data['{{ Auth::user()->organisation->custom_relation_label2 }}'], 'tokens'),
             templates: {
-              header: '&nbsp;<span style="font-weight:600;font-size:16px">{{ Auth::user()->organisation->custom_client_label2 }}</span>'
+              header: '&nbsp;<span style="font-weight:600;font-size:16px">{{ Auth::user()->organisation->custom_relation_label2 }}</span>'
             }
           }          
           @endif
-          @foreach (['clients', 'contacts', 'invoices', 'quotes', 'navigation'] as $type)
+          @foreach (['relations', 'contacts', 'invoices', 'quotes', 'navigation'] as $type)
           ,{
             name: 'data',
             display: 'value',
@@ -410,7 +410,7 @@
       <ul class="nav navbar-nav" style="font-weight: bold">
         {!! Form::nav_link('dashboard', 'dashboard') !!}
         {!! Form::menu_link('invoice') !!}
-        {!! Form::menu_link('client') !!}
+        {!! Form::menu_link('relation') !!}
         {!! Form::menu_link('task') !!}
       </ul>
 

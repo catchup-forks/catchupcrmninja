@@ -62,7 +62,7 @@ class Organisation extends Eloquent
         ORGANISATION_INVOICE_DESIGN,
         ORGANISATION_EMAIL_SETTINGS,
         ORGANISATION_TEMPLATES_AND_REMINDERS,
-        ORGANISATION_CLIENT_PORTAL,
+        ORGANISATION_RELATION_PORTAL,
         ORGANISATION_CHARTS_AND_REPORTS,
         ORGANISATION_DATA_VISUALIZATIONS,
         ORGANISATION_USER_MANAGEMENT,
@@ -84,9 +84,9 @@ class Organisation extends Eloquent
         return $this->hasMany('App\Models\User');
     }
 
-    public function clients()
+    public function relations()
     {
-        return $this->hasMany('App\Models\Client');
+        return $this->hasMany('App\Models\Relation');
     }
 
     public function contacts()
@@ -281,18 +281,18 @@ class Organisation extends Eloquent
         return $this->date_format ? $this->date_format->format : DEFAULT_DATE_FORMAT;
     }
 
-    public function formatMoney($amount, $client = null, $hideSymbol = false)
+    public function formatMoney($amount, $relation = null, $hideSymbol = false)
     {
-        if ($client && $client->currency_id) {
-            $currencyId = $client->currency_id;
+        if ($relation && $relation->currency_id) {
+            $currencyId = $relation->currency_id;
         } elseif ($this->currency_id) {
             $currencyId = $this->currency_id;
         } else {
             $currencyId = DEFAULT_CURRENCY;
         }
 
-        if ($client && $client->country_id) {
-            $countryId = $client->country_id;
+        if ($relation && $relation->country_id) {
+            $countryId = $relation->country_id;
         } elseif ($this->country_id) {
             $countryId = $this->country_id;
         } else {
@@ -439,7 +439,7 @@ class Organisation extends Eloquent
         return $height;
     }
 
-    public function createInvoice($entityType = ENTITY_INVOICE, $clientId = null)
+    public function createInvoice($entityType = ENTITY_INVOICE, $relationId = null)
     {
         $invoice = Invoice::createNew();
 
@@ -448,7 +448,7 @@ class Organisation extends Eloquent
         $invoice->invoice_date = Utils::today();
         $invoice->start_date = Utils::today();
         $invoice->invoice_design_id = $this->invoice_design_id;
-        $invoice->client_id = $clientId;
+        $invoice->relation_id = $relationId;
         
         if ($entityType === ENTITY_RECURRING_INVOICE) {
             $invoice->invoice_number = microtime(true);
@@ -458,16 +458,16 @@ class Organisation extends Eloquent
                 $invoice->is_quote = true;
             }
 
-            if ($this->hasClientNumberPattern($invoice) && !$clientId) {
+            if ($this->hasRelationNumberPattern($invoice) && !$relationId) {
                 // do nothing, we don't yet know the value
             } else {
                 $invoice->invoice_number = $this->getNextInvoiceNumber($invoice);
             }
         }
         
-        if (!$clientId) {
-            $invoice->client = Client::createNew();
-            $invoice->client->public_id = 0;
+        if (!$relationId) {
+            $invoice->relation = Relation::createNew();
+            $invoice->relation->public_id = 0;
         }
 
         return $invoice;
@@ -491,7 +491,7 @@ class Organisation extends Eloquent
         return $isQuote ? ($this->quote_number_pattern ? true : false) : ($this->invoice_number_pattern ? true : false);
     }
 
-    public function hasClientNumberPattern($invoice)
+    public function hasRelationNumberPattern($invoice)
     {
         $pattern = $invoice->is_quote ? $this->quote_number_pattern : $this->invoice_number_pattern;
         
@@ -527,16 +527,16 @@ class Organisation extends Eloquent
 
         $pattern = str_replace($search, $replace, $pattern);
 
-        if ($invoice->client_id) {
-            $pattern = $this->getClientInvoiceNumber($pattern, $invoice);
+        if ($invoice->relation_id) {
+            $pattern = $this->getRelationInvoiceNumber($pattern, $invoice);
         }
 
         return $pattern;
     }
 
-    private function getClientInvoiceNumber($pattern, $invoice)
+    private function getRelationInvoiceNumber($pattern, $invoice)
     {
-        if (!$invoice->client) {
+        if (!$invoice->relation) {
             return $pattern;
         }
 
@@ -546,8 +546,8 @@ class Organisation extends Eloquent
         ];
 
         $replace = [
-            $invoice->client->custom_value1,
-            $invoice->client->custom_value2,
+            $invoice->relation->custom_value1,
+            $invoice->relation->custom_value2,
         ];
 
         return str_replace($search, $replace, $pattern);
@@ -618,11 +618,11 @@ class Organisation extends Eloquent
     {
         $map = [
             'users' => [],
-            'clients' => ['contacts'],
-            'invoices' => ['invoice_items', 'user', 'client', 'payments'],
+            'relations' => ['contacts'],
+            'invoices' => ['invoice_items', 'user', 'relation', 'payments'],
             'products' => [],
             'tax_rates' => [],
-            'expenses' => ['client', 'invoice', 'vendor'],
+            'expenses' => ['relation', 'invoice', 'vendor'],
             'payments' => ['invoice'],
         ];
 
@@ -636,7 +636,7 @@ class Organisation extends Eloquent
         }        
     }
 
-    public function loadLocalizationSettings($client = false)
+    public function loadLocalizationSettings($relation = false)
     {
         $this->load('timezone', 'date_format', 'datetime_format', 'language');
 
@@ -646,8 +646,8 @@ class Organisation extends Eloquent
         Session::put(SESSION_DATE_FORMAT, $this->date_format ? $this->date_format->format : DEFAULT_DATE_FORMAT);
         Session::put(SESSION_DATE_PICKER_FORMAT, $this->date_format ? $this->date_format->picker_format : DEFAULT_DATE_PICKER_FORMAT);
 
-        $currencyId = ($client && $client->currency_id) ? $client->currency_id : $this->currency_id ?: DEFAULT_CURRENCY; 
-        $locale = ($client && $client->language_id) ? $client->language->locale : ($this->language_id ? $this->Language->locale : DEFAULT_LOCALE); 
+        $currencyId = ($relation && $relation->currency_id) ? $relation->currency_id : $this->currency_id ?: DEFAULT_CURRENCY;
+        $locale = ($relation && $relation->language_id) ? $relation->language->locale : ($this->language_id ? $this->Language->locale : DEFAULT_LOCALE);
 
         Session::put(SESSION_CURRENCY, $currencyId);
         Session::put(SESSION_LOCALE, $locale);
@@ -835,8 +835,8 @@ class Organisation extends Eloquent
 
     public function hideFieldsForViz()
     {
-        foreach ($this->clients as $client) {
-            $client->setVisible([
+        foreach ($this->relations as $relation) {
+            $relation->setVisible([
                 'public_id',
                 'name',
                 'balance',
@@ -845,7 +845,7 @@ class Organisation extends Eloquent
                 'contacts',
             ]);
 
-            foreach ($client->invoices as $invoice) {
+            foreach ($relation->invoices as $invoice) {
                 $invoice->setVisible([
                     'public_id',
                     'invoice_number',
@@ -867,7 +867,7 @@ class Organisation extends Eloquent
                 }
             }
 
-            foreach ($client->contacts as $contact) {
+            foreach ($relation->contacts as $contact) {
                 $contact->setVisible([
                     'public_id',
                     'first_name',
@@ -908,7 +908,7 @@ class Organisation extends Eloquent
             $entityType = ENTITY_INVOICE;
         }
 
-        $template = "<div>\$client,</div><br>";
+        $template = "<div>\$relation,</div><br>";
 
         if ($this->isPro() && $this->email_design_id != EMAIL_DESIGN_PLAIN) {
             $template .= "<div>" . trans("texts.{$entityType}_message_button", ['amount' => '$amount']) . "</div><br>" .
@@ -1049,7 +1049,7 @@ class Organisation extends Eloquent
         return $this->isPro() ? $this->email_design_id : EMAIL_DESIGN_PLAIN;
     }
 
-    public function clientViewCSS(){
+    public function relationViewCSS(){
         $css = null;
         
         if ($this->isPro()) {
@@ -1063,7 +1063,7 @@ class Organisation extends Eloquent
             
             if ((Utils::isNinja() && $this->isPro()) || $this->isWhiteLabel()) {
                 // For self-hosted users, a white-label license is required for custom CSS
-                $css .= $this->client_view_css;
+                $css .= $this->relation_view_css;
             }
         }
         

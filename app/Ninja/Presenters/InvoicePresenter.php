@@ -6,9 +6,9 @@ use Laracasts\Presenter\Presenter;
 
 class InvoicePresenter extends Presenter {
 
-    public function client()
+    public function relation()
     {
-        return $this->entity->client ? $this->entity->client->getDisplayName() : '';
+        return $this->entity->relation ? $this->entity->relation->getDisplayName() : '';
     }
 
     public function user()
@@ -79,7 +79,7 @@ class InvoicePresenter extends Presenter {
 
     public function email()
     {
-        $client = $this->entity->client;
-        return count($client->contacts) ? $client->contacts[0]->email : '';
+        $relation = $this->entity->relation;
+        return count($relation->contacts) ? $relation->contacts[0]->email : '';
     }
 }

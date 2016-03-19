@@ -8,7 +8,7 @@ use URL;
 use Utils;
 use View;
 use Validator;
-use App\Models\Client;
+use App\Models\Relation;
 use App\Services\CreditService;
 use App\Ninja\Repositories\CreditRepository;
 use App\Http\Requests\CreateCreditRequest;
@@ -40,7 +40,7 @@ class CreditController extends BaseController
             'sortCol' => '4',
             'columns' => Utils::trans([
               'checkbox',
-              'client',
+              'relation',
               'credit_amount',
               'credit_balance',
               'credit_date',
@@ -50,26 +50,26 @@ class CreditController extends BaseController
         ));
     }
 
-    public function getDatatable($clientPublicId = null)
+    public function getDatatable($relationPublicId = null)
     {
-        return $this->creditService->getDatatable($clientPublicId, Input::get('sSearch'));
+        return $this->creditService->getDatatable($relationPublicId, Input::get('sSearch'));
     }
 
-    public function create($clientPublicId = 0)
+    public function create($relationPublicId = 0)
     {
         if(!$this->checkCreatePermission($response)){
             return $response;
         }
         
         $data = array(
-            'clientPublicId' => Input::old('client') ? Input::old('client') : $clientPublicId,
+            'relationPublicId' => Input::old('relation') ? Input::old('relation') : $relationPublicId,
             //'invoicePublicId' => Input::old('invoice') ? Input::old('invoice') : $invoicePublicId,
             'credit' => null,
             'method' => 'POST',
             'url' => 'credits',
             'title' => trans('texts.new_credit'),
-            //'invoices' => Invoice::scope()->with('client', 'invoice_status')->orderBy('invoice_number')->get(),
-            'clients' => Client::scope()->with('contacts')->orderBy('name')->get(), );
+            //'invoices' => Invoice::scope()->with('relation', 'invoice_status')->orderBy('invoice_number')->get(),
+            'relations' => Relation::scope()->with('contacts')->orderBy('name')->get(), );
 
         return View::make('credits.edit', $data);
     }
@@ -85,12 +85,12 @@ class CreditController extends BaseController
         $credit->credit_date = Utils::fromSqlDate($credit->credit_date);
 
         $data = array(
-            'client' => null,
+            'relation' => null,
             'credit' => $credit,
             'method' => 'PUT',
             'url' => 'credits/'.$publicId,
             'title' => 'Edit Credit',
-            'clients' => Client::scope()->with('contacts')->orderBy('name')->get(), );
+            'relations' => Relation::scope()->with('contacts')->orderBy('name')->get(), );
 
         return View::make('credit.edit', $data);
     }
@@ -101,7 +101,7 @@ class CreditController extends BaseController
 
         Session::flash('message', trans('texts.created_credit'));
 
-        return redirect()->to($credit->client->getRoute());
+        return redirect()->to($credit->relation->getRoute());
     }
 
     public function bulk()

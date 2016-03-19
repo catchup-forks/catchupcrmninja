@@ -18,7 +18,7 @@ use App\Events\InvoiceInvitationWasViewed;
 use App\Events\QuoteInvitationWasViewed;
 use App\Services\PaymentService;
 
-class PublicClientController extends BaseController
+class PublicRelationController extends BaseController
 {
     private $invoiceRepo;
     private $paymentRepo;
@@ -38,15 +38,15 @@ class PublicClientController extends BaseController
         }
 
         $invoice = $invitation->invoice;
-        $client = $invoice->client;
+        $relation = $invoice->relation;
         $organisation = $invoice->organisation;
 
         if (!$organisation->checkSubdomain(Request::server('HTTP_HOST'))) {
             return response()->view('error', [
                 'error' => trans('texts.invoice_not_found'),
                 'hideHeader' => true,
-                'clientViewCSS' => $organisation->clientViewCSS(),
-                'clientFontUrl' => $organisation->getFontsUrl(),
+                'relationViewCSS' => $organisation->relationViewCSS(),
+                'relationFontUrl' => $organisation->getFontsUrl(),
             ]);
         }
 
@@ -62,7 +62,7 @@ class PublicClientController extends BaseController
         Session::put($invitationKey, true); // track this invitation has been seen
         Session::put('invitation_key', $invitationKey); // track current invitation
 
-        $organisation->loadLocalizationSettings($client);
+        $organisation->loadLocalizationSettings($relation);
         
         $invoice->invoice_date = Utils::fromSqlDate($invoice->invoice_date);
         $invoice->due_date = Utils::fromSqlDate($invoice->due_date);
@@ -82,7 +82,7 @@ class PublicClientController extends BaseController
             'phone',
         ]);
 
-        $paymentTypes = $this->getPaymentTypes($client, $invitation);
+        $paymentTypes = $this->getPaymentTypes($relation, $invitation);
         $paymentURL = '';
         if (count($paymentTypes)) {
             $paymentURL = $paymentTypes[0]['url'];
@@ -118,9 +118,9 @@ class PublicClientController extends BaseController
             'showBreadcrumbs' => false,
             'hideLogo' => $organisation->isWhiteLabel(),
             'hideHeader' => $organisation->isNinjaOrganisation(),
-            'hideDashboard' => !$organisation->enable_client_portal,
-            'clientViewCSS' => $organisation->clientViewCSS(),
-            'clientFontUrl' => $organisation->getFontsUrl(),
+            'hideDashboard' => !$organisation->enable_relation_portal,
+            'relationViewCSS' => $organisation->relationViewCSS(),
+            'relationFontUrl' => $organisation->getFontsUrl(),
             'invoice' => $invoice->hidePrivateFields(),
             'invitation' => $invitation,
             'invoiceLabels' => $organisation->getInvoiceLabels(),
@@ -136,12 +136,12 @@ class PublicClientController extends BaseController
         return View::make('invoices.view', $data);
     }
 
-    private function getPaymentTypes($client, $invitation)
+    private function getPaymentTypes($relation, $invitation)
     {
         $paymentTypes = [];
-        $organisation = $client->organisation;
+        $organisation = $relation->organisation;
 
-        if ($client->getGatewayToken()) {
+        if ($relation->getGatewayToken()) {
             $paymentTypes[] = [
                 'url' => URL::to("payment/{$invitation->invitation_key}/token"), 'label' => trans('texts.use_card_on_file')
             ];
@@ -193,20 +193,20 @@ class PublicClientController extends BaseController
 
         $organisation = $invitation->organisation;
         $invoice = $invitation->invoice;
-        $client = $invoice->client;
+        $relation = $invoice->relation;
         $color = $organisation->primary_color ? $organisation->primary_color : '#0b4d78';
 
-        if (!$organisation->enable_client_portal) {
+        if (!$organisation->enable_relation_portal) {
             return $this->returnError();
         }
 
         $data = [
             'color' => $color,
             'organisation' => $organisation,
-            'client' => $client,
+            'relation' => $relation,
             'hideLogo' => $organisation->isWhiteLabel(),
-            'clientViewCSS' => $organisation->clientViewCSS(),
-            'clientFontUrl' => $organisation->getFontsUrl(),
+            'relationViewCSS' => $organisation->relationViewCSS(),
+            'relationFontUrl' => $organisation->getFontsUrl(),
         ];
         
         return response()->view('invited.dashboard', $data);
@@ -219,17 +219,17 @@ class PublicClientController extends BaseController
         }
         $invoice = $invitation->invoice;
 
-        $query = $this->activityRepo->findByClientId($invoice->client_id);
+        $query = $this->activityRepo->findByRelationId($invoice->relation_id);
         $query->where('activities.adjustment', '!=', 0);
 
         return Datatable::query($query)
             ->addColumn('activities.id', function ($model) { return Utils::timestampToDateTimeString(strtotime($model->created_at)); })
             ->addColumn('activity_type_id', function ($model) {
                 $data = [
-                    'client' => Utils::getClientDisplayName($model),
+                    'relation' => Utils::getRelationDisplayName($model),
                     'user' => $model->is_system ? ('<i>' . trans('texts.system') . '</i>') : ($model->user_first_name . ' ' . $model->user_last_name), 
                     'invoice' => trans('texts.invoice') . ' ' . $model->invoice,
-                    'contact' => Utils::getClientDisplayName($model),
+                    'contact' => Utils::getRelationDisplayName($model),
                     'payment' => trans('texts.payment') . ($model->payment ? ' ' . $model->payment : ''),
                 ];
 
@@ -251,9 +251,9 @@ class PublicClientController extends BaseController
         $data = [
             'color' => $color,
             'hideLogo' => $organisation->isWhiteLabel(),
-            'hideDashboard' => !$organisation->enable_client_portal,
-            'clientViewCSS' => $organisation->clientViewCSS(),
-            'clientFontUrl' => $organisation->getFontsUrl(),
+            'hideDashboard' => !$organisation->enable_relation_portal,
+            'relationViewCSS' => $organisation->relationViewCSS(),
+            'relationFontUrl' => $organisation->getFontsUrl(),
             'title' => trans('texts.invoices'),
             'entityType' => ENTITY_INVOICE,
             'columns' => Utils::trans(['invoice_number', 'invoice_date', 'invoice_total', 'balance_due', 'due_date']),
@@ -268,7 +268,7 @@ class PublicClientController extends BaseController
             return '';
         }
 
-        return $this->invoiceRepo->getClientDatatable($invitation->contact_id, ENTITY_INVOICE, Input::get('sSearch'));
+        return $this->invoiceRepo->getRelationDatatable($invitation->contact_id, ENTITY_INVOICE, Input::get('sSearch'));
     }
 
 
@@ -283,9 +283,9 @@ class PublicClientController extends BaseController
         $data = [
             'color' => $color,
             'hideLogo' => $organisation->isWhiteLabel(),
-            'hideDashboard' => !$organisation->enable_client_portal,
-            'clientViewCSS' => $organisation->clientViewCSS(),
-            'clientFontUrl' => $organisation->getFontsUrl(),
+            'hideDashboard' => !$organisation->enable_relation_portal,
+            'relationViewCSS' => $organisation->relationViewCSS(),
+            'relationFontUrl' => $organisation->getFontsUrl(),
             'entityType' => ENTITY_PAYMENT,
             'title' => trans('texts.payments'),
             'columns' => Utils::trans(['invoice', 'transaction_reference', 'method', 'payment_amount', 'payment_date'])
@@ -321,9 +321,9 @@ class PublicClientController extends BaseController
         $data = [
           'color' => $color,
           'hideLogo' => $organisation->isWhiteLabel(),
-          'hideDashboard' => !$organisation->enable_client_portal,
-          'clientViewCSS' => $organisation->clientViewCSS(),
-          'clientFontUrl' => $organisation->getFontsUrl(),
+          'hideDashboard' => !$organisation->enable_relation_portal,
+          'relationViewCSS' => $organisation->relationViewCSS(),
+          'relationFontUrl' => $organisation->getFontsUrl(),
           'title' => trans('texts.quotes'),
           'entityType' => ENTITY_QUOTE,
           'columns' => Utils::trans(['quote_number', 'quote_date', 'quote_total', 'due_date']),
@@ -339,7 +339,7 @@ class PublicClientController extends BaseController
             return false;
         }
 
-        return $this->invoiceRepo->getClientDatatable($invitation->contact_id, ENTITY_QUOTE, Input::get('sSearch'));
+        return $this->invoiceRepo->getRelationDatatable($invitation->contact_id, ENTITY_QUOTE, Input::get('sSearch'));
     }
 
     private function returnError($error = false)

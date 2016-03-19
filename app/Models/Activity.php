@@ -31,9 +31,9 @@ class Activity extends Eloquent
         return $this->belongsTo('App\Models\Contact')->withTrashed();
     }
 
-    public function client()
+    public function relation()
     {
-        return $this->belongsTo('App\Models\Client')->withTrashed();
+        return $this->belongsTo('App\Models\Relation')->withTrashed();
     }
 
     public function invoice()
@@ -55,7 +55,7 @@ class Activity extends Eloquent
     {
         $activityTypeId = $this->activity_type_id;
         $organisation = $this->organisation;
-        $client = $this->client;
+        $relation = $this->relation;
         $user = $this->user;
         $invoice = $this->invoice;
         $contactId = $this->contact_id;
@@ -64,13 +64,13 @@ class Activity extends Eloquent
         $isSystem = $this->is_system;
 
         $data = [
-            'client' => link_to($client->getRoute(), $client->getDisplayName()),
+            'relation' => link_to($relation->getRoute(), $relation->getDisplayName()),
             'user' => $isSystem ? '<i>' . trans('texts.system') . '</i>' : $user->getDisplayName(),
             'invoice' => $invoice ? link_to($invoice->getRoute(), $invoice->getDisplayName()) : null,
             'quote' => $invoice ? link_to($invoice->getRoute(), $invoice->getDisplayName()) : null,
-            'contact' => $contactId ? $client->getDisplayName() : $user->getDisplayName(),
+            'contact' => $contactId ? $relation->getDisplayName() : $user->getDisplayName(),
             'payment' => $payment ? $payment->transaction_reference : null,
-            'credit' => $credit ? $organisation->formatMoney($credit->amount, $client) : null,
+            'credit' => $credit ? $organisation->formatMoney($credit->amount, $relation) : null,
         ];
 
         return trans("texts.activity_{$activityTypeId}", $data);

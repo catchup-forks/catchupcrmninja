@@ -5,22 +5,22 @@ use Utils;
 use URL;
 use App\Services\BaseService;
 use App\Ninja\Repositories\InvoiceRepository;
-use App\Ninja\Repositories\ClientRepository;
+use App\Ninja\Repositories\RelationRepository;
 use App\Events\QuoteInvitationWasApproved;
 use App\Models\Invitation;
 use App\Models\Invoice;
-use App\Models\Client;
+use App\Models\Relation;
 use App\Models\Payment;
 
 class InvoiceService extends BaseService
 {
-    protected $clientRepo;
+    protected $relationRepo;
     protected $invoiceRepo;
     protected $datatableService;
 
-    public function __construct(ClientRepository $clientRepo, InvoiceRepository $invoiceRepo, DatatableService $datatableService)
+    public function __construct(RelationRepository $relationRepo, InvoiceRepository $invoiceRepo, DatatableService $datatableService)
     {
-        $this->clientRepo = $clientRepo;
+        $this->relationRepo = $relationRepo;
         $this->invoiceRepo = $invoiceRepo;
         $this->datatableService = $datatableService;
     }
@@ -32,36 +32,36 @@ class InvoiceService extends BaseService
 
     public function save($data, $checkSubPermissions = false)
     {
-        if (isset($data['client'])) {
-            $can_save_client = !$checkSubPermissions;
-            if(!$can_save_client){
-                if(empty($data['client']['public_id']) || $data['client']['public_id']=='-1'){
-                    $can_save_client = Client::canCreate();
+        if (isset($data['relation'])) {
+            $can_save_relation = !$checkSubPermissions;
+            if(!$can_save_relation){
+                if(empty($data['relation']['public_id']) || $data['relation']['public_id']=='-1'){
+                    $can_save_relation = Relation::canCreate();
                 }
                 else{
-                    $can_save_client = Client::wherePublicId($data['client']['public_id'])->first()->canEdit();
+                    $can_save_relation = Relation::wherePublicId($data['relation']['public_id'])->first()->canEdit();
                 }
             }
             
-            if($can_save_client){
-                $client = $this->clientRepo->save($data['client']);
-                $data['client_id'] = $client->id;
+            if($can_save_relation){
+                $relation = $this->relationRepo->save($data['relation']);
+                $data['relation_id'] = $relation->id;
             }
         }
 
         $invoice = $this->invoiceRepo->save($data, $checkSubPermissions);
 
-        $client = $invoice->client;
-        $client->load('contacts');
+        $relation = $invoice->relation;
+        $relation->load('contacts');
         $sendInvoiceIds = [];
 
-        foreach ($client->contacts as $contact) {
-            if ($contact->send_invoice || count($client->contacts) == 1) {
+        foreach ($relation->contacts as $contact) {
+            if ($contact->send_invoice || count($relation->contacts) == 1) {
                 $sendInvoiceIds[] = $contact->id;
             }
         }
 
-        foreach ($client->contacts as $contact) {
+        foreach ($relation->contacts as $contact) {
             $invitation = Invitation::scope()->whereContactId($contact->id)->whereInvoiceId($invoice->id)->first();
 
             if (in_array($contact->id, $sendInvoiceIds) && !$invitation) {
@@ -119,19 +119,19 @@ class InvoiceService extends BaseService
         }
     }
 
-    public function getDatatable($organisationId, $clientPublicId = null, $entityType, $search)
+    public function getDatatable($organisationId, $relationPublicId = null, $entityType, $search)
     {
-        $query = $this->invoiceRepo->getInvoices($organisationId, $clientPublicId, $entityType, $search)
+        $query = $this->invoiceRepo->getInvoices($organisationId, $relationPublicId, $entityType, $search)
                     ->where('invoices.is_quote', '=', $entityType == ENTITY_QUOTE ? true : false);
 
         if(!Utils::hasPermission('view_all')){
             $query->where('invoices.user_id', '=', Auth::user()->id);
         }
         
-        return $this->createDatatable($entityType, $query, !$clientPublicId);
+        return $this->createDatatable($entityType, $query, !$relationPublicId);
     }
 
-    protected function getDatatableColumns($entityType, $hideClient)
+    protected function getDatatableColumns($entityType, $hideRelation)
     {
         return [
             [
@@ -145,14 +145,14 @@ class InvoiceService extends BaseService
                 }
             ],
             [
-                'client_name',
+                'relation_name',
                 function ($model) {
-                    if(!Client::canViewItemByOwner($model->client_user_id)){
-                        return Utils::getClientDisplayName($model);
+                    if(!Relation::canViewItemByOwner($model->relation_user_id)){
+                        return Utils::getRelationDisplayName($model);
                     }
-                    return link_to("clients/{$model->client_public_id}", Utils::getClientDisplayName($model))->toHtml();
+                    return link_to("relations/{$model->relation_public_id}", Utils::getRelationDisplayName($model))->toHtml();
                 },
-                ! $hideClient
+                ! $hideRelation
             ],
             [
                 'invoice_date',
@@ -238,7 +238,7 @@ class InvoiceService extends BaseService
             [
                 trans('texts.enter_payment'),
                 function ($model) {
-                    return URL::to("payments/create/{$model->client_public_id}/{$model->public_id}");
+                    return URL::to("payments/create/{$model->relation_public_id}/{$model->public_id}");
                 },
                 function ($model) use ($entityType) {
                     return $entityType == ENTITY_INVOICE && $model->balance > 0 && Payment::canCreate();

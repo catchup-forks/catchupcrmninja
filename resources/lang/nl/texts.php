@@ -2,7 +2,7 @@
 
 return array(
 
-    // client
+    // relation
     'organization' => 'Organisatie',
     'name' => 'Naam',
     'website' => 'Website',
@@ -28,7 +28,7 @@ return array(
 
     // invoice
     'invoice' => 'Factuur',
-    'client' => 'Klant',
+    'relation' => 'Relatie',
     'invoice_date' => 'Factuurdatum',
     'due_date' => 'Vervaldatum',
     'invoice_number' => 'Factuurnummer',
@@ -53,12 +53,12 @@ return array(
 
     'remove_contact' => 'Verwijder contact',
     'add_contact' => 'Voeg contact toe',
-    'create_new_client' => 'Maak nieuwe klant',
-    'edit_client_details' => 'Pas klantdetails aan',
+    'create_new_relation' => 'Maak nieuwe relatie aan',
+    'edit_relation_details' => 'Pas details aan',
     'enable' => 'Activeer',
     'learn_more' => 'Meer te weten komen',
     'manage_rates' => 'Beheer prijzen',
-    'note_to_client' => 'Bericht aan klant',
+    'note_to_relation' => 'Bericht aan relatie',
     'invoice_terms' => 'Factuur voorwaarden',
     'save_as_default_terms' => 'Opslaan als standaard voorwaarden',
     'download_pdf' => 'Download PDF',
@@ -77,7 +77,7 @@ return array(
 
     // navigation
     'dashboard' => 'Dashboard',
-    'clients' => 'Klanten',
+    'relations' => 'Relaties',
     'invoices' => 'Facturen',
     'payments' => 'Betalingen',
     'credits' => 'Kredietnota\'s',
@@ -102,7 +102,7 @@ return array(
 
     // recurring invoices
     'recurring_invoices' => 'Terugkerende facturen',
-    'recurring_help' => '<p>Zend klanten automatisch wekelijks, twee keer per maand, maandelijks, per kwartaal of jaarlijks dezelfde facturen.</p>
+    'recurring_help' => '<p>Stuur klanten automatisch wekelijks, twee keer per maand, maandelijks, per kwartaal of jaarlijks dezelfde facturen.</p>
         <p>Gebruik :MONTH, :QUARTER of :YEAR voor dynamische datums. Eenvoudige wiskunde werkt ook, bijvoorbeeld :MONTH-1.</p>
         <p>Voorbeelden van dynamische factuur variabelen:</p>
         <ul>
@@ -113,10 +113,10 @@ return array(
 
     // dashboard
     'in_total_revenue' => 'in totale opbrengst',
-    'billed_client' => 'Gefactureerde klant',
-    'billed_clients' => 'Gefactureerde klanten',
-    'active_client' => 'Actieve klant',
-    'active_clients' => 'Actieve klanten',
+    'billed_relation' => 'Gefactureerde klant',
+    'billed_relations' => 'Gefactureerde klanten',
+    'active_relation' => 'Actieve relatie',
+    'active_relations' => 'Actieve relaties',
     'invoices_past_due' => 'Vervallen facturen',
     'upcoming_invoices' => 'Aankomende facturen',
     'average_invoice' => 'Gemiddelde factuur',
@@ -124,15 +124,15 @@ return array(
     // list pages
     'archive' => 'Archiveer',
     'delete' => 'Verwijder',
-    'archive_client' => 'Archiveer klant',
-    'delete_client' => 'Verwijder klant',
+    'archive_relation' => 'Archiveer relatie',
+    'delete_relation' => 'Verwijder relatie',
     'archive_payment' => 'Archiveer betaling',
     'delete_payment' => 'Verwijder betaling',
     'archive_credit' => 'Archiveer kredietnota',
     'delete_credit' => 'Verwijder kredietnota',
     'show_archived_deleted' => 'Toon gearchiveerde/verwijderde',
     'filter' => 'Filter',
-    'new_client' => 'Nieuwe klant',
+    'new_relation' => 'Nieuwe relatie',
     'new_invoice' => 'Nieuwe factuur',
     'new_payment' => 'Nieuwe betaling',
     'new_credit' => 'Nieuwe kredietnota',
@@ -155,10 +155,10 @@ return array(
     'credit_date' => 'Kredietdatum',
     'empty_table' => 'Geen gegevens beschikbaar in de tabel',
     'select' => 'Selecteer',
-    'edit_client' => 'Klant aanpassen',
-    'edit_invoice' => 'Factuur aanpassen',
+    'edit_relation' => 'Relatie bewerken',
+    'edit_invoice' => 'Factuur bewerken',
 
-    // client view page
+    // relation view page
     'create_invoice' => 'Factuur aanmaken',
     'enter_credit' => 'Kredietnota ingeven',
     'last_logged_in' => 'Laatste login',
@@ -195,43 +195,43 @@ return array(
     'custom_messages' => 'Aangepaste berichten',
     'default_invoice_terms' => 'Stel standaard factuurvoorwaarden in',
     'default_email_footer' => 'Stel standaard e-mailhandtekening in',
-    'import_clients' => 'Importeer Klant Gegevens',
+    'import_relations' => 'Importeer Relatie Gegevens',
     'csv_file' => 'Selecteer CSV bestand',
-    'export_clients' => 'Exporteer Klant Gegevens',
+    'export_relations' => 'Exporteer Relatie Gegevens',
     'select_file' => 'Selecteer een bestand',
     'first_row_headers' => 'Gebruik eerste rij als koppen',
     'column' => 'Kolom',
     'sample' => 'Voorbeeld',
     'import_to' => 'Importeer naar',
-    'client_will_create' => 'klant zal aangemaakt worden',
-    'clients_will_create' => 'klanten zullen aangemaakt worden',
+    'relation_will_create' => 'relatie zal aangemaakt worden',
+    'relations_will_create' => 'relaties zullen aangemaakt worden',
     'email_settings' => 'E-mailinstellingen',
     'pdf_email_attachment' => 'PDF als bijlage toevoegen in e-mailberichten',
 
     // application messages
-    'created_client' => 'Klant succesvol aangemaakt',
-    'created_clients' => ':count klanten succesvol aangemaakt',
+    'created_relation' => 'Relatie succesvol aangemaakt',
+    'created_relations' => ':count relaties succesvol aangemaakt',
     'updated_settings' => 'Instellingen succesvol aangepast',
     'removed_logo' => 'Logo succesvol verwijderd',
     'sent_message' => 'Bericht succesvol verzonden',
-    'invoice_error' => 'Selecteer een klant alstublieft en corrigeer mogelijke fouten',
-    'limit_clients' => 'Sorry, dit zal de klantenlimiet van :count klanten overschrijden',
-    'payment_error' => 'Er was een fout bij het verwerken van uw betaling. Probeer later alstublieft opnieuw.',
+    'invoice_error' => 'Selecteer een relatie en corrigeer mogelijke fouten',
+    'limit_relations' => 'Sorry, dit zal de relatielimiet van :count relaties overschrijden',
+    'payment_error' => 'Er was een fout bij het verwerken van uw betaling. Probeer later opnieuw.',
     'registration_required' => 'Meld u aan om een factuur te mailen',
     'confirmation_required' => 'Bevestig uw e-mailadres alstublieft',
 
-    'updated_client' => 'Klant succesvol aangepast',
-    'created_client' => 'Klant succesvol aangemaakt',
-    'archived_client' => 'Klant succesvol gearchiveerd',
-    'archived_clients' => ':count klanten succesvol gearchiveerd',
-    'deleted_client' => 'Klant succesvol verwijderd',
-    'deleted_clients' => ':count klanten succesvol verwijderd',
+    'updated_relation' => 'Relatie succesvol aangepast',
+    'created_relation' => 'Relatie succesvol aangemaakt',
+    'archived_relation' => 'Relatie succesvol gearchiveerd',
+    'archived_relations' => ':count relaties succesvol gearchiveerd',
+    'deleted_relation' => 'Relatie succesvol verwijderd',
+    'deleted_relations' => ':count relatie succesvol verwijderd',
 
     'updated_invoice' => 'Factuur succesvol aangepast',
     'created_invoice' => 'Factuur succesvol aangemaakt',
     'cloned_invoice' => 'Factuur succesvol gekopieerd',
     'emailed_invoice' => 'Factuur succesvol gemaild',
-    'and_created_client' => 'en klant aangemaakt',
+    'and_created_relation' => 'en relatie aangemaakt',
     'archived_invoice' => 'Factuur succesvol gearchiveerd',
     'archived_invoices' => ':count facturen succesvol gearchiveerd',
     'deleted_invoice' => 'Factuur succesvol verwijderd',
@@ -261,14 +261,14 @@ return array(
     'email_salutation' => 'Beste :name,',
     'email_signature' => 'Met vriendelijke groeten,',
     'email_from' => 'Het InvoiceNinja Team',
-    'user_email_footer' => 'Ga alstublieft naar '.SITE_URL.'/settings/notifications om uw e-mail notificatie instellingen aan te passen',
+    'user_email_footer' => 'Ga naar '.SITE_URL.'/settings/notifications om uw e-mail notificatie instellingen aan te passen',
     'invoice_link_message' => 'Klik op volgende link om de Factuur van uw klant te bekijken:',
-    'notification_invoice_paid_subject' => 'Factuur :invoice is betaald door :client',
-    'notification_invoice_sent_subject' => 'Factuur :invoice is gezonden door :client',
-    'notification_invoice_viewed_subject' => 'Factuur :invoice is bekeken door :client',
-    'notification_invoice_paid' => 'Een betaling voor :amount is gemaakt door klant :client voor Factuur :invoice.',
-    'notification_invoice_sent' => 'De volgende klant :client heeft Factuur :invoice voor :amount gemaild gekregen.',
-    'notification_invoice_viewed' => 'De volgende klant :client heeft Factuur :invoice voor :amount bekeken.',
+    'notification_invoice_paid_subject' => 'Factuur :invoice is betaald door :relation',
+    'notification_invoice_sent_subject' => 'Factuur :invoice is gezonden door :relation',
+    'notification_invoice_viewed_subject' => 'Factuur :invoice is bekeken door :relation',
+    'notification_invoice_paid' => 'Een betaling voor :amount is gemaakt door klant :relation voor Factuur :invoice.',
+    'notification_invoice_sent' => 'De volgende klant :relation heeft Factuur :invoice voor :amount gemaild gekregen.',
+    'notification_invoice_viewed' => 'De volgende klant :relation heeft Factuur :invoice voor :amount bekeken.',
     'reset_password' => 'U kunt het wachtwoord van uw organisation resetten door op de volgende link te klikken:',
     'reset_password_footer' => 'Neem a.u.b. contact op met onze helpdesk indien u deze wachtwoordreset niet heeft aangevraagd. Het e-mailadres van de helpdesk is '.CONTACT_EMAIL,
 
@@ -316,7 +316,7 @@ return array(
     'unsaved_changes' => 'U hebt niet bewaarde wijzigingen',
     'custom_fields' => 'Aangepaste velden',
     'company_fields' => 'Velden Bedrijf',
-    'client_fields' => 'Velden Klant',
+    'relation_fields' => 'Relatie Velden',
     'field_label' => 'Label Veld',
     'field_value' => 'Waarde Veld',
     'edit' => 'Bewerk',
@@ -346,7 +346,7 @@ return array(
     'specify_colors_label' => 'Kies de kleuren die in de factuur gebruikt worden',
 
     'chart_builder' => 'Grafiekbouwer',
-    'ninja_email_footer' => 'Gebruik :site om uw klanten gratis te factureren en betalingen te ontvangen!',
+    'ninja_email_footer' => 'Gebruik :site om uw relaties gratis te factureren en betalingen te ontvangen!',
     'go_pro' => 'Go Pro',
 
     // Quotes
@@ -371,7 +371,7 @@ return array(
     'convert_to_invoice' => 'Zet om naar factuur',
     'view_invoice' => 'Bekijk factuur',
     'view_quote' => 'Bekijk offerte',
-    'view_client' => 'Bekijk klant',
+    'view_relation' => 'Bekijk relatie',
 
     'updated_quote' => 'Offerte succesvol bijgewerkt',
     'created_quote' => 'Offerte succesvol aangemaakt',
@@ -386,10 +386,10 @@ return array(
     'quote_subject' => 'Nieuwe offerte van :organisation',
     'quote_message' => 'Om uw offerte voor :amount te bekijken, klik op de link hieronder.',
     'quote_link_message' => 'Klik op de link hieronder om de offerte te bekijken:',
-    'notification_quote_sent_subject' => 'Offerte :invoice is verstuurd naar :client',
-    'notification_quote_viewed_subject' => 'Offerte :invoice is bekeken door :client',
-    'notification_quote_sent' => 'Klant :client heeft offerte :invoice voor :amount per email ontvangen.',
-    'notification_quote_viewed' => 'Klant :client heeft offerte :invoice voor :amount bekeken.',
+    'notification_quote_sent_subject' => 'Offerte :invoice is verstuurd naar :relation',
+    'notification_quote_viewed_subject' => 'Offerte :invoice is bekeken door :relation',
+    'notification_quote_sent' => 'Relatie :relation heeft offerte :invoice voor :amount per email ontvangen.',
+    'notification_quote_viewed' => 'Relatie :relation heeft offerte :invoice voor :amount bekeken.',
     'auto_convert_quote' => 'Offerte automatisch omzetten in factuur als deze goed gekeurd wordt',
 
     'session_expired' => 'Uw sessie is verlopen.',
@@ -472,13 +472,13 @@ return array(
     'restore' => 'Herstel',
     'restore_invoice' => 'Herstel factuur',
     'restore_quote' => 'Herstel offerte',
-    'restore_client' => 'Herstel klant',
+    'restore_relation' => 'Herstel relatie',
     'restore_credit' => 'Herstel kredietnota',
     'restore_payment' => 'Herstel betaling',
 
     'restored_invoice' => 'Factuur succesvol hersteld',
     'restored_quote' => 'Offerte succesvol hersteld',
-    'restored_client' => 'Klant succesvol hersteld',
+    'restored_relation' => 'Relatie succesvol hersteld',
     'restored_payment' => 'Betaling succesvol hersteld',
     'restored_credit' => 'Kredietnota succesvol hersteld',
 
@@ -573,8 +573,8 @@ return array(
     'converted' => 'Omgezet',
 
     'email_approved' => 'Email me wanneer een offerte is <b>goedgekeurd</b>',
-    'notification_quote_approved_subject' => 'Offerte :invoice is goedgekeurd door :client',
-    'notification_quote_approved' => ':client heeft offerte :invoice goedgekeurd voor :amount.',
+    'notification_quote_approved_subject' => 'Offerte :invoice is goedgekeurd door :relation',
+    'notification_quote_approved' => ':relation heeft offerte :invoice goedgekeurd voor :amount.',
     'resend_confirmation' => 'Verstuurd bevestingsmail opnieuw',
     'confirmation_resent' => 'De bevestigingsmail is opnieuw verstuurd',
 
@@ -588,14 +588,14 @@ return array(
 
     'more_fields' => 'Meer velden',
     'less_fields' => 'Minder velden',
-    'client_name' => 'Klantnaam',
+    'relation_name' => 'Relatienaam',
     'pdf_settings' => 'PDF-instellingen',
     'product_settings' => 'Productinstellingen',
     'auto_wrap' => 'Automatisch regel afbreken',
     'duplicate_post' => 'Opgelet: de volgende pagina is twee keer doorgestuurd. De tweede verzending is genegeerd.',
     'view_documentation' => 'Bekijk documentatie',
     'app_title' => 'Gratis Open-Source Online Facturatie',
-    'app_description' => 'Invoice Ninja is een gratis, open-source oplossing voor het aanmkaen en versturen van facturen aan klanten. Met Invoice Ninja, kun je gemakkelijk mooie facturen aanmaken en verzenden van om het even welk toestel met internettoegang. Je klanten kunnen je facturen afdrukken, downloaden als pdf bestanden en je zelfs online betalen vanuit het systeem.',
+    'app_description' => 'Invoice Ninja is een gratis, open-source oplossing voor het aanmaken en versturen van facturen aan relaties. Met Invoice Ninja, kun je gemakkelijk mooie facturen aanmaken en verzenden van om het even welk toestel met internettoegang. Je klanten kunnen je facturen afdrukken, downloaden als pdf bestanden en je zelfs online betalen vanuit het systeem.',
 
     'rows' => 'rijen',
     'www' => 'www',
@@ -648,7 +648,7 @@ return array(
     'invoiced' => 'Gefactureerd',
     'logged' => 'Gelogd',
     'running' => 'Lopend',
-    'task_error_multiple_clients' => 'Taken kunnen niet tot meerdere klanten behoren',
+    'task_error_multiple_relations' => 'Taken kunnen niet tot meerdere relaties behoren',
     'task_error_running' => 'Stop a.u.b. eerst de lopende taken',
     'task_error_invoiced' => 'Deze taken zijn al gefactureerd',
     'restored_task' => 'Taak succesvol hersteld',
@@ -670,14 +670,14 @@ return array(
 
     'pro_plan_title' => 'NINJA PRO',
     'pro_plan_call_to_action' => 'Nu upgraden!',
-    'pro_plan_feature1' => 'Maak ongelimiteerd klanten aan',
+    'pro_plan_feature1' => 'Maak ongelimiteerd relaties aan',
     'pro_plan_feature2' => 'Toegang tot 10 mooie factuur ontwerpen',
     'pro_plan_feature3' => 'Aangepaste URLs - "YourBrand.InvoiceNinja.com"',
     'pro_plan_feature4' => 'Verwijder "Aangemaakt door Invoice Ninja"',
     'pro_plan_feature5' => 'Multi-user toegang & Activeit Tracking',
     'pro_plan_feature6' => 'Maak offertes & Pro-forma facturen aan',
     'pro_plan_feature7' => 'Pas factuur veld titels & nummering aan',
-    'pro_plan_feature8' => 'Optie om PDFs toe te voegen aan de emails naar klanten',
+    'pro_plan_feature8' => 'Optie om PDFs toe te voegen aan de emails naar relaties',
 
     'resume' => 'Doorgaan',
     'break_duration' => 'Pauze',
@@ -687,7 +687,7 @@ return array(
     'click_here' => 'Klik hier',
 
     'email_receipt' => 'Mail betalingsbewijs naar de klant',
-    'created_payment_emailed_client' => 'Betaling succesvol toegevoegd en gemaild naar de klant',
+    'created_payment_emailed_relation' => 'Betaling succesvol toegevoegd en gemaild naar de klant',
     'add_company' => 'Bedrijf toevoegen',
     'untitled' => 'Zonder titel',
     'new_company' => 'Nieuw bedrijf',
@@ -703,9 +703,9 @@ return array(
     'unlink_organisation' => 'Koppel organisation los',
     'unlink' => 'Koppel los',
     'show_address' => 'Toon Adres',
-    'show_address_help' => 'Verplicht de klant om zijn factuur adres op te geven',
+    'show_address_help' => 'Verplicht de relatie om zijn factuur adres op te geven',
     'update_address' => 'Adres aanpassen',
-    'update_address_help' => 'Pas het adres van de klant aan met de ingevulde gegevens',
+    'update_address_help' => 'Pas het adres van de relatie aan met de ingevulde gegevens',
     'times' => 'Tijden',
     'set_now' => 'Start nu',
     'dark_mode' => 'Donkere modus',
@@ -741,7 +741,7 @@ return array(
     'primary_user' => 'Primaire gebruiker',
     'help' => 'Help',
     'customize_help' => '<p>We gebruiken <a href="http://pdfmake.org/" target="_blank">pdfmake</a> om de factuur ontwerpen declaratief te definieren. De pdfmake <a href="http://pdfmake.org/playground.html" target="_blank">playground</a> is een interessante manier om de library in actie te zien.</p>
-                        <p>Gebruik dot notatie om een "kind eigenschap" te gebruiken. Bijvoorbeeld voor de klant naam te tonen gebruik je <code>$client.name</code>.</p>
+                        <p>Gebruik dot notatie om een "kind eigenschap" te gebruiken. Bijvoorbeeld voor de relatie naam te tonen gebruik je <code>$relation.name</code>.</p>
                         <p>Als je ergens hulp bij nodig hebt, post dan een vraag op ons <a href="https://www.invoiceninja.com/forums/forum/support/" target="_blank">support forum</a>.</p>',
 
     'invoice_due_date' => 'Vervaldatum',
@@ -842,9 +842,9 @@ return array(
     'quote_counter' => 'Offerteteller',
     'type' => 'Type',
 
-    'activity_1' => ':user created client :client',
-    'activity_2' => ':user archived client :client',
-    'activity_3' => ':user deleted client :client',
+    'activity_1' => ':user created relation :relation',
+    'activity_2' => ':user archived relation :relation',
+    'activity_3' => ':user deleted relation :relation',
     'activity_4' => ':user created invoice :invoice',
     'activity_5' => ':user updated invoice :invoice',
     'activity_6' => ':user emailed invoice :invoice to :contact',
@@ -867,7 +867,7 @@ return array(
     'activity_23' => ':user deleted quote :quote',
     'activity_24' => ':user restored quote :quote',
     'activity_25' => ':user restored invoice :invoice',
-    'activity_26' => ':user restored client :client',
+    'activity_26' => ':user restored relation :relation',
     'activity_27' => ':user restored payment :payment',
     'activity_28' => ':user restored :credit credit',
     'activity_29' => ':contact approved quote :quote',
@@ -915,14 +915,14 @@ return array(
     'import_data' => 'Importeer data',
     'source' => 'Bron',
     'csv' => 'CSV',
-    'client_file' => 'Klantbestand',
+    'relation_file' => 'Relatiebestand',
     'invoice_file' => 'Factuurbestand',
     'task_file' => 'Urenbestand',
     'no_mapper' => 'No valid mapping for file',
     'invalid_csv_header' => 'Invalid CSV Header',
 
     'email_errors' => [
-    'inactive_client' => 'Emails can not be sent to inactive clients',
+    'inactive_relation' => 'Emails can not be sent to inactive relations',
     'inactive_contact' => 'Emails can not be sent to inactive contacts',
     'inactive_invoice' => 'Emails can not be sent to inactive invoices',
     'user_unregistered' => 'Please register your organisation to send emails',
@@ -930,13 +930,13 @@ return array(
     'invalid_contact_email' => 'Invalid contact email',
     ],
 
-    'client_portal' => 'Klantportaal',
+    'relation_portal' => 'Klantportaal',
     'admin' => 'Admin',
     'disabled' => 'Uitgeschakeld',
     'show_archived_users' => 'Toon gearchiveerde gebruikers',
     'notes' => 'Notities',
-    'invoice_will_create' => 'klant zal worden aangemaakt',
-    'invoices_will_create' => 'factuur zal worden aangemaakt',
+    'invoice_will_create' => 'factuur zal worden aangemaakt',
+    'invoices_will_create' => 'facturen zullen worden aangemaakt',
     'failed_to_import' => 'The following records failed to import, they either already exist or are missing required fields.',
 
     'publishable_key' => 'Publishable Key',
@@ -946,7 +946,7 @@ return array(
     'email_design' => 'Email Design',
     'due_by' => 'Due by :date',
     'enable_email_markup' => 'Enable Markup',
-    'enable_email_markup_help' => 'Make it easier for your clients to pay you by adding schema.org markup to your emails.',
+    'enable_email_markup_help' => 'Make it easier for your relations to pay you by adding schema.org markup to your emails.',
     'template_help_title' => 'Templates Help',
     'template_help_1' => 'Available variables:',
     'email_design_id' => 'Email Style',
@@ -959,11 +959,11 @@ return array(
     'subdomain_help' => 'Customize the invoice link subdomain or display the invoice on your own website.',
     'invoice_number_help' => 'Specify a prefix or use a custom pattern to dynamically set the invoice number.',
     'quote_number_help' => 'Specify a prefix or use a custom pattern to dynamically set the quote number.',
-    'custom_client_fields_helps' => 'Add a text input to the client create/edit page and display the label and value on the PDF.',
+    'custom_relation_fields_helps' => 'Add a text input to the relation create/edit page and display the label and value on the PDF.',
     'custom_account_fields_helps' => 'Add a label and value to the company details section of the PDF.',
     'custom_invoice_fields_helps' => 'Add a text input to the invoice create/edit page and display the label and value on the PDF.',
     'custom_invoice_charges_helps' => 'Add a text input to the invoice create/edit page and include the charge in the invoice subtotals.',
-    'color_help' => 'Note: the primary color is also used in the client portal and custom email designs.',
+    'color_help' => 'Note: the primary color is also used in the relation portal and custom email designs.',
 
     'token_expired' => 'Validation token was expired. Please try again.',
     'invoice_link' => 'Invoice Link',
@@ -1025,7 +1025,7 @@ return array(
     'view' => 'View',
     'restore_expense' => 'Restore Uitgave',
     'invoice_expense' => 'Invoice Uitgave',
-    'expense_error_multiple_clients' => 'The uitgaven can\'t belong to different clients',
+    'expense_error_multiple_relations' => 'The uitgaven can\'t belong to different relations',
     'expense_error_invoiced' => 'Expense has already been invoiced',
     'convert_currency' => 'Convert currency',
 
@@ -1053,7 +1053,7 @@ return array(
         </ul>',
     'due' => 'Due',
     'next_due_on' => 'Due Next: :date',
-    'use_client_terms' => 'Use client terms',
+    'use_relation_terms' => 'Use relation terms',
     'day_of_month' => ':ordinal day of month',
     'last_day_of_month' => 'Last day of month',
     'day_of_week_after' => ':ordinal :day after',
@@ -1068,7 +1068,7 @@ return array(
     // Fonts
     'header_font_id' => 'Header Font',
     'body_font_id' => 'Body Font',
-    'color_font_help' => 'Note: the primary color and fonts are also used in the client portal and custom email designs.',
+    'color_font_help' => 'Note: the primary color and fonts are also used in the relation portal and custom email designs.',
 
     'live_preview' => 'Live Preview',
     'invalid_mail_config' => 'Unable to send email, please check that the mail settings are correct.',
@@ -1099,14 +1099,14 @@ return array(
     'status_approved' => 'Approved',
     'quote_settings' => 'Quote Settings',
     'auto_convert_quote' => 'Auto convert quote',
-    'auto_convert_quote_help' => 'Automatically convert a quote to an invoice when approved by a client.',
+    'auto_convert_quote_help' => 'Automatically convert a quote to an invoice when approved by a relation.',
     'validate' => 'Validate',
     'info' => 'Info',
     'imported_expenses' => 'Successfully created :count_vendors vendor(s) and :count_expenses expense(s)',
 
     'iframe_url_help3' => 'Note: if you plan on accepting credit cards details we strongly recommend enabling HTTPS on your site.',
     'expense_error_multiple_currencies' => 'The expenses can\'t have different currencies.',
-    'expense_error_mismatch_currencies' => 'The client\'s currency does not match the expense currency.',
+    'expense_error_mismatch_currencies' => 'The relation\'s currency does not match the expense currency.',
     'trello_roadmap' => 'Trello Roadmap',
     'header_footer' => 'Header/Footer',
     'first_page' => 'first page',
@@ -1124,6 +1124,6 @@ return array(
     'trial_call_to_action' => 'Start Free Trial',
     'trial_success' => 'Successfully enabled two week free pro plan trial',
     'overdue' => 'Overdue',
-    'white_label_text' => 'Purchase a ONE YEAR white label license for $'.WHITE_LABEL_PRICE.' to remove the Invoice Ninja branding from the client portal and help support our project.',
+    'white_label_text' => 'Purchase a ONE YEAR white label license for $'.WHITE_LABEL_PRICE.' to remove the Invoice Ninja branding from the relation portal and help support our project.',
 
 );

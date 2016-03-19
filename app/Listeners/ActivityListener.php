@@ -1,10 +1,10 @@
 <?php namespace app\Listeners;
 
 use App\Models\Invoice;
-use App\Events\ClientWasCreated;
-use App\Events\ClientWasDeleted;
-use App\Events\ClientWasArchived;
-use App\Events\ClientWasRestored;
+use App\Events\RelationWasCreated;
+use App\Events\RelationWasDeleted;
+use App\Events\RelationWasArchived;
+use App\Events\RelationWasRestored;
 use App\Events\InvoiceWasCreated;
 use App\Events\InvoiceWasUpdated;
 use App\Events\InvoiceWasDeleted;
@@ -39,40 +39,40 @@ class ActivityListener
         $this->activityRepo = $activityRepo;
     }
 
-    // Clients
-    public function createdClient(ClientWasCreated $event)
+    // Relations
+    public function createdRelation(RelationWasCreated $event)
     {
         $this->activityRepo->create(
-            $event->client,
-            ACTIVITY_TYPE_CREATE_CLIENT
+            $event->relation,
+            ACTIVITY_TYPE_CREATE_RELATION
         );
     }
 
-    public function deletedClient(ClientWasDeleted $event)
+    public function deletedRelation(RelationWasDeleted $event)
     {
         $this->activityRepo->create(
-            $event->client,
-            ACTIVITY_TYPE_DELETE_CLIENT
+            $event->relation,
+            ACTIVITY_TYPE_DELETE_RELATION
         );
     }
 
-    public function archivedClient(ClientWasArchived $event)
+    public function archivedRelation(RelationWasArchived $event)
     {
-        if ($event->client->is_deleted) {
+        if ($event->relation->is_deleted) {
             return;
         }
 
         $this->activityRepo->create(
-            $event->client,
-            ACTIVITY_TYPE_ARCHIVE_CLIENT
+            $event->relation,
+            ACTIVITY_TYPE_ARCHIVE_RELATION
         );
     }
 
-    public function restoredClient(ClientWasRestored $event)
+    public function restoredRelation(RelationWasRestored $event)
     {
         $this->activityRepo->create(
-            $event->client,
-            ACTIVITY_TYPE_RESTORE_CLIENT
+            $event->relation,
+            ACTIVITY_TYPE_RESTORE_RELATION
         );
     }
 
@@ -92,7 +92,7 @@ class ActivityListener
             return;
         }
 
-        $backupInvoice = Invoice::with('invoice_items', 'client.organisation', 'client.contacts')->find($event->invoice->id);
+        $backupInvoice = Invoice::with('invoice_items', 'relation.organisation', 'relation.contacts')->find($event->invoice->id);
 
         $activity = $this->activityRepo->create(
             $event->invoice,
@@ -177,7 +177,7 @@ class ActivityListener
             return;
         }
 
-        $backupQuote = Invoice::with('invoice_items', 'client.organisation', 'client.contacts')->find($event->quote->id);
+        $backupQuote = Invoice::with('invoice_items', 'relation.organisation', 'relation.contacts')->find($event->quote->id);
 
         $activity = $this->activityRepo->create(
             $event->quote,

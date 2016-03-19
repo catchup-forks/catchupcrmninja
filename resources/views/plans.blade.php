@@ -2,7 +2,7 @@
 <div class="plans-table col-md-12">
   <div class="col-md-4 desc hide-phone">
     <div class="cell"></div>
-    <div class="cell">{{ trans('texts.plans.number_clients') }}</div>
+    <div class="cell">{{ trans('texts.plans.number_relations') }}</div>
     <div class="cell">{{ trans('texts.plans.unlimited_invoices') }}</div>
     <div class="cell">{{ trans('texts.plans.company_logo') }}</div>
     <div class="cell">{{ trans('texts.plans.live_pdf') }}</div>
@@ -21,7 +21,7 @@
   </div>
   <div class="free col-md-4">
     <div class="cell">{{ trans('texts.plans.free') }}</div>
-    <div class="cell"><div class="hide-desktop">{{ trans('texts.plans.number_clients') }}</div><span>500</span></div>
+    <div class="cell"><div class="hide-desktop">{{ trans('texts.plans.number_relations') }}</div><span>500</span></div>
     <div class="cell"><div class="hide-desktop">{{ trans('texts.plans.unlimited_invoices') }}</div><span class="glyphicon glyphicon-ok"></div>
     <div class="cell"><div class="hide-desktop">{{ trans('texts.plans.company_logo') }}</div><span class="glyphicon glyphicon-ok"></div>
     <div class="cell"><div class="hide-desktop">{{ trans('texts.plans.live_pdf') }}</div><span class="glyphicon glyphicon-ok"></div>
@@ -40,7 +40,7 @@
   <div class="pro col-md-4">
 
     <div class="cell">{{ trans('texts.plans.pro_plan') }}</div>
-    <div class="cell"><div class="hide-desktop">{{ trans('texts.plans.number_clients') }}</div><span style="color: #2299c0; font-size: 16px;">{{ trans('texts.plans.unlimited') }}</span></div>
+    <div class="cell"><div class="hide-desktop">{{ trans('texts.plans.number_relations') }}</div><span style="color: #2299c0; font-size: 16px;">{{ trans('texts.plans.unlimited') }}</span></div>
     <div class="cell"><div class="hide-desktop">{{ trans('texts.plans.unlimited_invoices') }}</div><span class="glyphicon glyphicon-ok"></div>
     <div class="cell"><div class="hide-desktop">{{ trans('texts.plans.company_logo') }}</div><span class="glyphicon glyphicon-ok"></div>
     <div class="cell"><div class="hide-desktop">{{ trans('texts.plans.live_pdf') }}</div><span class="glyphicon glyphicon-ok"></div>

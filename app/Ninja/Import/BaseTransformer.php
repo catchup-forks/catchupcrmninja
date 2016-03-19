@@ -13,10 +13,10 @@ class BaseTransformer extends TransformerAbstract
         $this->maps = $maps;
     }
 
-    protected function hasClient($name)
+    protected function hasRelation($name)
     {
         $name = strtolower($name);
-        return isset($this->maps[ENTITY_CLIENT][$name]);
+        return isset($this->maps[ENTITY_RELATION][$name]);
     }
 
     protected function getString($data, $field)
@@ -24,10 +24,10 @@ class BaseTransformer extends TransformerAbstract
         return (isset($data->$field) && $data->$field) ? $data->$field : '';
     }
 
-    protected function getClientId($name)
+    protected function getRelationId($name)
     {
         $name = strtolower($name);
-        return isset($this->maps[ENTITY_CLIENT][$name]) ? $this->maps[ENTITY_CLIENT][$name] : null;
+        return isset($this->maps[ENTITY_RELATION][$name]) ? $this->maps[ENTITY_RELATION][$name] : null;
     }
 
     protected function getCountryId($name)
@@ -81,10 +81,10 @@ class BaseTransformer extends TransformerAbstract
         return isset($this->maps[ENTITY_INVOICE][$invoiceNumber]);
     }
 
-    protected function getInvoiceClientId($invoiceNumber)
+    protected function getInvoiceRelationId($invoiceNumber)
     {
         $invoiceNumber = $this->getInvoiceNumber($invoiceNumber);
-        return isset($this->maps[ENTITY_INVOICE.'_'.ENTITY_CLIENT][$invoiceNumber])? $this->maps[ENTITY_INVOICE.'_'.ENTITY_CLIENT][$invoiceNumber] : null;
+        return isset($this->maps[ENTITY_INVOICE.'_'.ENTITY_RELATION][$invoiceNumber])? $this->maps[ENTITY_INVOICE.'_'.ENTITY_RELATION][$invoiceNumber] : null;
     }
 
     

@@ -222,7 +222,7 @@ class BankAccountService extends BaseService
         return $this->createDatatable(ENTITY_BANK_ACCOUNT, $query, false);
     }
 
-    protected function getDatatableColumns($entityType, $hideClient)
+    protected function getDatatableColumns($entityType, $hideRelation)
     {
         return [
             [

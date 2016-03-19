@@ -135,7 +135,7 @@
                         {{ trans('texts.total_invoiced') }}
                     </div>
                     <div class="amount">
-                        {{ Utils::formatMoney($client->paid_to_date + $client->balance, $client->currency_id ?: $organisation->currency_id) }}
+                        {{ Utils::formatMoney($relation->paid_to_date + $relation->balance, $relation->currency_id ?: $organisation->currency_id) }}
                     </div>
                 </div>
             </div>
@@ -146,7 +146,7 @@
                         {{ trans('texts.paid_to_date') }}
                     </div>
                     <div class="amount">
-                        {{ Utils::formatMoney($client->paid_to_date, $client->currency_id ?: $organisation->currency_id) }}
+                        {{ Utils::formatMoney($relation->paid_to_date, $relation->currency_id ?: $organisation->currency_id) }}
                     </div>
                 </div>
             </div>
@@ -157,7 +157,7 @@
                         {{ trans('texts.open_balance') }}
                     </div>
                     <div class="amount">
-                        {{ Utils::formatMoney($client->balance, $client->currency_id ?: $organisation->currency_id) }}
+                        {{ Utils::formatMoney($relation->balance, $relation->currency_id ?: $organisation->currency_id) }}
                     </div>
                 </div>
             </div>
@@ -170,7 +170,7 @@
                     trans('texts.message'),
                     trans('texts.balance'),
                     trans('texts.adjustment'))
-                ->setUrl(route('api.client.activity'))
+                ->setUrl(route('api.relation.activity'))
                 ->setOptions('bFilter', false)
                 ->setOptions('aaSorting', [['0', 'desc']])
                 ->setOptions('sPaginationType', 'bootstrap')

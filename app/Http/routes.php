@@ -14,7 +14,7 @@
 //Crypt::decrypt();
 //apc_clear_cache();
 //dd(DB::getQueryLog());
-//dd(Client::getPrivateId(1));
+//dd(Relation::getPrivateId(1));
 //dd(new DateTime());
 //dd(App::environment());
 //dd(gethostname());
@@ -34,25 +34,25 @@ Route::get('/invoice_now', 'HomeController@invoiceNow');
 Route::get('/keep_alive', 'HomeController@keepAlive');
 Route::post('/get_started', 'OrganisationController@getStarted');
 
-// Client visible pages
-Route::group(['middleware' => 'auth:client'], function() {
-    Route::get('view/{invitation_key}', 'PublicClientController@view');
-    Route::get('download/{invitation_key}', 'PublicClientController@download');
+// Relation visible pages
+Route::group(['middleware' => 'auth:relation'], function() {
+    Route::get('view/{invitation_key}', 'PublicRelationController@view');
+    Route::get('download/{invitation_key}', 'PublicRelationController@download');
     Route::get('view', 'HomeController@viewLogo');
     Route::get('approve/{invitation_key}', 'QuoteController@approve');
     Route::get('payment/{invitation_key}/{payment_type?}', 'PaymentController@show_payment');
     Route::post('payment/{invitation_key}', 'PaymentController@do_payment');
     Route::get('complete', 'PaymentController@offsite_payment');
-    Route::get('client/quotes', 'PublicClientController@quoteIndex');
-    Route::get('client/invoices', 'PublicClientController@invoiceIndex');
-    Route::get('client/payments', 'PublicClientController@paymentIndex');
-    Route::get('client/dashboard', 'PublicClientController@dashboard');
+    Route::get('relation/quotes', 'PublicRelationController@quoteIndex');
+    Route::get('relation/invoices', 'PublicRelationController@invoiceIndex');
+    Route::get('relation/payments', 'PublicRelationController@paymentIndex');
+    Route::get('relation/dashboard', 'PublicRelationController@dashboard');
 });
 
-Route::get('api/client.quotes', array('as'=>'api.client.quotes', 'uses'=>'PublicClientController@quoteDatatable'));
-Route::get('api/client.invoices', array('as'=>'api.client.invoices', 'uses'=>'PublicClientController@invoiceDatatable'));
-Route::get('api/client.payments', array('as'=>'api.client.payments', 'uses'=>'PublicClientController@paymentDatatable'));
-Route::get('api/client.activity', array('as'=>'api.client.activity', 'uses'=>'PublicClientController@activityDatatable'));
+Route::get('api/relation.quotes', array('as'=>'api.relation.quotes', 'uses'=>'PublicRelationController@quoteDatatable'));
+Route::get('api/relation.invoices', array('as'=>'api.relation.invoices', 'uses'=>'PublicRelationController@invoiceDatatable'));
+Route::get('api/relation.payments', array('as'=>'api.relation.payments', 'uses'=>'PublicRelationController@paymentDatatable'));
+Route::get('api/relation.activity', array('as'=>'api.relation.activity', 'uses'=>'PublicRelationController@activityDatatable'));
 
 Route::get('license', 'PaymentController@show_license_payment');
 Route::post('license', 'PaymentController@do_license_payment');
@@ -79,14 +79,14 @@ Route::get('/password/reset/{token}', array('as' => 'forgot', 'uses' => 'Auth\Pa
 Route::post('/password/reset', array('as' => 'forgot', 'uses' => 'Auth\PasswordController@postReset'));
 Route::get('/user/confirm/{code}', 'UserController@confirm');
 
-// Client auth
-Route::get('/client/login', array('as' => 'login', 'uses' => 'ClientAuth\AuthController@getLogin'));
-Route::post('/client/login', array('as' => 'login', 'uses' => 'ClientAuth\AuthController@postLogin'));
-Route::get('/client/logout', array('as' => 'logout', 'uses' => 'ClientAuth\AuthController@getLogout'));
-Route::get('/client/forgot', array('as' => 'forgot', 'uses' => 'ClientAuth\PasswordController@getEmail'));
-Route::post('/client/forgot', array('as' => 'forgot', 'uses' => 'ClientAuth\PasswordController@postEmail'));
-Route::get('/client/password/reset/{invitation_key}/{token}', array('as' => 'forgot', 'uses' => 'ClientAuth\PasswordController@getReset'));
-Route::post('/client/password/reset', array('as' => 'forgot', 'uses' => 'ClientAuth\PasswordController@postReset'));
+// Relation auth
+Route::get('/relation/login', array('as' => 'login', 'uses' => 'RelationAuth\AuthController@getLogin'));
+Route::post('/relation/login', array('as' => 'login', 'uses' => 'RelationAuth\AuthController@postLogin'));
+Route::get('/relation/logout', array('as' => 'logout', 'uses' => 'RelationAuth\AuthController@getLogout'));
+Route::get('/relation/forgot', array('as' => 'forgot', 'uses' => 'RelationAuth\PasswordController@getEmail'));
+Route::post('/relation/forgot', array('as' => 'forgot', 'uses' => 'RelationAuth\PasswordController@postEmail'));
+Route::get('/relation/password/reset/{invitation_key}/{token}', array('as' => 'forgot', 'uses' => 'RelationAuth\PasswordController@getReset'));
+Route::post('/relation/password/reset', array('as' => 'forgot', 'uses' => 'RelationAuth\PasswordController@postReset'));
 
 
 if (Utils::isNinja()) {
@@ -108,48 +108,48 @@ Route::group(['middleware' => 'auth:user'], function() {
     Route::get('settings/user_details', 'OrganisationController@showUserDetails');
     Route::post('settings/user_details', 'OrganisationController@saveUserDetails');
 
-    Route::resource('clients', 'ClientController');
-    Route::get('api/clients', array('as'=>'api.clients', 'uses'=>'ClientController@getDatatable'));
-    Route::get('api/activities/{client_id?}', array('as'=>'api.activities', 'uses'=>'ActivityController@getDatatable'));
-    Route::post('clients/bulk', 'ClientController@bulk');
+    Route::resource('relations', 'RelationController');
+    Route::get('api/relations', array('as'=>'api.relations', 'uses'=>'RelationController@getDatatable'));
+    Route::get('api/activities/{relation_id?}', array('as'=>'api.activities', 'uses'=>'ActivityController@getDatatable'));
+    Route::post('relations/bulk', 'RelationController@bulk');
 
     Route::resource('tasks', 'TaskController');
-    Route::get('api/tasks/{client_id?}', array('as'=>'api.tasks', 'uses'=>'TaskController@getDatatable'));
-    Route::get('tasks/create/{client_id?}', 'TaskController@create');
+    Route::get('api/tasks/{relation_id?}', array('as'=>'api.tasks', 'uses'=>'TaskController@getDatatable'));
+    Route::get('tasks/create/{relation_id?}', 'TaskController@create');
     Route::post('tasks/bulk', 'TaskController@bulk');
 
-    Route::get('api/recurring_invoices/{client_id?}', array('as'=>'api.recurring_invoices', 'uses'=>'InvoiceController@getRecurringDatatable'));
+    Route::get('api/recurring_invoices/{relation_id?}', array('as'=>'api.recurring_invoices', 'uses'=>'InvoiceController@getRecurringDatatable'));
 
     Route::get('invoices/invoice_history/{invoice_id}', 'InvoiceController@invoiceHistory');
     Route::get('quotes/quote_history/{invoice_id}', 'InvoiceController@invoiceHistory');
 
     Route::resource('invoices', 'InvoiceController');
-    Route::get('api/invoices/{client_id?}', array('as'=>'api.invoices', 'uses'=>'InvoiceController@getDatatable'));
-    Route::get('invoices/create/{client_id?}', 'InvoiceController@create');
-    Route::get('recurring_invoices/create/{client_id?}', 'InvoiceController@createRecurring');
+    Route::get('api/invoices/{relation_id?}', array('as'=>'api.invoices', 'uses'=>'InvoiceController@getDatatable'));
+    Route::get('invoices/create/{relation_id?}', 'InvoiceController@create');
+    Route::get('recurring_invoices/create/{relation_id?}', 'InvoiceController@createRecurring');
     Route::get('recurring_invoices', 'RecurringInvoiceController@index');
     Route::get('invoices/{public_id}/clone', 'InvoiceController@cloneInvoice');
     Route::post('invoices/bulk', 'InvoiceController@bulk');
     Route::post('recurring_invoices/bulk', 'InvoiceController@bulk');
 
-    Route::get('quotes/create/{client_id?}', 'QuoteController@create');
+    Route::get('quotes/create/{relation_id?}', 'QuoteController@create');
     Route::get('quotes/{public_id}/clone', 'InvoiceController@cloneInvoice');
     Route::get('quotes/{public_id}/edit', 'InvoiceController@edit');
     Route::put('quotes/{public_id}', 'InvoiceController@update');
     Route::get('quotes/{public_id}', 'InvoiceController@edit');
     Route::post('quotes', 'InvoiceController@store');
     Route::get('quotes', 'QuoteController@index');
-    Route::get('api/quotes/{client_id?}', array('as'=>'api.quotes', 'uses'=>'QuoteController@getDatatable'));
+    Route::get('api/quotes/{relation_id?}', array('as'=>'api.quotes', 'uses'=>'QuoteController@getDatatable'));
     Route::post('quotes/bulk', 'QuoteController@bulk');
 
     Route::resource('payments', 'PaymentController');
-    Route::get('payments/create/{client_id?}/{invoice_id?}', 'PaymentController@create');
-    Route::get('api/payments/{client_id?}', array('as'=>'api.payments', 'uses'=>'PaymentController@getDatatable'));
+    Route::get('payments/create/{relation_id?}/{invoice_id?}', 'PaymentController@create');
+    Route::get('api/payments/{relation_id?}', array('as'=>'api.payments', 'uses'=>'PaymentController@getDatatable'));
     Route::post('payments/bulk', 'PaymentController@bulk');
 
     Route::resource('credits', 'CreditController');
-    Route::get('credits/create/{client_id?}/{invoice_id?}', 'CreditController@create');
-    Route::get('api/credits/{client_id?}', array('as'=>'api.credits', 'uses'=>'CreditController@getDatatable'));
+    Route::get('credits/create/{relation_id?}/{invoice_id?}', 'CreditController@create');
+    Route::get('api/credits/{relation_id?}', array('as'=>'api.credits', 'uses'=>'CreditController@getDatatable'));
     Route::post('credits/bulk', 'CreditController@bulk');
 
     Route::get('/resend_confirmation', 'OrganisationController@resendConfirmation');
@@ -163,7 +163,7 @@ Route::group(['middleware' => 'auth:user'], function() {
 
     // Expense
     Route::resource('expenses', 'ExpenseController');
-    Route::get('expenses/create/{vendor_id?}/{client_id?}', 'ExpenseController@create');
+    Route::get('expenses/create/{vendor_id?}/{relation_id?}', 'ExpenseController@create');
     Route::get('api/expense', array('as'=>'api.expenses', 'uses'=>'ExpenseController@getDatatable'));
     Route::get('api/expenseVendor/{id}', array('as'=>'api.expense', 'uses'=>'ExpenseController@getDatatableVendor'));
     Route::post('expenses/bulk', 'ExpenseController@bulk');
@@ -233,13 +233,13 @@ Route::group([
 // Route groups for API
 Route::group(['middleware' => 'api', 'prefix' => 'api/v1'], function()
 {
-    Route::get('ping', 'ClientApiController@ping');
+    Route::get('ping', 'RelationApiController@ping');
     Route::post('login', 'OrganisationApiController@login');
     Route::post('register', 'OrganisationApiController@register');
     Route::get('static', 'OrganisationApiController@getStaticData');
     Route::get('organisations', 'OrganisationApiController@show');
     Route::put('organisations', 'OrganisationApiController@update');
-    Route::resource('clients', 'ClientApiController');
+    Route::resource('relations', 'RelationApiController');
     Route::get('quotes', 'QuoteApiController@index');
     Route::resource('quotes', 'QuoteApiController');
     Route::get('invoices', 'InvoiceApiController@index');
@@ -306,7 +306,7 @@ if (!defined('CONTACT_EMAIL')) {
 
     define('RECENTLY_VIEWED', 'RECENTLY_VIEWED');
 
-    define('ENTITY_CLIENT', 'client');
+    define('ENTITY_RELATION', 'relation');
     define('ENTITY_CONTACT', 'contact');
     define('ENTITY_INVOICE', 'invoice');
     define('ENTITY_INVOICE_ITEMS', 'invoice_items');
@@ -352,7 +352,7 @@ if (!defined('CONTACT_EMAIL')) {
     define('ORGANISATION_ADVANCED_SETTINGS', 'advanced_settings');
     define('ORGANISATION_INVOICE_SETTINGS', 'invoice_settings');
     define('ORGANISATION_INVOICE_DESIGN', 'invoice_design');
-    define('ORGANISATION_CLIENT_PORTAL', 'client_portal');
+    define('ORGANISATION_RELATION_PORTAL', 'relation_portal');
     define('ORGANISATION_EMAIL_SETTINGS', 'email_settings');
     define('ORGANISATION_CHARTS_AND_REPORTS', 'charts_and_reports');
     define('ORGANISATION_USER_MANAGEMENT', 'user_management');
@@ -368,9 +368,9 @@ if (!defined('CONTACT_EMAIL')) {
     define('ACTION_CONVERT', 'convert');
     define('ACTION_DELETE', 'delete');
 
-    define('ACTIVITY_TYPE_CREATE_CLIENT', 1);
-    define('ACTIVITY_TYPE_ARCHIVE_CLIENT', 2);
-    define('ACTIVITY_TYPE_DELETE_CLIENT', 3);
+    define('ACTIVITY_TYPE_CREATE_RELATION', 1);
+    define('ACTIVITY_TYPE_ARCHIVE_RELATION', 2);
+    define('ACTIVITY_TYPE_DELETE_RELATION', 3);
 
     define('ACTIVITY_TYPE_CREATE_INVOICE', 4);
     define('ACTIVITY_TYPE_UPDATE_INVOICE', 5);
@@ -398,7 +398,7 @@ if (!defined('CONTACT_EMAIL')) {
 
     define('ACTIVITY_TYPE_RESTORE_QUOTE', 24);
     define('ACTIVITY_TYPE_RESTORE_INVOICE', 25);
-    define('ACTIVITY_TYPE_RESTORE_CLIENT', 26);
+    define('ACTIVITY_TYPE_RESTORE_RELATION', 26);
     define('ACTIVITY_TYPE_RESTORE_PAYMENT', 27);
     define('ACTIVITY_TYPE_RESTORE_CREDIT', 28);
     define('ACTIVITY_TYPE_APPROVE_QUOTE', 29);
@@ -439,9 +439,9 @@ if (!defined('CONTACT_EMAIL')) {
     define('IMPORT_INVOICEABLE', 'Invoiceable');
     define('IMPORT_HARVEST', 'Harvest');
 
-    define('MAX_NUM_CLIENTS', 100);
-    define('MAX_NUM_CLIENTS_PRO', 20000);
-    define('MAX_NUM_CLIENTS_LEGACY', 500);
+    define('MAX_NUM_RELATIONS', 100);
+    define('MAX_NUM_RELATIONS_PRO', 20000);
+    define('MAX_NUM_RELATIONS_LEGACY', 500);
     define('MAX_INVOICE_AMOUNT', 1000000000);
     define('LEGACY_CUTOFF', 57800);
     define('ERROR_DELAY', 3);
@@ -520,7 +520,7 @@ if (!defined('CONTACT_EMAIL')) {
     define('GATEWAY_DWOLLA', 43);
     define('GATEWAY_CHECKOUT_COM', 47);
 
-    define('EVENT_CREATE_CLIENT', 1);
+    define('EVENT_CREATE_RELATION', 1);
     define('EVENT_CREATE_INVOICE', 2);
     define('EVENT_CREATE_QUOTE', 3);
     define('EVENT_CREATE_PAYMENT', 4);

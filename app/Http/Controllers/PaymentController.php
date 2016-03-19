@@ -14,7 +14,7 @@ use URL;
 use Cache;
 use App\Models\Invoice;
 use App\Models\Invitation;
-use App\Models\Client;
+use App\Models\Relation;
 use App\Models\PaymentType;
 use App\Models\License;
 use App\Models\Payment;
@@ -52,7 +52,7 @@ class PaymentController extends BaseController
             'columns' => Utils::trans([
               'checkbox',
               'invoice',
-              'client',
+              'relation',
               'transaction_reference',
               'method',
               'payment_amount',
@@ -62,12 +62,12 @@ class PaymentController extends BaseController
         ));
     }
 
-    public function getDatatable($clientPublicId = null)
+    public function getDatatable($relationPublicId = null)
     {
-        return $this->paymentService->getDatatable($clientPublicId, Input::get('sSearch'));
+        return $this->paymentService->getDatatable($relationPublicId, Input::get('sSearch'));
     }
 
-    public function create($clientPublicId = 0, $invoicePublicId = 0)
+    public function create($relationPublicId = 0, $invoicePublicId = 0)
     {
         if(!$this->checkCreatePermission($response)){
             return $response;
@@ -77,11 +77,11 @@ class PaymentController extends BaseController
                     ->where('is_recurring', '=', false)
                     ->where('is_quote', '=', false)
                     ->where('invoices.balance', '>', 0)
-                    ->with('client', 'invoice_status')
+                    ->with('relation', 'invoice_status')
                     ->orderBy('invoice_number')->get();
 
         $data = array(
-            'clientPublicId' => Input::old('client') ? Input::old('client') : $clientPublicId,
+            'relationPublicId' => Input::old('relation') ? Input::old('relation') : $relationPublicId,
             'invoicePublicId' => Input::old('invoice') ? Input::old('invoice') : $invoicePublicId,
             'invoice' => null,
             'invoices' => $invoices,
@@ -91,7 +91,7 @@ class PaymentController extends BaseController
             'title' => trans('texts.new_payment'),
             'paymentTypes' => Cache::get('paymentTypes'),
             'paymentTypeId' => Input::get('paymentTypeId'),
-            'clients' => Client::scope()->with('contacts')->orderBy('name')->get(), );
+            'relations' => Relation::scope()->with('contacts')->orderBy('name')->get(), );
 
         return View::make('payments.edit', $data);
     }
@@ -107,16 +107,16 @@ class PaymentController extends BaseController
         $payment->payment_date = Utils::fromSqlDate($payment->payment_date);
 
         $data = array(
-            'client' => null,
+            'relation' => null,
             'invoice' => null,
             'invoices' => Invoice::scope()->where('is_recurring', '=', false)->where('is_quote', '=', false)
-                            ->with('client', 'invoice_status')->orderBy('invoice_number')->get(),
+                            ->with('relation', 'invoice_status')->orderBy('invoice_number')->get(),
             'payment' => $payment,
             'method' => 'PUT',
             'url' => 'payments/'.$publicId,
             'title' => trans('texts.edit_payment'),
             'paymentTypes' => Cache::get('paymentTypes'),
-            'clients' => Client::scope()->with('contacts')->orderBy('name')->get(), );
+            'relations' => Relation::scope()->with('contacts')->orderBy('name')->get(), );
 
         return View::make('payments.edit', $data);
     }
@@ -138,10 +138,10 @@ class PaymentController extends BaseController
     public function show_payment($invitationKey, $paymentType = false)
     {
 
-        $invitation = Invitation::with('invoice.invoice_items', 'invoice.client.currency', 'invoice.client.organisation.organisation_gateways.gateway')->where('invitation_key', '=', $invitationKey)->firstOrFail();
+        $invitation = Invitation::with('invoice.invoice_items', 'invoice.relation.currency', 'invoice.relation.organisation.organisation_gateways.gateway')->where('invitation_key', '=', $invitationKey)->firstOrFail();
         $invoice = $invitation->invoice;
-        $client = $invoice->client;
-        $organisation = $client->organisation;
+        $relation = $invoice->relation;
+        $organisation = $relation->organisation;
         $useToken = false;
 
         if ($paymentType) {
@@ -157,7 +157,7 @@ class PaymentController extends BaseController
         }
         Session::put($invitation->id . 'payment_type', $paymentType);
 
-        $OrganisationGateway = $invoice->client->organisation->getGatewayByType($paymentType);
+        $OrganisationGateway = $invoice->relation->organisation->getGatewayByType($paymentType);
         $gateway = $OrganisationGateway->gateway;
 
         $acceptedCreditCardTypes = $OrganisationGateway->getCreditcardTypes();
@@ -182,19 +182,19 @@ class PaymentController extends BaseController
             'url' => 'payment/'.$invitationKey,
             'amount' => $invoice->getRequestedAmount(),
             'invoiceNumber' => $invoice->invoice_number,
-            'client' => $client,
+            'relation' => $relation,
             'contact' => $invitation->contact,
             'gateway' => $gateway,
             'OrganisationGateway' => $OrganisationGateway,
             'acceptedCreditCardTypes' => $acceptedCreditCardTypes,
             'countries' => Cache::get('countries'),
-            'currencyId' => $client->getCurrencyId(),
-            'currencyCode' => $client->currency ? $client->currency->code : ($organisation->currency ? $organisation->currency->code : 'USD'),
-            'organisation' => $client->organisation,
+            'currencyId' => $relation->getCurrencyId(),
+            'currencyCode' => $relation->currency ? $relation->currency->code : ($organisation->currency ? $organisation->currency->code : 'USD'),
+            'organisation' => $relation->organisation,
             'hideLogo' => $organisation->isWhiteLabel(),
             'hideHeader' => $organisation->isNinjaOrganisation(),
-            'clientViewCSS' => $organisation->clientViewCSS(),
-            'clientFontUrl' => $organisation->getFontsUrl(),
+            'relationViewCSS' => $organisation->relationViewCSS(),
+            'relationFontUrl' => $organisation->getFontsUrl(),
             'showAddress' => $OrganisationGateway->show_address,
         ];
 
@@ -240,7 +240,7 @@ class PaymentController extends BaseController
             'hideHeader' => true,
             'url' => 'license',
             'amount' => $affiliate->price,
-            'client' => false,
+            'relation' => false,
             'contact' => false,
             'gateway' => $gateway,
             'organisation' => $organisation,
@@ -363,10 +363,10 @@ class PaymentController extends BaseController
 
     public function do_payment($invitationKey, $onSite = true, $useToken = false)
     {
-        $invitation = Invitation::with('invoice.invoice_items', 'invoice.client.currency', 'invoice.client.organisation.currency', 'invoice.client.organisation.organisation_gateways.gateway')->where('invitation_key', '=', $invitationKey)->firstOrFail();
+        $invitation = Invitation::with('invoice.invoice_items', 'invoice.relation.currency', 'invoice.relation.organisation.currency', 'invoice.relation.organisation.organisation_gateways.gateway')->where('invitation_key', '=', $invitationKey)->firstOrFail();
         $invoice = $invitation->invoice;
-        $client = $invoice->client;
-        $organisation = $client->organisation;
+        $relation = $invoice->relation;
+        $organisation = $relation->organisation;
         $OrganisationGateway = $organisation->getGatewayByType(Session::get($invitation->id . 'payment_type'));
 
 
@@ -407,18 +407,18 @@ class PaymentController extends BaseController
             }
 
             if ($OrganisationGateway->update_address) {
-                $client->address1 = trim(Input::get('address1'));
-                $client->housenumber = trim(Input::get('housenumber'));
-                $client->city = trim(Input::get('city'));
-                $client->state = trim(Input::get('state'));
-                $client->postal_code = trim(Input::get('postal_code'));
-                $client->country_id = Input::get('country_id');
-                $client->save();
+                $relation->address1 = trim(Input::get('address1'));
+                $relation->housenumber = trim(Input::get('housenumber'));
+                $relation->city = trim(Input::get('city'));
+                $relation->state = trim(Input::get('state'));
+                $relation->postal_code = trim(Input::get('postal_code'));
+                $relation->country_id = Input::get('country_id');
+                $relation->save();
             }
         }
 
         try {
-            // For offsite payments send the client's details on file
+            // For offsite payments send the relation's details on file
             // If we're using a token then we don't need to send any other data
             if (!$onSite || $useToken) {
                 $data = false;
@@ -437,9 +437,9 @@ class PaymentController extends BaseController
                 }
 
                 if ($useToken) {
-                    $details['customerReference'] = $client->getGatewayToken();
+                    $details['customerReference'] = $relation->getGatewayToken();
                 } elseif ($organisation->token_billing_type_id == TOKEN_BILLING_ALWAYS || Input::get('token_billing')) {
-                    $token = $this->paymentService->createToken($gateway, $details, $OrganisationGateway, $client, $invitation->contact_id);
+                    $token = $this->paymentService->createToken($gateway, $details, $OrganisationGateway, $relation, $invitation->contact_id);
                     if ($token) {
                         $details['customerReference'] = $token;
                     } else {
@@ -522,10 +522,10 @@ class PaymentController extends BaseController
             return redirect(NINJA_WEB_URL);
         }
 
-        $invitation = Invitation::with('invoice.client.currency', 'invoice.client.organisation.organisation_gateways.gateway')->where('transaction_reference', '=', $token)->firstOrFail();
+        $invitation = Invitation::with('invoice.relation.currency', 'invoice.relation.organisation.organisation_gateways.gateway')->where('transaction_reference', '=', $token)->firstOrFail();
         $invoice = $invitation->invoice;
-        $client = $invoice->client;
-        $organisation = $client->organisation;
+        $relation = $invoice->relation;
+        $organisation = $relation->organisation;
 
         if ($payerId) {
             $paymentType = PAYMENT_TYPE_PAYPAL;
@@ -591,17 +591,17 @@ class PaymentController extends BaseController
         }
         
         $input['invoice_id'] = Invoice::getPrivateId($input['invoice']);
-        $input['client_id'] = Client::getPrivateId($input['client']);
+        $input['relation_id'] = Relation::getPrivateId($input['relation']);
         $payment = $this->paymentRepo->save($input);
 
         if (Input::get('email_receipt')) {
             $this->contactMailer->sendPaymentConfirmation($payment);
-            Session::flash('message', trans('texts.created_payment_emailed_client'));
+            Session::flash('message', trans('texts.created_payment_emailed_relation'));
         } else {
             Session::flash('message', trans('texts.created_payment'));
         }
 
-        return redirect()->to($payment->client->getRoute());
+        return redirect()->to($payment->relation->getRoute());
     }
 
     public function update(UpdatePaymentRequest $request)

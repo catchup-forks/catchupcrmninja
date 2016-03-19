@@ -4,7 +4,7 @@ use Utils;
 use URL;
 use Auth;
 use App\Services\BaseService;
-use App\Models\Client;
+use App\Models\Relation;
 use App\Models\Payment;
 use App\Ninja\Repositories\CreditRepository;
 
@@ -30,30 +30,30 @@ class CreditService extends BaseService
         return $this->creditRepo->save($data);
     }
 
-    public function getDatatable($clientPublicId, $search)
+    public function getDatatable($relationPublicId, $search)
     {
-        $query = $this->creditRepo->find($clientPublicId, $search);
+        $query = $this->creditRepo->find($relationPublicId, $search);
         
         if(!Utils::hasPermission('view_all')){
             $query->where('credits.user_id', '=', Auth::user()->id);
         }
 
-        return $this->createDatatable(ENTITY_CREDIT, $query, !$clientPublicId);
+        return $this->createDatatable(ENTITY_CREDIT, $query, !$relationPublicId);
     }
 
-    protected function getDatatableColumns($entityType, $hideClient)
+    protected function getDatatableColumns($entityType, $hideRelation)
     {
         return [
             [
-                'client_name',
+                'relation_name',
                 function ($model) {
-                    if(!Client::canViewItemByOwner($model->client_user_id)){
-                        return Utils::getClientDisplayName($model);
+                    if(!Relation::canViewItemByOwner($model->relation_user_id)){
+                        return Utils::getRelationDisplayName($model);
                     }
                     
-                    return $model->client_public_id ? link_to("clients/{$model->client_public_id}", Utils::getClientDisplayName($model))->toHtml() : '';
+                    return $model->relation_public_id ? link_to("relations/{$model->relation_public_id}", Utils::getRelationDisplayName($model))->toHtml() : '';
                 },
-                ! $hideClient
+                ! $hideRelation
             ],
             [
                 'amount',
@@ -88,7 +88,7 @@ class CreditService extends BaseService
             [
                 trans('texts.apply_credit'),
                 function ($model) {
-                    return URL::to("payments/create/{$model->client_public_id}") . '?paymentTypeId=1';
+                    return URL::to("payments/create/{$model->relation_public_id}") . '?paymentTypeId=1';
                 },
                 function ($model) {
                     return Payment::canCreate();

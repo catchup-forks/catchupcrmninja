@@ -5,7 +5,7 @@ use App\Http\Requests\Request;
 use Illuminate\Validation\Factory;
 use App\Models\Invoice;
 
-class SaveInvoiceWithClientRequest extends Request
+class SaveInvoiceWithRelationRequest extends Request
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,7 +28,7 @@ class SaveInvoiceWithClientRequest extends Request
         $invoiceId = $publicId ? Invoice::getPrivateId($publicId) : '';
         
         $rules = [
-            'client.contacts' => 'valid_contacts',
+            'relation.contacts' => 'valid_contacts',
             'invoice_items' => 'valid_invoice_items',
             'invoice_number' => 'required|unique:invoices,invoice_number,'.$invoiceId.',id,organisation_id,'.Auth::user()->organisation_id,
             'discount' => 'positive',

@@ -4,9 +4,9 @@ use App\Models\Organisation;
 
 class NinjaRepository
 {
-    public function updateProPlanPaid($clientPublicId, $proPlanPaid)
+    public function updateProPlanPaid($relationPublicId, $proPlanPaid)
     {
-        $organisation = Organisation::whereId($clientPublicId)->first();
+        $organisation = Organisation::whereId($relationPublicId)->first();
 
         if (!$organisation) {
             return;

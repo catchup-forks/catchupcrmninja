@@ -7,8 +7,8 @@
 
 	{!! Former::open('/import_csv')->addClass('warn-on-exit') !!}
 
-    @if (isset($data[ENTITY_CLIENT]))
-        @include('organisations.partials.map', $data[ENTITY_CLIENT])
+    @if (isset($data[ENTITY_RELATION]))
+        @include('organisations.partials.map', $data[ENTITY_RELATION])
     @endif
 
     @if (isset($data[ENTITY_INVOICE]))

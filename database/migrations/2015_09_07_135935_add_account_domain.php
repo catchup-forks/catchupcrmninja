@@ -17,7 +17,7 @@ class AddOrganisationDomain extends Migration
             $table->unsignedInteger('referral_user_id')->nullable();
         });
 
-        Schema::table('clients', function ($table) {
+        Schema::table('relations', function ($table) {
             $table->unsignedInteger('language_id')->nullable();
             $table->foreign('language_id')->references('id')->on('languages');
         });
@@ -46,8 +46,8 @@ class AddOrganisationDomain extends Migration
             $table->dropColumn('referral_user_id');
         });
 
-        Schema::table('clients', function ($table) {
-            $table->dropForeign('clients_language_id_foreign');
+        Schema::table('relations', function ($table) {
+            $table->dropForeign('relations_language_id_foreign');
             $table->dropColumn('language_id');
         });
 

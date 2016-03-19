@@ -22,7 +22,7 @@ class RecurringInvoiceController extends BaseController
             'columns' => Utils::trans([
                 'checkbox',
                 'frequency',
-                'client',
+                'relation',
                 'start_date',
                 'end_date',
                 'invoice_total',

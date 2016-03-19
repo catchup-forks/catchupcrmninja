@@ -7,7 +7,7 @@ class PaymentTransformer extends BaseTransformer
 {
     public function transform($data, $maps)
     {
-        if ( ! $this->getInvoiceClientId($data->invoice_num)) {
+        if ( ! $this->getInvoiceRelationId($data->invoice_num)) {
             return false;
         }
         
@@ -15,7 +15,7 @@ class PaymentTransformer extends BaseTransformer
             return [
                 'amount' => (float) $data->amount,
                 'payment_date_sql' => $this->getDate($data->payment_date),
-                'client_id' => $this->getInvoiceClientId($data->invoice_num),
+                'relation_id' => $this->getInvoiceRelationId($data->invoice_num),
                 'invoice_id' => $this->getInvoiceId($data->invoice_num),
             ];
         });

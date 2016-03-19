@@ -3,11 +3,11 @@
 use App\Ninja\Import\BaseTransformer;
 use League\Fractal\Resource\Item;
 
-class ClientTransformer extends BaseTransformer
+class RelationTransformer extends BaseTransformer
 {
     public function transform($data)
     {
-        if (isset($data->name) && $this->hasClient($data->name)) {
+        if (isset($data->name) && $this->hasRelation($data->name)) {
             return false;
         }
 

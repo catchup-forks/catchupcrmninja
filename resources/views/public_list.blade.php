@@ -39,7 +39,7 @@
 
 		{!! Datatable::table()
 	    	->addColumn($columns)
-	    	->setUrl(route('api.client.' . $entityType . 's'))    	
+	    	->setUrl(route('api.relation.' . $entityType . 's'))
 	    	->setOptions('sPaginationType', 'bootstrap')
 	    	->render('datatable') !!}
 

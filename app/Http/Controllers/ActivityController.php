@@ -5,7 +5,7 @@ use DB;
 use Datatable;
 use Utils;
 use View;
-use App\Models\Client;
+use App\Models\Relation;
 use App\Models\Activity;
 use App\Services\ActivityService;
 
@@ -20,8 +20,8 @@ class ActivityController extends BaseController
         $this->activityService = $activityService;
     }
 
-    public function getDatatable($clientPublicId)
+    public function getDatatable($relationPublicId)
     {
-        return $this->activityService->getDatatable($clientPublicId);
+        return $this->activityService->getDatatable($relationPublicId);
     }
 }

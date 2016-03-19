@@ -36,7 +36,7 @@
             {!! Button::normal(trans('texts.recurring'))->asLinkTo(URL::to('/recurring_invoices'))->appendIcon(Icon::create('list')) !!}
         @elseif ($entityType == ENTITY_EXPENSE)
             {!! Button::normal(trans('texts.vendors'))->asLinkTo(URL::to('/vendors'))->appendIcon(Icon::create('list')) !!}
-        @elseif ($entityType == ENTITY_CLIENT)
+        @elseif ($entityType == ENTITY_RELATION)
             {!! Button::normal(trans('texts.credits'))->asLinkTo(URL::to('/credits'))->appendIcon(Icon::create('list')) !!}
         @endif
 

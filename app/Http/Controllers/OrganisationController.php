@@ -149,8 +149,8 @@ class OrganisationController extends BaseController
             return View::make('organisations.import_export', ['title' => trans('texts.import_export')]);
         } elseif ($section == ORGANISATION_INVOICE_DESIGN || $section == ORGANISATION_CUSTOMIZE_DESIGN) {
             return self::showInvoiceDesign($section);
-        } elseif ($section == ORGANISATION_CLIENT_PORTAL) {
-            return self::showClientPortal();
+        } elseif ($section == ORGANISATION_RELATION_PORTAL) {
+            return self::showRelationPortal();
         } elseif ($section === ORGANISATION_TEMPLATES_AND_REMINDERS) {
             return self::showTemplates();
         } elseif ($section === ORGANISATION_PRODUCTS) {
@@ -159,8 +159,11 @@ class OrganisationController extends BaseController
             return self::showTaxRates();
         } elseif ($section === ORGANISATION_PAYMENT_TERMS) {
             return self::showPaymentTerms();
+
+        /*
         } elseif ($section === ORGANISATION_SYSTEM_SETTINGS) {
             return self::showSystemSettings();
+            */
         } else {
             $data = [
                 'organisation' => Organisation::with('users')->findOrFail(Auth::user()->organisation_id),
@@ -172,6 +175,7 @@ class OrganisationController extends BaseController
         }
     }
 
+    /*
     private function showSystemSettings()
     {
         if (Utils::isNinjaProd()) {
@@ -186,6 +190,7 @@ class OrganisationController extends BaseController
 
         return View::make("organisations.system_settings", $data);
     }
+    */
 
     private function showInvoiceSettings()
     {
@@ -344,17 +349,17 @@ class OrganisationController extends BaseController
     {
         $organisation = Auth::user()->organisation->load('country');
         $invoice = new stdClass();
-        $client = new stdClass();
+        $relation = new stdClass();
         $contact = new stdClass();
         $invoiceItem = new stdClass();
 
-        $client->name = 'Sample Client';
-        $client->address1 = trans('texts.address1');
-        $client->city = trans('texts.city');
-        $client->state = trans('texts.state');
-        $client->postal_code = trans('texts.postal_code');
-        $client->work_phone = trans('texts.work_phone');
-        $client->work_email = trans('texts.work_id');
+        $relation->name = 'Sample Relation';
+        $relation->address1 = trans('texts.address1');
+        $relation->city = trans('texts.city');
+        $relation->state = trans('texts.state');
+        $relation->postal_code = trans('texts.postal_code');
+        $relation->work_phone = trans('texts.work_phone');
+        $relation->work_email = trans('texts.work_id');
         
         $invoice->invoice_number = '0000';
         $invoice->invoice_date = Utils::fromSqlDate(date('Y-m-d'));
@@ -365,14 +370,14 @@ class OrganisationController extends BaseController
         $invoice->invoice_footer = trim($organisation->invoice_footer);
 
         $contact->email = 'contact@gmail.com';
-        $client->contacts = [$contact];
+        $relation->contacts = [$contact];
 
         $invoiceItem->cost = 100;
         $invoiceItem->qty = 1;
         $invoiceItem->notes = 'Notes';
         $invoiceItem->product_key = 'Item';
 
-        $invoice->client = $client;
+        $invoice->relation = $relation;
         $invoice->invoice_items = [$invoiceItem];
 
         $data['organisation'] = $organisation;
@@ -396,7 +401,7 @@ class OrganisationController extends BaseController
 
             // sample invoice to help determine variables
             $invoice = Invoice::scope()
-                            ->with('client', 'organisation')
+                            ->with('relation', 'organisation')
                             ->where('is_quote', '=', false)
                             ->where('is_recurring', '=', false)
                             ->first();
@@ -405,7 +410,7 @@ class OrganisationController extends BaseController
                 $invoice->hidePrivateFields();
                 unset($invoice->organisation);
                 unset($invoice->invoice_items);
-                unset($invoice->client->contacts);
+                unset($invoice->relation->contacts);
                 $data['sampleInvoice'] = $invoice;
             }
         }
@@ -413,10 +418,10 @@ class OrganisationController extends BaseController
         return View::make("organisations.{$section}", $data);
     }
 
-    private function showClientPortal()
+    private function showRelationPortal()
     {
         $organisation = Auth::user()->organisation->load('country');
-        $css = $organisation->client_view_css ? $organisation->client_view_css : '';
+        $css = $organisation->relation_view_css ? $organisation->relation_view_css : '';
 
         if (Utils::isNinja() && $css) {
             // Unescape the CSS for display purposes
@@ -428,15 +433,15 @@ class OrganisationController extends BaseController
         }
 
         $data = [
-            'client_view_css' => $css,
+            'relation_view_css' => $css,
             'enable_portal_password' => $organisation->enable_portal_password,
             'send_portal_password' => $organisation->send_portal_password,
-            'title' => trans("texts.client_portal"),
-            'section' => ORGANISATION_CLIENT_PORTAL,
+            'title' => trans("texts.relation_portal"),
+            'section' => ORGANISATION_RELATION_PORTAL,
             'organisation' => $organisation,
         ];
 
-        return View::make("organisations.client_portal", $data);
+        return View::make("organisations.relation_portal", $data);
     }
 
     private function showTemplates()
@@ -479,8 +484,8 @@ class OrganisationController extends BaseController
             return OrganisationController::saveInvoiceDesign();
         } elseif ($section === ORGANISATION_CUSTOMIZE_DESIGN) {
             return OrganisationController::saveCustomizeDesign();
-        } elseif ($section === ORGANISATION_CLIENT_PORTAL) {
-            return OrganisationController::saveClientPortal();
+        } elseif ($section === ORGANISATION_RELATION_PORTAL) {
+            return OrganisationController::saveRelationPortal();
         } elseif ($section === ORGANISATION_TEMPLATES_AND_REMINDERS) {
             return OrganisationController::saveEmailTemplates();
         } elseif ($section === ORGANISATION_PRODUCTS) {
@@ -506,11 +511,11 @@ class OrganisationController extends BaseController
         return Redirect::to('settings/'.ORGANISATION_CUSTOMIZE_DESIGN);
     }
 
-    private function saveClientPortal()
+    private function saveRelationPortal()
     {
         // Only allowed for pro Invoice Ninja users or white labeled self-hosted users
         if ((Utils::isNinja() && Auth::user()->organisation->isPro()) || Auth::user()->organisation->isWhiteLabel()) {
-            $input_css = Input::get('client_view_css');
+            $input_css = Input::get('relation_view_css');
             if (Utils::isNinja()) {
                 // Allow referencing the body element
                 $input_css = preg_replace('/(?<![a-z0-9\-\_\#\.])body(?![a-z0-9\-\_])/i', '.body', $input_css);
@@ -543,9 +548,9 @@ class OrganisationController extends BaseController
             }
 
             $organisation = Auth::user()->organisation;
-            $organisation->client_view_css = $sanitized_css;
+            $organisation->relation_view_css = $sanitized_css;
 
-            $organisation->enable_client_portal = !!Input::get('enable_client_portal');
+            $organisation->enable_relation_portal = !!Input::get('enable_relation_portal');
             $organisation->enable_portal_password = !!Input::get('enable_portal_password');
             $organisation->send_portal_password = !!Input::get('send_portal_password');
 
@@ -554,7 +559,7 @@ class OrganisationController extends BaseController
             Session::flash('message', trans('texts.updated_settings'));
         }
 
-        return Redirect::to('settings/'.ORGANISATION_CLIENT_PORTAL);
+        return Redirect::to('settings/'.ORGANISATION_RELATION_PORTAL);
     }
 
     private function saveEmailTemplates()
@@ -681,8 +686,8 @@ class OrganisationController extends BaseController
                 $organisation->custom_value1 = trim(Input::get('custom_value1'));
                 $organisation->custom_label2 = trim(Input::get('custom_label2'));
                 $organisation->custom_value2 = trim(Input::get('custom_value2'));
-                $organisation->custom_client_label1 = trim(Input::get('custom_client_label1'));
-                $organisation->custom_client_label2 = trim(Input::get('custom_client_label2'));
+                $organisation->custom_relation_label1 = trim(Input::get('custom_relation_label1'));
+                $organisation->custom_relation_label2 = trim(Input::get('custom_relation_label2'));
                 $organisation->custom_invoice_label1 = trim(Input::get('custom_invoice_label1'));
                 $organisation->custom_invoice_label2 = trim(Input::get('custom_invoice_label2'));
                 $organisation->custom_invoice_taxes1 = Input::get('custom_invoice_taxes1') ? true : false;

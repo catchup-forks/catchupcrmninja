@@ -19,11 +19,11 @@ class Authenticate {
 	{
 		$authenticated = Auth::guard($guard)->check();
 		
-		if($guard == 'client' && !empty($request->invitation_key)){
+		if($guard == 'relation' && !empty($request->invitation_key)){
 			$old_key = session('invitation_key');
 			if($old_key && $old_key != $request->invitation_key){
 				if($this->getInvitationContactId($old_key) != $this->getInvitationContactId($request->invitation_key)){
-					// This is a different client; reauthenticate
+					// This is a different relation; reauthenticate
 					$authenticated = false;
 					Auth::guard($guard)->logout();
 				}
@@ -31,12 +31,12 @@ class Authenticate {
 			Session::put('invitation_key', $request->invitation_key);					
 		}
 		
-		if($guard=='client'){
+		if($guard=='relation'){
 			$invitation_key = session('invitation_key');
 			$organisation_id = $this->getInvitationOrganisationId($invitation_key);
 			
 			if(Auth::guard('user')->check() && Auth::user('user')->organisation_id === $organisation_id){
-				// This is an admin; let them pretend to be a client
+				// This is an admin; let them pretend to be a relation
 				$authenticated = true;
 			}
 			
@@ -62,7 +62,7 @@ class Authenticate {
 			}
 			else
 			{
-				return redirect()->guest($guard=='client'?'/client/login':'/login');
+				return redirect()->guest($guard=='relation'?'/relation/login':'/login');
 			}
 		}
 

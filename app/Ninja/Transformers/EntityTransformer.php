@@ -1,7 +1,7 @@
 <?php namespace App\Ninja\Transformers;
 
 use App\Models\Organisation;
-use App\Models\Client;
+use App\Models\Relation;
 use League\Fractal\TransformerAbstract;
 
 class EntityTransformer extends TransformerAbstract

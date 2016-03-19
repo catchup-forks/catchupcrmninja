@@ -13,7 +13,7 @@ use App\Models\OrganisationGateway;
 use App\Models\Invitation;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
-use App\Models\Client;
+use App\Models\Relation;
 use App\Models\Language;
 use App\Models\Contact;
 use App\Models\Organisation;
@@ -82,70 +82,70 @@ class OrganisationRepository
     private function getOrganisationSearchData($organisation)
     {
         $data = [
-            'clients' => [],
+            'relations' => [],
             'contacts' => [],
             'invoices' => [],
             'quotes' => [],
         ];
 
-        // include custom client fields in search
-        if ($organisation->custom_client_label1) {
-            $data[$organisation->custom_client_label1] = [];
+        // include custom relation fields in search
+        if ($organisation->custom_relation_label1) {
+            $data[$organisation->custom_relation_label1] = [];
         }
-        if ($organisation->custom_client_label2) {
-            $data[$organisation->custom_client_label2] = [];
+        if ($organisation->custom_relation_label2) {
+            $data[$organisation->custom_relation_label2] = [];
         }
 
-        $clients = Client::scope()
+        $relations = Relation::scope()
                     ->with('contacts', 'invoices')
                     ->get();
 
-        foreach ($clients as $client) {
-            if ($client->name) {
-                $data['clients'][] = [
-                    'value' => $client->name,
-                    'tokens' => $client->name,
-                    'url' => $client->present()->url,
+        foreach ($relations as $relation) {
+            if ($relation->name) {
+                $data['relations'][] = [
+                    'value' => $relation->name,
+                    'tokens' => $relation->name,
+                    'url' => $relation->present()->url,
                 ];
             } 
 
-            if ($client->custom_value1) {
-                $data[$organisation->custom_client_label1][] = [
-                    'value' => "{$client->custom_value1}: " . $client->getDisplayName(),
-                    'tokens' => $client->custom_value1,
-                    'url' => $client->present()->url,                    
+            if ($relation->custom_value1) {
+                $data[$organisation->custom_relation_label1][] = [
+                    'value' => "{$relation->custom_value1}: " . $relation->getDisplayName(),
+                    'tokens' => $relation->custom_value1,
+                    'url' => $relation->present()->url,
                 ];
             }           
-            if ($client->custom_value2) {
-                $data[$organisation->custom_client_label2][] = [
-                    'value' => "{$client->custom_value2}: " . $client->getDisplayName(),
-                    'tokens' => $client->custom_value2,
-                    'url' => $client->present()->url,                    
+            if ($relation->custom_value2) {
+                $data[$organisation->custom_relation_label2][] = [
+                    'value' => "{$relation->custom_value2}: " . $relation->getDisplayName(),
+                    'tokens' => $relation->custom_value2,
+                    'url' => $relation->present()->url,
                 ];
             }
 
-            foreach ($client->contacts as $contact) {
+            foreach ($relation->contacts as $contact) {
                 if ($contact->getFullName()) {
                     $data['contacts'][] = [
                         'value' => $contact->getDisplayName(),
                         'tokens' => $contact->getDisplayName(),
-                        'url' => $client->present()->url,
+                        'url' => $relation->present()->url,
                     ];
                 }
                 if ($contact->email) {
                     $data['contacts'][] = [
                         'value' => $contact->email,
                         'tokens' => $contact->email,
-                        'url' => $client->present()->url,
+                        'url' => $relation->present()->url,
                     ];
                 }
             }
 
-            foreach ($client->invoices as $invoice) {
+            foreach ($relation->invoices as $invoice) {
                 $entityType = $invoice->getEntityType();
                 $data["{$entityType}s"][] = [
-                    'value' => $invoice->getDisplayName() . ': ' . $client->getDisplayName(),
-                    'tokens' => $invoice->getDisplayName() . ': ' . $client->getDisplayName(),
+                    'value' => $invoice->getDisplayName() . ': ' . $relation->getDisplayName(),
+                    'tokens' => $invoice->getDisplayName() . ': ' . $relation->getDisplayName(),
                     'url' => $invoice->present()->url,
                 ];
             }
@@ -158,7 +158,7 @@ class OrganisationRepository
     {
         $entityTypes = [
             ENTITY_INVOICE,
-            ENTITY_CLIENT,
+            ENTITY_RELATION,
             ENTITY_QUOTE,
             ENTITY_TASK,
             ENTITY_EXPENSE,
@@ -212,13 +212,13 @@ class OrganisationRepository
         }
         
         $organisation = Auth::user()->organisation;
-        $client = $this->getNinjaClient($organisation);
-        $invitation = $this->createNinjaInvoice($client, $organisation);
+        $relation = $this->getNinjaRelation($organisation);
+        $invitation = $this->createNinjaInvoice($relation, $organisation);
 
         return $invitation;
     }
 
-    public function createNinjaInvoice($client, $clientOrganisation)
+    public function createNinjaInvoice($relation, $relationOrganisation)
     {
         $organisation = $this->getNinjaAccount();
         $lastInvoice = Invoice::withTrashed()->whereOrganisationId($organisation->id)->orderBy('public_id', 'DESC')->first();
@@ -227,9 +227,9 @@ class OrganisationRepository
         $invoice->organisation_id = $organisation->id;
         $invoice->user_id = $organisation->users()->first()->id;
         $invoice->public_id = $publicId;
-        $invoice->client_id = $client->id;
+        $invoice->relation_id = $relation->id;
         $invoice->invoice_number = $organisation->getNextInvoiceNumber($invoice);
-        $invoice->invoice_date = $clientOrganisation->getRenewalDate();
+        $invoice->invoice_date = $relationOrganisation->getRenewalDate();
         $invoice->amount = PRO_PLAN_PRICE;
         $invoice->balance = PRO_PLAN_PRICE;
         $invoice->save();
@@ -249,7 +249,7 @@ class OrganisationRepository
         $invitation->user_id = $organisation->users()->first()->id;
         $invitation->public_id = $publicId;
         $invitation->invoice_id = $invoice->id;
-        $invitation->contact_id = $client->contacts()->first()->id;
+        $invitation->contact_id = $relation->contacts()->first()->id;
         $invitation->invitation_key = str_random(RANDOM_KEY_LENGTH);
         $invitation->save();
 
@@ -294,21 +294,21 @@ class OrganisationRepository
         return $organisation;
     }
 
-    public function getNinjaClient($organisation)
+    public function getNinjaRelation($organisation)
     {
         $organisation->load('users');
         $ninjaOrganisation = $this->getNinjaAccount();
-        $client = Client::whereOrganisationId($ninjaOrganisation->id)->wherePublicId($organisation->id)->first();
+        $relation = Relation::whereOrganisationId($ninjaOrganisation->id)->wherePublicId($organisation->id)->first();
 
-        if (!$client) {
-            $client = new Client();
-            $client->public_id = $organisation->id;
-            $client->user_id = $ninjaOrganisation->users()->first()->id;
-            $client->currency_id = 1;
+        if (!$relation) {
+            $relation = new Relation();
+            $relation->public_id = $organisation->id;
+            $relation->user_id = $ninjaOrganisation->users()->first()->id;
+            $relation->currency_id = 1;
             foreach (['name', 'address1', 'housenumber', 'city', 'state', 'postal_code', 'country_id', 'work_phone', 'language_id'] as $field) {
-                $client->$field = $organisation->$field;
+                $relation->$field = $organisation->$field;
             }
-            $ninjaOrganisation->clients()->save($client);
+            $ninjaOrganisation->relations()->save($relation);
 
             $contact = new Contact();
             $contact->user_id = $ninjaOrganisation->users()->first()->id;
@@ -318,16 +318,16 @@ class OrganisationRepository
             foreach (['first_name', 'last_name', 'email', 'phone'] as $field) {
                 $contact->$field = $organisation->users()->first()->$field;
             }
-            $client->contacts()->save($contact);
+            $relation->contacts()->save($contact);
         }
 
-        return $client;
+        return $relation;
     }
 
     public function findByKey($key)
     {
         $organisation = Organisation::whereOrganisationKey($key)
-                    ->with('clients.invoices.invoice_items', 'clients.contacts')
+                    ->with('relations.invoices.invoice_items', 'relations.contacts')
                     ->firstOrFail();
 
         return $organisation;

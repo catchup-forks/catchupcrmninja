@@ -1,7 +1,7 @@
 <?php namespace App\Ninja\Transformers;
 
 use App\Models\Organisation;
-use App\Models\Client;
+use App\Models\Relation;
 use App\Models\Invoice;
 use League\Fractal;
 
@@ -15,7 +15,7 @@ class InvoiceTransformer extends EntityTransformer
     * @SWG\Property(property="id", type="integer", example=1, readOnly=true)
     * @SWG\Property(property="amount", type="float", example=10, readOnly=true)
     * @SWG\Property(property="balance", type="float", example=10, readOnly=true)
-    * @SWG\Property(property="client_id", type="integer", example=1)
+    * @SWG\Property(property="relation_id", type="integer", example=1)
     * @SWG\Property(property="invoice_number", type="string", example="0001")
     * @SWG\Property(property="invoice_status_id", type="integer", example=1)
     */
@@ -27,7 +27,7 @@ class InvoiceTransformer extends EntityTransformer
     protected $availableIncludes = [
         'invitations',
         'payments',
-        'client',
+        'relation',
         'expenses',
     ];
 
@@ -49,10 +49,10 @@ class InvoiceTransformer extends EntityTransformer
         return $this->includeCollection($invoice->payments, $transformer, ENTITY_PAYMENT);
     }
 
-    public function includeClient(Invoice $invoice)
+    public function includeRelation(Invoice $invoice)
     {
-        $transformer = new ClientTransformer($this->organisation, $this->serializer);
-        return $this->includeItem($invoice->client, $transformer, ENTITY_CLIENT);
+        $transformer = new RelationTransformer($this->organisation, $this->serializer);
+        return $this->includeItem($invoice->relation, $transformer, ENTITY_RELATION);
     }
 
     public function includeExpenses(Invoice $invoice)
@@ -68,7 +68,7 @@ class InvoiceTransformer extends EntityTransformer
             'id' => (int) $invoice->public_id,
             'amount' => (float) $invoice->amount,
             'balance' => (float) $invoice->balance,
-            'client_id' => (int) $invoice->client->public_id,
+            'relation_id' => (int) $invoice->relation->public_id,
             'invoice_status_id' => (int) $invoice->invoice_status_id,
             'updated_at' => $this->getTimestamp($invoice->updated_at),
             'archived_at' => $this->getTimestamp($invoice->deleted_at),

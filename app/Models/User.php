@@ -171,17 +171,17 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         }
     }
 
-    public function getMaxNumClients()
+    public function getMaxNumRelations()
     {
         if ($this->isPro() && ! $this->isTrial()) {
-            return MAX_NUM_CLIENTS_PRO;
+            return MAX_NUM_RELATIONS_PRO;
         }
 
         if ($this->id < LEGACY_CUTOFF) {
-            return MAX_NUM_CLIENTS_LEGACY;
+            return MAX_NUM_RELATIONS_LEGACY;
         }
 
-        return MAX_NUM_CLIENTS;
+        return MAX_NUM_RELATIONS;
     }
 
     public function getMaxNumVendors()

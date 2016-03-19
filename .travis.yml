@@ -66,7 +66,7 @@ script:
   - php ./vendor/codeception/codeception/codecept run --debug acceptance AllPagesCept.php
   - php ./vendor/codeception/codeception/codecept run --debug acceptance APICest.php
   - php ./vendor/codeception/codeception/codecept run --debug acceptance CheckBalanceCest.php
-  - php ./vendor/codeception/codeception/codecept run --debug acceptance ClientCest.php
+  - php ./vendor/codeception/codeception/codecept run --debug acceptance RelationCest.php
   - php ./vendor/codeception/codeception/codecept run --debug acceptance ExpenseCest.php
   - php ./vendor/codeception/codeception/codecept run --debug acceptance CreditCest.php
   - php ./vendor/codeception/codeception/codecept run --debug acceptance InvoiceCest.php
@@ -84,7 +84,7 @@ after_script:
   - cat .env
   - mysql -u root -e 'select * from organisations;' ninja
   - mysql -u root -e 'select * from organisation_gateways;' ninja
-  - mysql -u root -e 'select * from clients;' ninja
+  - mysql -u root -e 'select * from relations;' ninja
   - mysql -u root -e 'select * from invoices;' ninja
   - mysql -u root -e 'select * from invoice_items;' ninja
   - cat storage/logs/laravel.log

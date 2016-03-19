@@ -12,19 +12,19 @@ class EventServiceProvider extends ServiceProvider {
 	 */
 	protected $listen = [
     
-        // Clients
-        'App\Events\ClientWasCreated' => [
-            'App\Listeners\ActivityListener@createdClient',
-            'App\Listeners\SubscriptionListener@createdClient',
+        // Relations
+        'App\Events\RelationWasCreated' => [
+            'App\Listeners\ActivityListener@createdRelation',
+            'App\Listeners\SubscriptionListener@createdRelation',
         ],
-        'App\Events\ClientWasArchived' => [
-            'App\Listeners\ActivityListener@archivedClient',
+        'App\Events\RelationWasArchived' => [
+            'App\Listeners\ActivityListener@archivedRelation',
         ],
-        'App\Events\ClientWasDeleted' => [
-            'App\Listeners\ActivityListener@deletedClient',
+        'App\Events\RelationWasDeleted' => [
+            'App\Listeners\ActivityListener@deletedRelation',
         ],
-        'App\Events\ClientWasRestored' => [
-            'App\Listeners\ActivityListener@restoredClient',
+        'App\Events\RelationWasRestored' => [
+            'App\Listeners\ActivityListener@restoredRelation',
         ],
 
         // Invoices

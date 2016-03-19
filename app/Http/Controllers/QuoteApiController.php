@@ -40,15 +40,15 @@ class QuoteApiController extends BaseAPIController
     {
         $paginator = Invoice::scope();
         $invoices = Invoice::scope()
-                        ->with('client', 'invitations', 'user', 'invoice_items')
+                        ->with('relation', 'invitations', 'user', 'invoice_items')
                         ->where('invoices.is_quote', '=', true);
 
-        if ($clientPublicId = Input::get('client_id')) {
-            $filter = function($query) use ($clientPublicId) {
-                $query->where('public_id', '=', $clientPublicId);
+        if ($relationPublicId = Input::get('relation_id')) {
+            $filter = function($query) use ($relationPublicId) {
+                $query->where('public_id', '=', $relationPublicId);
             };
-            $invoices->whereHas('client', $filter);
-            $paginator->whereHas('client', $filter);
+            $invoices->whereHas('relation', $filter);
+            $paginator->whereHas('relation', $filter);
         }
 
         $invoices = $invoices->orderBy('created_at', 'desc')->paginate();

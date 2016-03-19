@@ -23,7 +23,7 @@ class ConfideSetupUsersTable extends Migration {
         Schema::dropIfExists('contacts');
         Schema::dropIfExists('invoices');
         Schema::dropIfExists('password_reminders');
-        Schema::dropIfExists('clients');
+        Schema::dropIfExists('relations');
         Schema::dropIfExists('users');
         Schema::dropIfExists('organisations');
         Schema::dropIfExists('currencies');        
@@ -226,7 +226,7 @@ class ConfideSetupUsersTable extends Migration {
             $t->string('token');
         });        
 
-        Schema::create('clients', function($t)
+        Schema::create('relations', function($t)
         {
             $t->increments('id');
             $t->unsignedInteger('user_id');
@@ -269,7 +269,7 @@ class ConfideSetupUsersTable extends Migration {
             $t->increments('id');
             $t->unsignedInteger('organisation_id');
             $t->unsignedInteger('user_id');
-            $t->unsignedInteger('client_id')->index();
+            $t->unsignedInteger('relation_id')->index();
             $t->timestamps();
             $t->softDeletes();
 
@@ -281,7 +281,7 @@ class ConfideSetupUsersTable extends Migration {
             $t->string('phone')->nullable();
             $t->timestamp('last_login')->nullable();            
 
-            $t->foreign('client_id')->references('id')->on('clients')->onDelete('cascade'); 
+            $t->foreign('relation_id')->references('id')->on('relations')->onDelete('cascade');
             $t->foreign('user_id')->references('id')->on('users')->onDelete('cascade');;
 
             $t->unsignedInteger('public_id')->nullable();
@@ -303,7 +303,7 @@ class ConfideSetupUsersTable extends Migration {
         Schema::create('invoices', function($t)
         {
             $t->increments('id');
-            $t->unsignedInteger('client_id')->index();
+            $t->unsignedInteger('relation_id')->index();
             $t->unsignedInteger('user_id');
             $t->unsignedInteger('organisation_id')->index();
             $t->unsignedInteger('invoice_status_id')->default(1);
@@ -331,7 +331,7 @@ class ConfideSetupUsersTable extends Migration {
             $t->decimal('amount', 13, 2);
             $t->decimal('balance', 13, 2);
         
-            $t->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
+            $t->foreign('relation_id')->references('id')->on('relations')->onDelete('cascade');
             $t->foreign('organisation_id')->references('id')->on('organisations')->onDelete('cascade');
             $t->foreign('user_id')->references('id')->on('users')->onDelete('cascade'); 
             $t->foreign('invoice_status_id')->references('id')->on('invoice_statuses');
@@ -436,7 +436,7 @@ class ConfideSetupUsersTable extends Migration {
             $t->increments('id');
             $t->unsignedInteger('invoice_id')->index();
             $t->unsignedInteger('organisation_id')->index();
-            $t->unsignedInteger('client_id')->index();
+            $t->unsignedInteger('relation_id')->index();
             $t->unsignedInteger('contact_id')->nullable();
             $t->unsignedInteger('invitation_id')->nullable();
             $t->unsignedInteger('user_id')->nullable();
@@ -453,7 +453,7 @@ class ConfideSetupUsersTable extends Migration {
 
             $t->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
             $t->foreign('organisation_id')->references('id')->on('organisations')->onDelete('cascade');
-            $t->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
+            $t->foreign('relation_id')->references('id')->on('relations')->onDelete('cascade');
             $t->foreign('contact_id')->references('id')->on('contacts')->onDelete('cascade');
             $t->foreign('account_gateway_id')->references('id')->on('organisation_gateways')->onDelete('cascade');
             $t->foreign('user_id')->references('id')->on('users')->onDelete('cascade');;
@@ -467,7 +467,7 @@ class ConfideSetupUsersTable extends Migration {
         {
             $t->increments('id');
             $t->unsignedInteger('organisation_id')->index();
-            $t->unsignedInteger('client_id')->index();
+            $t->unsignedInteger('relation_id')->index();
             $t->unsignedInteger('user_id');
             $t->timestamps();
             $t->softDeletes();
@@ -480,7 +480,7 @@ class ConfideSetupUsersTable extends Migration {
             $t->text('private_notes');
             
             $t->foreign('organisation_id')->references('id')->on('organisations')->onDelete('cascade');
-            $t->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
+            $t->foreign('relation_id')->references('id')->on('relations')->onDelete('cascade');
             $t->foreign('user_id')->references('id')->on('users')->onDelete('cascade');;
             
             $t->unsignedInteger('public_id')->index();
@@ -493,7 +493,7 @@ class ConfideSetupUsersTable extends Migration {
             $t->timestamps();
 
             $t->unsignedInteger('organisation_id');
-            $t->unsignedInteger('client_id');
+            $t->unsignedInteger('relation_id');
             $t->unsignedInteger('user_id');
             $t->unsignedInteger('contact_id')->nullable();
             $t->unsignedInteger('payment_id')->nullable();
@@ -508,7 +508,7 @@ class ConfideSetupUsersTable extends Migration {
             $t->decimal('balance', 13, 2)->nullable();
             
             $t->foreign('organisation_id')->references('id')->on('organisations')->onDelete('cascade');
-            $t->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
+            $t->foreign('relation_id')->references('id')->on('relations')->onDelete('cascade');
         });
     }
 
@@ -532,7 +532,7 @@ class ConfideSetupUsersTable extends Migration {
         Schema::dropIfExists('contacts');
         Schema::dropIfExists('invoices');
         Schema::dropIfExists('password_reminders');
-        Schema::dropIfExists('clients');
+        Schema::dropIfExists('relations');
         Schema::dropIfExists('users');
         Schema::dropIfExists('organisations');
         Schema::dropIfExists('currencies');        

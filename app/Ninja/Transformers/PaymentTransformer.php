@@ -3,7 +3,7 @@
 use App\Models\Organisation;
 use App\Models\Payment;
 use App\Models\Invoice;
-use App\Models\Client;
+use App\Models\Relation;
 use League\Fractal;
 use App\Ninja\Transformers\InvoiceTransformer;
 
@@ -21,7 +21,7 @@ class PaymentTransformer extends EntityTransformer
     protected $defaultIncludes = [];
 
     protected $availableIncludes = [
-        'client',
+        'relation',
         'invoice',
     ];
 
@@ -38,10 +38,10 @@ class PaymentTransformer extends EntityTransformer
         return $this->includeItem($payment->invoice, $transformer, 'invoice');
     }
 
-    public function includeClient(Payment $payment)
+    public function includeRelation(Payment $payment)
     {
-        $transformer = new ClientTransformer($this->organisation, $this->serializer);
-        return $this->includeItem($payment->client, $transformer, 'client');
+        $transformer = new RelationTransformer($this->organisation, $this->serializer);
+        return $this->includeItem($payment->relation, $transformer, 'relation');
     }
 
     public function transform(Payment $payment)

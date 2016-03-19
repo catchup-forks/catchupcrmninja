@@ -52,6 +52,8 @@ return array(
 
             "sPaginationType" => "full_numbers",
 
+            "pageLength" => 25,
+
             "bProcessing" => false
 
         ),

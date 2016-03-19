@@ -7,7 +7,7 @@ use League\Fractal\Manager;
 use League\Fractal\Resource\Item;
 use App\Ninja\Serializers\ArraySerializer;
 use App\Ninja\Transformers\OrganisationTransformer;
-use App\Models\Client;
+use App\Models\Relation;
 use App\Models\Contact;
 use App\Models\Credit;
 use App\Models\Task;
@@ -108,46 +108,46 @@ class ExportController extends BaseController
             'multiUser' => $organisation->users->count() > 1
         ];
         
-        if ($request->input(ENTITY_CLIENT)) {
-            $data['clients'] = Client::scope()
+        if ($request->input(ENTITY_RELATION)) {
+            $data['relations'] = Relation::scope()
                 ->with('user', 'contacts', 'country')
                 ->withArchived()
                 ->get();
 
             $data['contacts'] = Contact::scope()
-                ->with('user', 'client.contacts')
+                ->with('user', 'relation.contacts')
                 ->withTrashed()
                 ->get();
 
             $data['credits'] = Credit::scope()
-                ->with('user', 'client.contacts')
+                ->with('user', 'relation.contacts')
                 ->get();
         }
         
         if ($request->input(ENTITY_TASK)) {
             $data['tasks'] = Task::scope()
-                ->with('user', 'client.contacts')
+                ->with('user', 'relation.contacts')
                 ->withArchived()
                 ->get();
         }
         
         if ($request->input(ENTITY_INVOICE)) {
             $data['invoices'] = Invoice::scope()
-                ->with('user', 'client.contacts', 'invoice_status')
+                ->with('user', 'relation.contacts', 'invoice_status')
                 ->withArchived()
                 ->where('is_quote', '=', false)
                 ->where('is_recurring', '=', false)
                 ->get();
         
             $data['quotes'] = Invoice::scope()
-                ->with('user', 'client.contacts', 'invoice_status')
+                ->with('user', 'relation.contacts', 'invoice_status')
                 ->withArchived()
                 ->where('is_quote', '=', true)
                 ->where('is_recurring', '=', false)
                 ->get();
 
             $data['recurringInvoices'] = Invoice::scope()
-                ->with('user', 'client.contacts', 'invoice_status', 'frequency')
+                ->with('user', 'relation.contacts', 'invoice_status', 'frequency')
                 ->withArchived()
                 ->where('is_quote', '=', false)
                 ->where('is_recurring', '=', true)
@@ -157,13 +157,13 @@ class ExportController extends BaseController
         if ($request->input(ENTITY_PAYMENT)) {
             $data['payments'] = Payment::scope()
                 ->withArchived()
-                ->with('user', 'client.contacts', 'payment_type', 'invoice', 'account_gateway.gateway')
+                ->with('user', 'relation.contacts', 'payment_type', 'invoice', 'account_gateway.gateway')
                 ->get();
         }
 
         
         if ($request->input(ENTITY_VENDOR)) {
-            $data['clients'] = Vendor::scope()
+            $data['relations'] = Vendor::scope()
                 ->with('user', 'vendorcontacts', 'country')
                 ->withArchived()
                 ->get();
@@ -175,7 +175,7 @@ class ExportController extends BaseController
             
             /*
             $data['expenses'] = Credit::scope()
-                ->with('user', 'client.contacts')
+                ->with('user', 'relation.contacts')
                 ->get();
             */
         }

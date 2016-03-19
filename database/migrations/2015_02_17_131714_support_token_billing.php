@@ -23,7 +23,7 @@ class SupportTokenBilling extends Migration {
             $table->unsignedInteger('organisation_id');
             $table->unsignedInteger('contact_id');
             $table->unsignedInteger('account_gateway_id');
-            $table->unsignedInteger('client_id');
+            $table->unsignedInteger('relation_id');
             $table->string('token');
 
             $table->timestamps();
@@ -32,7 +32,7 @@ class SupportTokenBilling extends Migration {
             $table->foreign('organisation_id')->references('id')->on('organisations')->onDelete('cascade');
             $table->foreign('contact_id')->references('id')->on('contacts')->onDelete('cascade');
             $table->foreign('account_gateway_id')->references('id')->on('organisation_gateways')->onDelete('cascade');
-            $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
+            $table->foreign('relation_id')->references('id')->on('relations')->onDelete('cascade');
         });
 
         DB::table('organisations')->update(['token_billing_type_id' => TOKEN_BILLING_ALWAYS]);

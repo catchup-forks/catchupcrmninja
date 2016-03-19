@@ -17,7 +17,7 @@ class AddCompanyIdNumber extends Migration {
 			$table->string('id_number')->nullable();
 		});
         
-                Schema::table('clients', function($table)
+                Schema::table('relations', function($table)
 		{
 			$table->string('id_number')->nullable();
 		});
@@ -34,7 +34,7 @@ class AddCompanyIdNumber extends Migration {
 		{
 			$table->dropColumn('id_number');
 		});
-                Schema::table('clients', function($table)
+                Schema::table('relations', function($table)
 		{
 			$table->dropColumn('id_number');
 		});	

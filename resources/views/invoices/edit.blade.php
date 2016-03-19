@@ -42,7 +42,7 @@
             ->autocomplete('off')
             ->onsubmit('return onFormSubmit(event)')
             ->rules(array(
-        		'client' => 'required',
+        		'relation' => 'required',
                 'invoice_number' => 'required',
         		'product_key' => 'max:255'
         	)) !!}
@@ -60,28 +60,28 @@
 
     		@if ($invoice->id || $data)
 				<div class="form-group">
-					<label for="client" class="control-label col-lg-4 col-sm-4">{{ trans('texts.client') }}</label>
+					<label for="relation" class="control-label col-lg-4 col-sm-4">{{ trans('texts.relation') }}</label>
 					<div class="col-lg-8 col-sm-8">
-                        <h4><div data-bind="text: getClientDisplayName(ko.toJS(client()))"></div></h4>
+                        <h4><div data-bind="text: getRelationDisplayName(ko.toJS(relation()))"></div></h4>
                         
-                        @if($invoice->client->canView())
-                            @if ($invoice->client->canEdit())
-                                <a id="editClientLink" class="pointer" data-bind="click: $root.showClientForm">{{ trans('texts.edit_client') }}</a> |
+                        @if($invoice->relation->canView())
+                            @if ($invoice->relation->canEdit())
+                                <a id="editRelationLink" class="pointer" data-bind="click: $root.showRelationForm">{{ trans('texts.edit_relation') }}</a> |
                             @endif
-                            {!! link_to('/clients/'.$invoice->client->public_id, trans('texts.view_client'), ['target' => '_blank']) !!}
+                            {!! link_to('/relations/'.$invoice->relation->public_id, trans('texts.view_relation'), ['target' => '_blank']) !!}
                         @endif
 					</div>
 				</div>
 				<div style="display:none">
     		@endif
             
-            {!! Former::select('client')->addOption('', '')->data_bind("dropdown: client")->addClass('client-input')->addGroupClass('client_select closer-row') !!}
+            {!! Former::select('relation')->addOption('', '')->data_bind("dropdown: relation")->addClass('relation-input')->addGroupClass('relation_select closer-row') !!}
 
 			<div class="form-group" style="margin-bottom: 8px">
 				<div class="col-lg-8 col-sm-8 col-lg-offset-4 col-sm-offset-4">
-					<a id="createClientLink" class="pointer" data-bind="click: $root.showClientForm, html: $root.clientLinkText"></a>
-                    <span data-bind="visible: $root.invoice().client().public_id() > 0" style="display:none">|
-                        <a data-bind="attr: {href: '{{ url('/clients') }}/' + $root.invoice().client().public_id()}" target="_blank">{{ trans('texts.view_client') }}</a>
+					<a id="createRelationLink" class="pointer" data-bind="click: $root.showRelationForm, html: $root.relationLinkText"></a>
+                    <span data-bind="visible: $root.invoice().relation().public_id() > 0" style="display:none">|
+                        <a data-bind="attr: {href: '{{ url('/relations') }}/' + $root.invoice().relation().public_id()}" target="_blank">{{ trans('texts.view_relation') }}</a>
                     </span>
 				</div>
 			</div>
@@ -90,12 +90,12 @@
 				</div>
 			@endif
 
-			<div data-bind="with: client" class="invoice-contact">
+			<div data-bind="with: relation" class="invoice-contact">
 				<div style="display:none" class="form-group" data-bind="visible: contacts().length > 0 &amp;&amp; (contacts()[0].email() || contacts()[0].first_name()), foreach: contacts">
 					<div class="col-lg-8 col-lg-offset-4 col-sm-offset-4">
 						<label class="checkbox" data-bind="attr: {for: $index() + '_check'}" onclick="refreshPDF(true)">
-                            <input type="hidden" value="0" data-bind="attr: {name: 'client[contacts][' + $index() + '][send_invoice]'}">
-							<input type="checkbox" value="1" data-bind="checked: send_invoice, attr: {id: $index() + '_check', name: 'client[contacts][' + $index() + '][send_invoice]'}">
+                            <input type="hidden" value="0" data-bind="attr: {name: 'relation[contacts][' + $index() + '][send_invoice]'}">
+							<input type="checkbox" value="1" data-bind="checked: send_invoice, attr: {id: $index() + '_check', name: 'relation[contacts][' + $index() + '][send_invoice]'}">
 							<span data-bind="html: email.display"></span>
                         </label>
                         <span data-bind="visible: !$root.invoice().is_recurring()">
@@ -267,7 +267,7 @@
                     <div role="tabpanel">
 
                       <ul class="nav nav-tabs" role="tablist" style="border: none">
-                        <li role="presentation" class="active"><a href="#notes" aria-controls="notes" role="tab" data-toggle="tab">{{ trans('texts.note_to_client') }}</a></li>
+                        <li role="presentation" class="active"><a href="#notes" aria-controls="notes" role="tab" data-toggle="tab">{{ trans('texts.note_to_relation') }}</a></li>
                         <li role="presentation"><a href="#terms" aria-controls="terms" role="tab" data-toggle="tab">{{ trans("texts.{$entityType}_terms") }}</a></li>
                         <li role="presentation"><a href="#footer" aria-controls="footer" role="tab" data-toggle="tab">{{ trans("texts.{$entityType}_footer") }}</a></li>
                     </ul>
@@ -438,7 +438,7 @@
 
 		{!! Button::primary(trans('texts.download_pdf'))->withAttributes(array('onclick' => 'onDownloadClick()'))->appendIcon(Icon::create('download-alt')) !!}
 
-        @if ($invoice->isClientTrashed())
+        @if ($invoice->isRelationTrashed())
             <!-- do nothing -->
         @elseif ($invoice->trashed())
             {!! Button::success(trans('texts.restore'))->withAttributes(['onclick' => 'submitBulkAction("restore")'])->appendIcon(Icon::create('cloud-download')) !!}
@@ -463,54 +463,54 @@
 		</div>
 	@endif
 
-	<div class="modal fade" id="clientModal" tabindex="-1" role="dialog" aria-labelledby="clientModalLabel" aria-hidden="true">
+	<div class="modal fade" id="relationModal" tabindex="-1" role="dialog" aria-labelledby="relationModalLabel" aria-hidden="true">
 	  <div class="modal-dialog" data-bind="css: {'large-dialog': $root.showMore}">
 	    <div class="modal-content" style="background-color: #f8f8f8">
 	      <div class="modal-header">
 	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-	        <h4 class="modal-title" id="clientModalLabel">{{ trans('texts.client') }}</h4>
+	        <h4 class="modal-title" id="relationModalLabel">{{ trans('texts.relation') }}</h4>
 	      </div>
 
        <div class="container" style="width: 100%; padding-bottom: 0px !important">
        <div class="panel panel-default">
         <div class="panel-body">
 
-        <div class="row" data-bind="with: client" onkeypress="clientModalEnterClick(event)">
+        <div class="row" data-bind="with: relation" onkeypress="relationModalEnterClick(event)">
             <div style="margin-left:0px;margin-right:0px" data-bind="css: {'col-md-6': $root.showMore}">
 
-                {!! Former::hidden('client_public_id')->data_bind("value: public_id, valueUpdate: 'afterkeydown',
-                            attr: {name: 'client[public_id]'}") !!}
-                {!! Former::text('client[name]')
+                {!! Former::hidden('relation_public_id')->data_bind("value: public_id, valueUpdate: 'afterkeydown',
+                            attr: {name: 'relation[public_id]'}") !!}
+                {!! Former::text('relation[name]')
                     ->data_bind("value: name, valueUpdate: 'afterkeydown', attr { placeholder: name.placeholder }")
-                    ->label('client_name') !!}
+                    ->label('relation_name') !!}
 
                 <span data-bind="visible: $root.showMore">
 
-                    {!! Former::text('client[id_number]')
+                    {!! Former::text('relation[id_number]')
                             ->label('id_number')
                             ->data_bind("value: id_number, valueUpdate: 'afterkeydown'") !!}
-                    {!! Former::text('client[vat_number]')
+                    {!! Former::text('relation[vat_number]')
                             ->label('vat_number')
                             ->data_bind("value: vat_number, valueUpdate: 'afterkeydown'") !!}
 
-                    {!! Former::text('client[website]')
+                    {!! Former::text('relation[website]')
                             ->label('website')
                             ->data_bind("value: website, valueUpdate: 'afterkeydown'") !!}
-                    {!! Former::text('client[work_phone]')
+                    {!! Former::text('relation[work_phone]')
                             ->label('work_phone')
                             ->data_bind("value: work_phone, valueUpdate: 'afterkeydown'") !!}
 				
                 </span>
 
                 @if (Auth::user()->isPro())
-                    @if ($organisation->custom_client_label1)
-                        {!! Former::text('client[custom_value1]')
-                            ->label($organisation->custom_client_label1)
+                    @if ($organisation->custom_relation_label1)
+                        {!! Former::text('relation[custom_value1]')
+                            ->label($organisation->custom_relation_label1)
                             ->data_bind("value: custom_value1, valueUpdate: 'afterkeydown'") !!}
                     @endif
-                    @if ($organisation->custom_client_label2)
-                        {!! Former::text('client[custom_value2]')
-                            ->label($organisation->custom_client_label2)
+                    @if ($organisation->custom_relation_label2)
+                        {!! Former::text('relation[custom_value2]')
+                            ->label($organisation->custom_relation_label2)
                             ->data_bind("value: custom_value2, valueUpdate: 'afterkeydown'") !!}
                     @endif
                 @endif
@@ -518,22 +518,22 @@
                 <span data-bind="visible: $root.showMore">
                     &nbsp;
 
-                    {!! Former::text('client[address1]')
+                    {!! Former::text('relation[address1]')
                             ->label(trans('texts.address1'))
                             ->data_bind("value: address1, valueUpdate: 'afterkeydown'") !!}
-                    {!! Former::text('client[housenumber]')
+                    {!! Former::text('relation[housenumber]')
                             ->label(trans('texts.housenumber'))
                             ->data_bind("value: housenumber, valueUpdate: 'afterkeydown'") !!}
-                    {!! Former::text('client[city]')
+                    {!! Former::text('relation[city]')
                             ->label(trans('texts.city'))
                             ->data_bind("value: city, valueUpdate: 'afterkeydown'") !!}
-                    {!! Former::text('client[state]')
+                    {!! Former::text('relation[state]')
                             ->label(trans('texts.state'))
                             ->data_bind("value: state, valueUpdate: 'afterkeydown'") !!}
-                    {!! Former::text('client[postal_code]')
+                    {!! Former::text('relation[postal_code]')
                             ->label(trans('texts.postal_code'))
                             ->data_bind("value: postal_code, valueUpdate: 'afterkeydown'") !!}
-                    {!! Former::select('client[country_id]')
+                    {!! Former::select('relation[country_id]')
                             ->label(trans('texts.country_id'))
                             ->addOption('','')->addGroupClass('country_select')
                             ->fromQuery(Cache::get('countries'), 'name', 'id')->data_bind("dropdown: country_id") !!}
@@ -547,19 +547,19 @@
                                         afterAdd: showContact }'>
 
                     {!! Former::hidden('public_id')->data_bind("value: public_id, valueUpdate: 'afterkeydown',
-                            attr: {name: 'client[contacts][' + \$index() + '][public_id]'}") !!}
+                            attr: {name: 'relation[contacts][' + \$index() + '][public_id]'}") !!}
                     {!! Former::text('first_name')->data_bind("value: first_name, valueUpdate: 'afterkeydown',
-                            attr: {name: 'client[contacts][' + \$index() + '][first_name]'}") !!}
+                            attr: {name: 'relation[contacts][' + \$index() + '][first_name]'}") !!}
                     {!! Former::text('last_name')->data_bind("value: last_name, valueUpdate: 'afterkeydown',
-                            attr: {name: 'client[contacts][' + \$index() + '][last_name]'}") !!}
+                            attr: {name: 'relation[contacts][' + \$index() + '][last_name]'}") !!}
                     {!! Former::text('email')->data_bind("value: email, valueUpdate: 'afterkeydown',
-                            attr: {name: 'client[contacts][' + \$index() + '][email]', id:'email'+\$index()}")
-                            ->addClass('client-email') !!}
+                            attr: {name: 'relation[contacts][' + \$index() + '][email]', id:'email'+\$index()}")
+                            ->addClass('relation-email') !!}
                     {!! Former::text('phone')->data_bind("value: phone, valueUpdate: 'afterkeydown',
-                            attr: {name: 'client[contacts][' + \$index() + '][phone]'}") !!}
+                            attr: {name: 'relation[contacts][' + \$index() + '][phone]'}") !!}
                     @if ($organisation->isPro() && $organisation->enable_portal_password)
                         {!! Former::password('password')->data_bind("value: (typeof password=='function'?password():null)?'-%unchanged%-':'', valueUpdate: 'afterkeydown',
-                            attr: {name: 'client[contacts][' + \$index() + '][password]'}") !!}
+                            attr: {name: 'relation[contacts][' + \$index() + '][password]'}") !!}
                     @endif
                     <div class="form-group">
                         <div class="col-lg-8 col-lg-offset-4">
@@ -577,31 +577,31 @@
                     &nbsp;
                 </span>
 
-                {!! Former::select('client[currency_id]')->addOption('','')
+                {!! Former::select('relation[currency_id]')->addOption('','')
                         ->placeholder($organisation->currency ? $organisation->currency->name : '')
                         ->label(trans('texts.currency_id'))
                         ->data_bind('value: currency_id')
                         ->fromQuery($currencies, 'name', 'id') !!}
 
                 <span data-bind="visible: $root.showMore">
-                {!! Former::select('client[language_id]')->addOption('','')
+                {!! Former::select('relation[language_id]')->addOption('','')
                         ->placeholder($organisation->language ? $organisation->language->name : '')
                         ->label(trans('texts.language_id'))
                         ->data_bind('value: language_id')
                         ->fromQuery($languages, 'name', 'id') !!}
-                {!! Former::select('client[payment_terms]')->addOption('','')->data_bind('value: payment_terms')
+                {!! Former::select('relation[payment_terms]')->addOption('','')->data_bind('value: payment_terms')
                         ->fromQuery($paymentTerms, 'name', 'num_days')
                         ->label(trans('texts.payment_terms'))
                         ->help(trans('texts.payment_terms_help')) !!}
-                {!! Former::select('client[size_id]')->addOption('','')->data_bind('value: size_id')
+                {!! Former::select('relation[size_id]')->addOption('','')->data_bind('value: size_id')
                         ->label(trans('texts.size_id'))
                         ->fromQuery($sizes, 'name', 'id') !!}
-                {!! Former::select('client[industry_id]')->addOption('','')->data_bind('value: industry_id')
+                {!! Former::select('relation[industry_id]')->addOption('','')->data_bind('value: industry_id')
                         ->label(trans('texts.industry_id'))
                         ->fromQuery($industries, 'name', 'id') !!}
-                {!! Former::textarea('client_private_notes')
+                {!! Former::textarea('relation_private_notes')
                         ->label(trans('texts.private_notes'))
-                        ->data_bind("value: private_notes, attr:{ name: 'client[private_notes]'}") !!}
+                        ->data_bind("value: private_notes, attr:{ name: 'relation[private_notes]'}") !!}
                 </span>
             </div>
             </div>
@@ -613,7 +613,7 @@
             <span class="error-block" id="emailError" style="display:none;float:left;font-weight:bold">{{ trans('texts.provide_name_or_email') }}</span><span>&nbsp;</span>
             <button type="button" class="btn btn-default" data-dismiss="modal">{{ trans('texts.cancel') }}</button>
             <button type="button" class="btn btn-default" data-bind="click: $root.showMoreFields, text: $root.showMore() ? '{{ trans('texts.less_fields') }}' : '{{ trans('texts.more_fields') }}'"></button>
-            <button id="clientDoneButton" type="button" class="btn btn-primary" data-bind="click: $root.clientFormComplete">{{ trans('texts.done') }}</button>
+            <button id="relationDoneButton" type="button" class="btn btn-primary" data-bind="click: $root.relationFormComplete">{{ trans('texts.done') }}</button>
          </div>
 
         </div>
@@ -677,32 +677,32 @@
 	<script type="text/javascript">
 
     var products = {!! $products !!};
-    var clients = {!! $clients !!};
+    var relations = {!! $relations !!};
     var organisation = {!! Auth::user()->organisation !!};
 
-    var clientMap = {};
-    var $clientSelect = $('select#client');
+    var relationMap = {};
+    var $relationSelect = $('select#relation');
     var invoiceDesigns = {!! $invoiceDesigns !!};
     var invoiceFonts = {!! $invoiceFonts !!};
 
 
 	$(function() {
-        // create client dictionary
-        for (var i=0; i<clients.length; i++) {
-            var client = clients[i];
-            var clientName = getClientDisplayName(client);
-            for (var j=0; j<client.contacts.length; j++) {
-                var contact = client.contacts[j];
+        // create relation dictionary
+        for (var i=0; i<relations.length; i++) {
+            var relation = relations[i];
+            var relationName = getRelationDisplayName(relation);
+            for (var j=0; j<relation.contacts.length; j++) {
+                var contact = relation.contacts[j];
                 var contactName = getContactDisplayName(contact);
                 if (contact.is_primary === '1') {
                     contact.send_invoice = true;
                 }
-                if (clientName != contactName) {
-                    $clientSelect.append(new Option(contactName, client.public_id));
+                if (relationName != contactName) {
+                    $relationSelect.append(new Option(contactName, relation.public_id));
                 }
             }
-            clientMap[client.public_id] = client;
-            $clientSelect.append(new Option(clientName, client.public_id));
+            relationMap[relation.public_id] = relation;
+            $relationSelect.append(new Option(relationName, relation.public_id));
         }
 
         @if ($data)
@@ -723,10 +723,10 @@
 
             @if ($invoice->id)
                 var invitationContactIds = {!! json_encode($invitationContactIds) !!};
-                var client = clientMap[invoice.client.public_id];
-                if (client) { // in case it's deleted
-                    for (var i=0; i<client.contacts.length; i++) {
-                        var contact = client.contacts[i];
+                var relation = relationMap[invoice.relation.public_id];
+                if (relation) { // in case it's deleted
+                    for (var i=0; i<relation.contacts.length; i++) {
+                        var contact = relation.contacts[i];
                         contact.send_invoice = invitationContactIds.indexOf(contact.public_id) >= 0;
                     }
                 }
@@ -798,11 +798,11 @@
 			var countryId = $('input[name=country_id]').val();
             var country = _.findWhere(countries, {id: countryId});
 			if (country) {
-                model.invoice().client().country = country;
-                model.invoice().client().country_id(countryId);
+                model.invoice().relation().country = country;
+                model.invoice().relation().country_id(countryId);
             } else {
-				model.invoice().client().country = false;
-				model.invoice().client().country_id(0);
+				model.invoice().relation().country = false;
+				model.invoice().relation().country_id(0);
 			}
 		});
 
@@ -810,33 +810,33 @@
 
 		$('#invoice_date, #due_date, #start_date, #end_date, #last_sent_date').datepicker();
 
-		@if ($invoice->client && !$invoice->id)
-			$('input[name=client]').val({{ $invoice->client->public_id }});
+		@if ($invoice->relation && !$invoice->id)
+			$('input[name=relation]').val({{ $invoice->relation->public_id }});
 		@endif
 
-		var $input = $('select#client');
+		var $input = $('select#relation');
 		$input.combobox().on('change', function(e) {
-            var oldId = model.invoice().client().public_id();
-            var clientId = parseInt($('input[name=client]').val(), 10) || 0;
-            if (clientId > 0) {
-                var selected = clientMap[clientId];
-				model.loadClient(selected);
-                // we enable searching by contact but the selection must be the client
-                $('.client-input').val(getClientDisplayName(selected));
+            var oldId = model.invoice().relation().public_id();
+            var relationId = parseInt($('input[name=relation]').val(), 10) || 0;
+            if (relationId > 0) {
+                var selected = relationMap[relationId];
+				model.loadRelation(selected);
+                // we enable searching by contact but the selection must be the relation
+                $('.relation-input').val(getRelationDisplayName(selected));
                 // if there's an invoice number pattern we'll apply it now
                 setInvoiceNumber(selected);
                 refreshPDF(true);
 			} else if (oldId) {
-				model.loadClient($.parseJSON(ko.toJSON(new ClientModel())));
-				model.invoice().client().country = false;
+				model.loadRelation($.parseJSON(ko.toJSON(new RelationModel())));
+				model.invoice().relation().country = false;
                 refreshPDF(true);
 			}
 		});
 
-		// If no clients exists show the client form when clicking on the client select input
-		if (clients.length === 0) {
-			$('.client_select input.form-control').on('click', function() {
-				model.showClientForm();
+		// If no relations exists show the relation form when clicking on the relation select input
+		if (relations.length === 0) {
+			$('.relation_select input.form-control').on('click', function() {
+				model.showRelationForm();
 			});
 		}
 
@@ -864,17 +864,17 @@
             })(field);
         }
 
-		@if ($invoice->id || count($clients) == 0)
+		@if ($invoice->id || count($relations) == 0)
 			$('#invoice_number').focus();
 		@else
-			$('.client_select input.form-control').focus();
+			$('.relation_select input.form-control').focus();
 		@endif
 
-		$('#clientModal').on('shown.bs.modal', function () {
-            $('#client\\[name\\]').focus();
+		$('#relationModal').on('shown.bs.modal', function () {
+            $('#relation\\[name\\]').focus();
 		}).on('hidden.bs.modal', function () {
-			if (model.clientBackup) {
-				model.loadClient(model.clientBackup);
+			if (model.relationBackup) {
+				model.loadRelation(model.relationBackup);
 				refreshPDF(true);
 			}
 		})
@@ -885,16 +885,16 @@
 
 		$('label.radio').addClass('radio-inline');
 
-		@if ($invoice->client->id)
+		@if ($invoice->relation->id)
 			$input.trigger('change');
 		@else
 			refreshPDF(true);
 		@endif
 
-		var client = model.invoice().client();
-		setComboboxValue($('.client_select'),
-			client.public_id(),
-			client.name.display());
+		var relation = model.invoice().relation();
+		setComboboxValue($('.relation_select'),
+			relation.public_id(),
+			relation.name.display());
 
         @if (isset($tasks) && $tasks)
             NINJA.formIsChanged = true;
@@ -952,7 +952,7 @@
 		var invoice = ko.toJS(window.model).invoice;
 		invoice.is_pro = {{ Auth::user()->isPro() ? 'true' : 'false' }};
 		invoice.is_quote = {{ $entityType == ENTITY_QUOTE ? 'true' : 'false' }};
-		invoice.contact = _.findWhere(invoice.client.contacts, {send_invoice: true});
+		invoice.contact = _.findWhere(invoice.relation.contacts, {send_invoice: true});
 
         if (invoice.is_recurring) {
             invoice.invoice_number = "{{ trans('texts.assigned_when_sent') }}";
@@ -1062,11 +1062,11 @@
 	}
 
     function getSendToEmails() {
-        var client = model.invoice().client();
+        var relation = model.invoice().relation();
         var parts = [];
 
-        for (var i=0; i<client.contacts().length; i++) {
-            var contact = client.contacts()[i];
+        for (var i=0; i<relation.contacts().length; i++) {
+            var contact = relation.contacts()[i];
             if (contact.send_invoice()) {
                 parts.push(contact.displayName());
             }
@@ -1094,14 +1094,14 @@
 
     function onFormSubmit(event) {
         if (!isSaveValid()) {
-            model.showClientForm();
+            model.showRelationForm();
             return false;
         }
 
         // check currency matches for expenses
         var expenseCurrencyId = model.expense_currency_id();
-        var clientCurrencyId = model.invoice().client().currency_id() || {{ $organisation->getCurrencyId() }};
-        if (expenseCurrencyId && expenseCurrencyId != clientCurrencyId) {
+        var relationCurrencyId = model.invoice().relation().currency_id() || {{ $organisation->getCurrencyId() }};
+        if (expenseCurrencyId && expenseCurrencyId != relationCurrencyId) {
             alert("{!! trans('texts.expense_error_mismatch_currencies') !!}");
             return false;
         }
@@ -1118,8 +1118,8 @@
 
 	function isSaveValid() {
 		var isValid = false;
-		for (var i=0; i<model.invoice().client().contacts().length; i++) {
-			var contact = model.invoice().client().contacts()[i];
+		for (var i=0; i<model.invoice().relation().contacts().length; i++) {
+			var contact = model.invoice().relation().contacts()[i];
 			if (isValidEmailAddress(contact.email()) || contact.first_name()) {
 				isValid = true;
 			} else {
@@ -1133,9 +1133,9 @@
 	function isEmailValid() {
 		var isValid = true;
 		var sendTo = false;
-		var client = model.invoice().client();
-		for (var i=0; i<client.contacts().length; i++) {
-			var contact = client.contacts()[i];
+		var relation = model.invoice().relation();
+		for (var i=0; i<relation.contacts().length; i++) {
+			var contact = relation.contacts()[i];
             if ( ! contact.send_invoice()) {
                 continue;
             }
@@ -1164,11 +1164,11 @@
 
     @if ($invoice->id)
     	function onPaymentClick() {
-    		window.location = '{{ URL::to('payments/create/' . $invoice->client->public_id . '/' . $invoice->public_id ) }}';
+    		window.location = '{{ URL::to('payments/create/' . $invoice->relation->public_id . '/' . $invoice->public_id ) }}';
     	}
 
     	function onCreditClick() {
-    		window.location = '{{ URL::to('credits/create/' . $invoice->client->public_id . '/' . $invoice->public_id ) }}';
+    		window.location = '{{ URL::to('credits/create/' . $invoice->relation->public_id . '/' . $invoice->public_id ) }}';
     	}
     @endif
 
@@ -1197,10 +1197,10 @@
 		}
 	}
 
-	function clientModalEnterClick(event) {
+	function relationModalEnterClick(event) {
 		if (event.keyCode === 13){
 			event.preventDefault();
-            model.clientFormComplete();
+            model.relationFormComplete();
             return false;
         }
 	}
@@ -1253,13 +1253,13 @@
         $('#recurringDueDateModal').modal('show');
     }
 
-    function setInvoiceNumber(client) {
-        @if ($invoice->id || !$organisation->hasClientNumberPattern($invoice))
+    function setInvoiceNumber(relation) {
+        @if ($invoice->id || !$organisation->hasRelationNumberPattern($invoice))
             return;
         @endif
         var number = '{{ $organisation->getNumberPattern($invoice) }}';
-        number = number.replace('{$custom1}', client.custom_value1 ? client.custom_value1 : '');
-        number = number.replace('{$custom2}', client.custom_value2 ? client.custom_value1 : '');
+        number = number.replace('{$custom1}', relation.custom_value1 ? relation.custom_value1 : '');
+        number = number.replace('{$custom2}', relation.custom_value2 ? relation.custom_value1 : '');
         model.invoice().invoice_number(number);
     }
 

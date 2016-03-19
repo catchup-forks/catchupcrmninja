@@ -8,7 +8,7 @@
     <div>
         <center>
             @include('partials.email_button', [
-                'link' => URL::to("client/password/reset/".session('invitation_key')."/{$token}"),
+                'link' => URL::to("relation/password/reset/".session('invitation_key')."/{$token}"),
                 'field' => 'reset',
                 'color' => '#36c157',
             ])

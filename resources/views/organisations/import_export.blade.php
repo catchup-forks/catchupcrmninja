@@ -61,11 +61,11 @@
                 ->label('include')
                 ->addGroupClass('entity-types')
                 ->checkboxes([
-                    trans('texts.clients') => array('name' => ENTITY_CLIENT, 'value' => 1),
+                    trans('texts.relations') => array('name' => ENTITY_RELATION, 'value' => 1),
                     trans('texts.tasks') => array('name' => ENTITY_TASK, 'value' => 1),
                     trans('texts.invoices') => array('name' => ENTITY_INVOICE, 'value' => 1),
                     trans('texts.payments') => array('name' => ENTITY_PAYMENT, 'value' => 1),
-                ])->check(ENTITY_CLIENT)->check(ENTITY_TASK)->check(ENTITY_INVOICE)->check(ENTITY_PAYMENT) !!}
+                ])->check(ENTITY_RELATION)->check(ENTITY_TASK)->check(ENTITY_INVOICE)->check(ENTITY_PAYMENT) !!}
 
         {!! Former::actions( Button::primary(trans('texts.download'))->submit()->large()->appendIcon(Icon::create('download-alt'))) !!}            
     </div>

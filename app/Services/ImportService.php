@@ -10,23 +10,23 @@ use Session;
 use Validator;
 use League\Fractal\Manager;
 use App\Ninja\Repositories\ContactRepository;
-use App\Ninja\Repositories\ClientRepository;
+use App\Ninja\Repositories\RelationRepository;
 use App\Ninja\Repositories\InvoiceRepository;
 use App\Ninja\Repositories\PaymentRepository;
 use App\Ninja\Serializers\ArraySerializer;
-use App\Models\Client;
+use App\Models\Relation;
 use App\Models\Invoice;
 
 class ImportService
 {
     protected $transformer;
     protected $invoiceRepo;
-    protected $clientRepo;
+    protected $relationRepo;
     protected $contactRepo;
     protected $processedRows = array();
 
     public static $entityTypes = [
-        ENTITY_CLIENT,
+        ENTITY_RELATION,
         ENTITY_CONTACT,
         ENTITY_INVOICE,
         ENTITY_PAYMENT,
@@ -45,12 +45,12 @@ class ImportService
         IMPORT_ZOHO,
     ];
 
-    public function __construct(Manager $manager, ClientRepository $clientRepo, InvoiceRepository $invoiceRepo, PaymentRepository $paymentRepo, ContactRepository $contactRepo)
+    public function __construct(Manager $manager, RelationRepository $relationRepo, InvoiceRepository $invoiceRepo, PaymentRepository $paymentRepo, ContactRepository $contactRepo)
     {
         $this->fractal = $manager;
         $this->fractal->setSerializer(new ArraySerializer());
 
-        $this->clientRepo = $clientRepo;
+        $this->relationRepo = $relationRepo;
         $this->invoiceRepo = $invoiceRepo;
         $this->paymentRepo = $paymentRepo;
         $this->contactRepo = $contactRepo;
@@ -155,7 +155,7 @@ class ImportService
 
         // if the invoice is paid we'll also create a payment record
         if ($entityType === ENTITY_INVOICE && isset($data['paid']) && $data['paid'] > 0) {
-            $this->createPayment($source, $row, $maps, $data['client_id'], $entity->id);
+            $this->createPayment($source, $row, $maps, $data['relation_id'], $entity->id);
         }
 
         return $entity;
@@ -163,16 +163,16 @@ class ImportService
 
     private function checkData($entityType, $count)
     {
-        if ($entityType === ENTITY_CLIENT) {
-            $this->checkClientCount($count);
+        if ($entityType === ENTITY_RELATION) {
+            $this->checkRelationCount($count);
         }
     }
 
-    private function checkClientCount($count)
+    private function checkRelationCount($count)
     {
-        $totalClients = $count + Client::scope()->withTrashed()->count();
-        if ($totalClients > Auth::user()->getMaxNumClients()) {
-            throw new Exception(trans('texts.limit_clients', ['count' => Auth::user()->getMaxNumClients()]));
+        $totalRelations = $count + Relation::scope()->withTrashed()->count();
+        if ($totalRelations > Auth::user()->getMaxNumRelations()) {
+            throw new Exception(trans('texts.limit_relations', ['count' => Auth::user()->getMaxNumRelations()]));
         }
     }
 
@@ -188,11 +188,11 @@ class ImportService
         return new $className($maps);
     }
 
-    private function createPayment($source, $data, $maps, $clientId, $invoiceId)
+    private function createPayment($source, $data, $maps, $relationId, $invoiceId)
     {
         $paymentTransformer = $this->getTransformer($source, ENTITY_PAYMENT, $maps);
 
-        $data->client_id = $clientId;
+        $data->relation_id = $relationId;
         $data->invoice_id = $invoiceId;
 
         if ($resource = $paymentTransformer->transform($data, $maps)) {
@@ -204,14 +204,14 @@ class ImportService
     private function validate($source, $data, $entityType)
     {
         // Harvest's contacts are listed separately
-        if ($entityType === ENTITY_CLIENT && $source != IMPORT_HARVEST) {
+        if ($entityType === ENTITY_RELATION && $source != IMPORT_HARVEST) {
             $rules = [
                 'contacts' => 'valid_contacts',
             ];
         }
         if ($entityType === ENTITY_INVOICE) {
             $rules = [
-                'client.contacts' => 'valid_contacts',
+                'relation.contacts' => 'valid_contacts',
                 'invoice_items' => 'valid_invoice_items',
                 'invoice_number' => 'required|unique:invoices,invoice_number,,id,organisation_id,'.Auth::user()->organisation_id,
                 'discount' => 'positive',
@@ -233,21 +233,21 @@ class ImportService
 
     private function createMaps()
     {
-        $clientMap = [];
-        $clients = $this->clientRepo->all();
-        foreach ($clients as $client) {
-            if ($name = strtolower(trim($client->name))) {
-                $clientMap[$name] = $client->id;
+        $relationMap = [];
+        $relations = $this->relationRepo->all();
+        foreach ($relations as $relation) {
+            if ($name = strtolower(trim($relation->name))) {
+                $relationMap[$name] = $relation->id;
             }
         }
 
         $invoiceMap = [];
-        $invoiceClientMap = [];
+        $invoiceRelationMap = [];
         $invoices = $this->invoiceRepo->all();
         foreach ($invoices as $invoice) {
             if ($number = strtolower(trim($invoice->invoice_number))) {
                 $invoiceMap[$number] = $invoice->id;
-                $invoiceClientMap[$number] = $invoice->client_id;
+                $invoiceRelationMap[$number] = $invoice->relation_id;
             }
         }
 
@@ -266,9 +266,9 @@ class ImportService
         }
 
         return [
-            ENTITY_CLIENT => $clientMap,
+            ENTITY_RELATION => $relationMap,
             ENTITY_INVOICE => $invoiceMap,
-            ENTITY_INVOICE.'_'.ENTITY_CLIENT => $invoiceClientMap,
+            ENTITY_INVOICE.'_'.ENTITY_RELATION => $invoiceRelationMap,
             'countries' => $countryMap,
             'countries2' => $countryMap2,
             'currencies' => $currencyMap,
@@ -280,9 +280,9 @@ class ImportService
         $data = [];
 
         foreach ($files as $entityType => $filename) {
-            if ($entityType === ENTITY_CLIENT) {
-                $columns = Client::getImportColumns();
-                $map = Client::getImportMap();
+            if ($entityType === ENTITY_RELATION) {
+                $columns = Relation::getImportColumns();
+                $map = Relation::getImportMap();
             } else {
                 $columns = Invoice::getImportColumns();
                 $map = Invoice::getImportMap();
@@ -297,9 +297,9 @@ class ImportService
 
             $data[$entityType] = $this->mapFile($entityType, $filename, $columns, $map);
 
-            if ($entityType === ENTITY_CLIENT) {
-                if (count($data[$entityType]['data']) + Client::scope()->count() > Auth::user()->getMaxNumClients()) {
-                    throw new Exception(trans('texts.limit_clients', ['count' => Auth::user()->getMaxNumClients()]));
+            if ($entityType === ENTITY_RELATION) {
+                if (count($data[$entityType]['data']) + Relation::scope()->count() > Auth::user()->getMaxNumRelations()) {
+                    throw new Exception(trans('texts.limit_relations', ['count' => Auth::user()->getMaxNumRelations()]));
                 }
             }
         }
@@ -453,8 +453,8 @@ class ImportService
     {
         $obj = new stdClass();
 
-        if ($entityType === ENTITY_CLIENT) {
-            $columns = Client::getImportColumns();
+        if ($entityType === ENTITY_RELATION) {
+            $columns = Relation::getImportColumns();
         } else {
             $columns = Invoice::getImportColumns();
         }

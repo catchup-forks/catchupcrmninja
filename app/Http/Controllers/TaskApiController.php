@@ -42,12 +42,12 @@ class TaskApiController extends BaseAPIController
         $tasks = Task::scope()
                     ->with($this->getIncluded());
 
-        if ($clientPublicId = Input::get('client_id')) {
-            $filter = function($query) use ($clientPublicId) {
-                $query->where('public_id', '=', $clientPublicId);
+        if ($relationPublicId = Input::get('relation_id')) {
+            $filter = function($query) use ($relationPublicId) {
+                $query->where('public_id', '=', $relationPublicId);
             };
-            $tasks->whereHas('client', $filter);
-            $paginator->whereHas('client', $filter);
+            $tasks->whereHas('relation', $filter);
+            $paginator->whereHas('relation', $filter);
         }
 
         $tasks = $tasks->orderBy('created_at', 'desc')->paginate();
@@ -85,12 +85,12 @@ class TaskApiController extends BaseAPIController
         $data = Input::all();
         $taskId = isset($data['id']) ? $data['id'] : false;
 
-        if (isset($data['client_id']) && $data['client_id']) {
-            $data['client'] = $data['client_id'];
+        if (isset($data['relation_id']) && $data['relation_id']) {
+            $data['relation'] = $data['relation_id'];
         }
 
         $task = $this->taskRepo->save($taskId, $data);
-        $task = Task::scope($task->public_id)->with('client')->first();
+        $task = Task::scope($task->public_id)->with('relation')->first();
 
         $transformer = new TaskTransformer(Auth::user()->organisation, Input::get('serializer'));
         $data = $this->createItem($task, $transformer, 'task');

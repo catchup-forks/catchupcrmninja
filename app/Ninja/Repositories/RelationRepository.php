@@ -3,22 +3,22 @@
 use DB;
 use Cache;
 use App\Ninja\Repositories\BaseRepository;
-use App\Models\Client;
+use App\Models\Relation;
 use App\Models\Contact;
 use App\Models\Activity;
-use App\Events\ClientWasCreated;
-use App\Events\ClientWasUpdated;
+use App\Events\RelationWasCreated;
+use App\Events\RelationWasUpdated;
 
-class ClientRepository extends BaseRepository
+class RelationRepository extends BaseRepository
 {
     public function getClassName()
     {
-        return 'App\Models\Client';
+        return 'App\Models\Relation';
     }
 
     public function all()
     {
-        return Client::scope()
+        return Relation::scope()
                 ->with('user', 'contacts', 'country')
                 ->withTrashed()
                 ->where('is_deleted', '=', false)
@@ -27,36 +27,36 @@ class ClientRepository extends BaseRepository
 
     public function find($filter = null)
     {
-        $query = DB::table('clients')
-                    ->join('organisations', 'organisations.id', '=', 'clients.organisation_id')
-                    ->join('contacts', 'contacts.client_id', '=', 'clients.id')
-                    ->where('clients.organisation_id', '=', \Auth::user()->organisation_id)
+        $query = DB::table('relations')
+                    ->join('organisations', 'organisations.id', '=', 'relations.organisation_id')
+                    ->join('contacts', 'contacts.relation_id', '=', 'relations.id')
+                    ->where('relations.organisation_id', '=', \Auth::user()->organisation_id)
                     ->where('contacts.is_primary', '=', true)
                     ->where('contacts.deleted_at', '=', null)
                     ->select(
-                        DB::raw('COALESCE(clients.currency_id, organisations.currency_id) currency_id'),
-                        DB::raw('COALESCE(clients.country_id, organisations.country_id) country_id'),
-                        'clients.public_id',
-                        'clients.name',
+                        DB::raw('COALESCE(relations.currency_id, organisations.currency_id) currency_id'),
+                        DB::raw('COALESCE(relations.country_id, organisations.country_id) country_id'),
+                        'relations.public_id',
+                        'relations.name',
                         'contacts.first_name',
                         'contacts.last_name',
-                        'clients.balance',
-                        'clients.last_login',
-                        'clients.created_at',
-                        'clients.work_phone',
+                        'relations.balance',
+                        'relations.last_login',
+                        'relations.created_at',
+                        'relations.work_phone',
                         'contacts.email',
-                        'clients.deleted_at',
-                        'clients.is_deleted',
-                        'clients.user_id'
+                        'relations.deleted_at',
+                        'relations.is_deleted',
+                        'relations.user_id'
                     );
 
-        if (!\Session::get('show_trash:client')) {
-            $query->where('clients.deleted_at', '=', null);
+        if (!\Session::get('show_trash:relation')) {
+            $query->where('relations.deleted_at', '=', null);
         }
 
         if ($filter) {
             $query->where(function ($query) use ($filter) {
-                $query->where('clients.name', 'like', '%'.$filter.'%')
+                $query->where('relations.name', 'like', '%'.$filter.'%')
                       ->orWhere('contacts.first_name', 'like', '%'.$filter.'%')
                       ->orWhere('contacts.last_name', 'like', '%'.$filter.'%')
                       ->orWhere('contacts.email', 'like', '%'.$filter.'%');
@@ -71,9 +71,9 @@ class ClientRepository extends BaseRepository
         $publicId = isset($data['public_id']) ? $data['public_id'] : false;
 
         if (!$publicId || $publicId == '-1') {
-            $client = Client::createNew();
+            $relation = Relation::createNew();
         } else {
-            $client = Client::scope($publicId)->with('contacts')->firstOrFail();
+            $relation = Relation::scope($publicId)->with('contacts')->firstOrFail();
         }
 
         // convert currency code to id
@@ -87,12 +87,12 @@ class ClientRepository extends BaseRepository
             }
         }
 
-        $client->fill($data);
-        $client->save();
+        $relation->fill($data);
+        $relation->save();
 
         /*
         if ( ! isset($data['contact']) && ! isset($data['contacts'])) {
-            return $client;
+            return $relation;
         }
         */
         
@@ -101,23 +101,23 @@ class ClientRepository extends BaseRepository
         $contactIds = [];
 
         foreach ($contacts as $contact) {
-            $contact = $client->addContact($contact, $first);
+            $contact = $relation->addContact($contact, $first);
             $contactIds[] = $contact->public_id;
             $first = false;
         }
 
-        foreach ($client->contacts as $contact) {
+        foreach ($relation->contacts as $contact) {
             if (!in_array($contact->public_id, $contactIds)) {
                 $contact->delete();
             }
         }
 
         if (!$publicId || $publicId == '-1') {
-            event(new ClientWasCreated($client));
+            event(new RelationWasCreated($relation));
         } else {
-            event(new ClientWasUpdated($client));
+            event(new RelationWasUpdated($relation));
         }
 
-        return $client;
+        return $relation;
     }
 }

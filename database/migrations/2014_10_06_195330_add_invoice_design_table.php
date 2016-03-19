@@ -25,9 +25,9 @@ class AddInvoiceDesignTable extends Migration {
 		DB::table('invoice_designs')->where('id', 1)->update([
 			'javascript' => "var GlobalY=0;//Y position of line at current page
 
-	    var client = invoice.client;
+	    var relation = invoice.relation;
 	    var organisation = invoice.organisation;
-	    var currencyId = client.currency_id;
+	    var currencyId = relation.currency_id;
 
 	    layout.headerRight = 550;
 	    layout.rowHeight = 15;
@@ -60,8 +60,8 @@ class AddInvoiceDesignTable extends Migration {
 	    doc.setFontSize(9);
 
 	    var invoiceHeight = displayInvoice(doc, invoice, 50, 170, layout);
-	    var clientHeight = displayClient(doc, invoice, 220, 170, layout);
-	    var detailsHeight = Math.max(invoiceHeight, clientHeight);
+	    var relationHeight = displayRelation(doc, invoice, 220, 170, layout);
+	    var detailsHeight = Math.max(invoiceHeight, relationHeight);
 	    layout.tableTop = Math.max(layout.tableTop, layout.headerTop + detailsHeight + (3 * layout.rowHeight));
 	   
 	    doc.setLineWidth(0.3);        
@@ -119,9 +119,9 @@ class AddInvoiceDesignTable extends Migration {
 		DB::table('invoice_designs')->where('id', 2)->update([
 			'javascript' => "  var GlobalY=0;//Y position of line at current page
 
-			  var client = invoice.client;
+			  var relation = invoice.relation;
 			  var organisation = invoice.organisation;
-			  var currencyId = client.currency_id;
+			  var currencyId = relation.currency_id;
 
 			  layout.headerRight = 150;
 			  layout.rowHeight = 15;
@@ -225,8 +225,8 @@ class AddInvoiceDesignTable extends Migration {
 
 			  doc.setFontSize('8');        
 			  SetPdfColor('Black',doc);			  
-        var clientHeight = displayClient(doc, invoice, layout.marginLeft, z, layout);
-        layout.tableTop += Math.max(0, clientHeight - 75);
+        var relationHeight = displayRelation(doc, invoice, layout.marginLeft, z, layout);
+        layout.tableTop += Math.max(0, relationHeight - 75);
 			  marginLeft2=395;
 
 			  //publish left side information
@@ -267,9 +267,9 @@ class AddInvoiceDesignTable extends Migration {
 			]);
 
 			DB::table('invoice_designs')->where('id', 3)->update([
-				'javascript' => "    var client = invoice.client;
+				'javascript' => "    var relation = invoice.relation;
 	    var organisation = invoice.organisation;
-	    var currencyId = client.currency_id;
+	    var currencyId = relation.currency_id;
 
 	    layout.headerRight = 400;
 	    layout.rowHeight = 15;
@@ -355,7 +355,7 @@ class AddInvoiceDesignTable extends Migration {
 	    SetPdfColor('Black',doc); //set black color
 	    doc.setFontSize(7);
 	    doc.setFontType('normal');
-	    displayClient(doc, invoice, layout.headerRight, layout.headerTop, layout);
+	    displayRelation(doc, invoice, layout.headerRight, layout.headerTop, layout);
 
 
 	      
@@ -418,9 +418,9 @@ class AddInvoiceDesignTable extends Migration {
 		]);
 
 		DB::table('invoice_designs')->where('id', 4)->update([
-			'javascript' => "  var client = invoice.client;
+			'javascript' => "  var relation = invoice.relation;
 		  var organisation = invoice.organisation;
-		  var currencyId = client.currency_id;  
+		  var currencyId = relation.currency_id;
 		  
       layout.accountTop += 25;
       layout.headerTop += 25;
@@ -447,7 +447,7 @@ class AddInvoiceDesignTable extends Migration {
 		  doc.setFontType('normal');
 
 		  displayOrganisation(doc, invoice, layout.marginLeft, layout.accountTop, layout);
-		  displayClient(doc, invoice, layout.marginLeft, layout.headerTop, layout);
+		  displayRelation(doc, invoice, layout.marginLeft, layout.headerTop, layout);
 
 		  displayInvoice(doc, invoice, layout.headerLeft, layout.headerTop, layout, layout.headerRight);
 		  layout.tableTop = Math.max(layout.tableTop, layout.headerTop + detailsHeight + (2 * layout.tablePadding));

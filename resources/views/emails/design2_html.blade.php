@@ -2,7 +2,7 @@
 
 @section('markup')
     @if ($organisation->enable_email_markup)
-        @include('emails.partials.client_view_action')
+        @include('emails.partials.relation_view_action')
     @endif
 @stop
 
@@ -36,7 +36,7 @@
                                 {{ strtoupper(trans('texts.' . $invoice->present()->balanceDueLabel)) }}:
                             </span><br />
                             <span class="total" style="font-size: 27px; color: #FFFFFF; margin-top: 5px;display: block;">
-                                {{ $organisation->formatMoney($invoice->getRequestedAmount(), $client) }}
+                                {{ $organisation->formatMoney($invoice->getRequestedAmount(), $relation) }}
                             </span>
                         </p>
                     </td>

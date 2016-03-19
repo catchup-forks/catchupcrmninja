@@ -27,9 +27,9 @@ class Credit extends EntityModel
         return $this->belongsTo('App\Models\Invoice')->withTrashed();
     }
 
-    public function client()
+    public function relation()
     {
-        return $this->belongsTo('App\Models\Client')->withTrashed();
+        return $this->belongsTo('App\Models\Relation')->withTrashed();
     }
 
     public function getName()

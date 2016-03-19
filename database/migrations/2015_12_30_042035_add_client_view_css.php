@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddClientViewCss extends Migration {
+class AddRelationViewCss extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -13,7 +13,7 @@ class AddClientViewCss extends Migration {
 	public function up()
 	{
         Schema::table('organisations', function ($table) {
-            $table->text('client_view_css')->nullable();
+            $table->text('relation_view_css')->nullable();
         });
 	}
 
@@ -25,7 +25,7 @@ class AddClientViewCss extends Migration {
 	public function down()
 	{
         Schema::table('organisations', function ($table) {
-            $table->dropColumn('client_view_css');
+            $table->dropColumn('relation_view_css');
         });
 	}
 

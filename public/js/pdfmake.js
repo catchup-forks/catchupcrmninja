@@ -59,7 +59,7 @@
 	var PdfPrinter = __webpack_require__(2);
 	var saveAs = __webpack_require__(3);
 
-	var defaultClientFonts = {
+	var defaultRelationFonts = {
 		Roboto: {
 			normal: 'Roboto-Regular.ttf',
 			bold: 'Roboto-Medium.ttf',
@@ -70,7 +70,7 @@
 
 	function Document(docDefinition, fonts, vfs) {
 		this.docDefinition = docDefinition;
-		this.fonts = fonts || defaultClientFonts;
+		this.fonts = fonts || defaultRelationFonts;
 		this.vfs = vfs;
 	}
 

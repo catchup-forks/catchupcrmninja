@@ -108,12 +108,12 @@
             'email' => 'required|email'
         )) !!}
 
-@if ($client)
-  {{ Former::populate($client) }}
+@if ($relation)
+  {{ Former::populate($relation) }}
   {{ Former::populateField('first_name', $contact->first_name) }}
   {{ Former::populateField('last_name', $contact->last_name) }}
-  @if (!$client->country_id && $client->organisation->country_id)
-    {{ Former::populateField('country_id', $client->organisation->country_id) }}
+  @if (!$relation->country_id && $relation->organisation->country_id)
+    {{ Former::populateField('country_id', $relation->organisation->country_id) }}
   @endif
 @endif
 
@@ -137,9 +137,9 @@
     <div class="row">
         <div class="col-md-7">
             <header>
-                @if ($client)
-                    <h2>{{ $client->getDisplayName() }}</h2>
-                    <h3>{{ trans('texts.invoice') . ' ' . $invoiceNumber }}<span>|&nbsp; {{ trans('texts.amount_due') }}: <em>{{ $organisation->formatMoney($amount, $client, true) }}</em></span></h3>
+                @if ($relation)
+                    <h2>{{ $relation->getDisplayName() }}</h2>
+                    <h3>{{ trans('texts.invoice') . ' ' . $invoiceNumber }}<span>|&nbsp; {{ trans('texts.amount_due') }}: <em>{{ $organisation->formatMoney($amount, $relation, true) }}</em></span></h3>
                 @elseif ($paymentTitle)
                     <h2>{{ $paymentTitle }}<br/><small>{{ $paymentSubtitle }}</small></h2>
                 @endif
@@ -295,7 +295,7 @@
 
         <div class="row" style="padding-top:18px">
             <div class="col-md-5">
-                @if ($client && $organisation->showTokenCheckbox())
+                @if ($relation && $organisation->showTokenCheckbox())
                     <input id="token_billing" type="checkbox" name="token_billing" {{ $organisation->selectTokenCheckbox() ? 'CHECKED' : '' }} value="1" style="margin-left:0px; vertical-align:top">
                     <label for="token_billing" class="checkbox" style="display: inline;">{{ trans('texts.token_billing') }}</label>
                     <span class="help-block" style="font-size:15px">{!! trans('texts.token_billing_secure', ['stripe_link' => link_to('https://stripe.com/', 'Stripe.com', ['target' => '_blank'])]) !!}</span>
@@ -316,7 +316,7 @@
 
         <p>&nbsp;</p>
         <center>
-            {!! Button::success(strtoupper(trans('texts.pay_now') . ' - ' . $organisation->formatMoney($amount, $client, true)  ))
+            {!! Button::success(strtoupper(trans('texts.pay_now') . ' - ' . $organisation->formatMoney($amount, $relation, true)  ))
                             ->submit()
                             ->large() !!}
         </center>        

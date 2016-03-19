@@ -21,7 +21,7 @@ class ContactMailer extends Mailer
         'organisation',
         'dueDate',
         'invoiceDate',
-        'client',
+        'relation',
         'amount',
         'contact',
         'firstName',
@@ -36,21 +36,21 @@ class ContactMailer extends Mailer
 
     public function sendInvoice(Invoice $invoice, $reminder = false, $pdfString = false)
     {
-        $invoice->load('invitations', 'client.language', 'organisation');
+        $invoice->load('invitations', 'relation.language', 'organisation');
         $entityType = $invoice->getEntityType();
 
-        $client = $invoice->client;
+        $relation = $invoice->relation;
         $organisation = $invoice->organisation;
 
         $response = null;
 
-        if ($client->trashed()) {
-            return trans('texts.email_errors.inactive_client');
+        if ($relation->trashed()) {
+            return trans('texts.email_errors.inactive_relation');
         } elseif ($invoice->trashed()) {
             return trans('texts.email_errors.inactive_invoice');
         }
 
-        $organisation->loadLocalizationSettings($client);
+        $organisation->loadLocalizationSettings($relation);
         $emailTemplate = $organisation->getEmailTemplate($reminder ?: $entityType);
         $emailSubject = $organisation->getEmailSubject($reminder ?: $entityType);
 
@@ -82,7 +82,7 @@ class ContactMailer extends Mailer
 
     private function sendInvitation($invitation, $invoice, $body, $subject, $pdfString)
     {
-        $client = $invoice->client;
+        $relation = $invoice->relation;
         $organisation = $invoice->organisation;
         
         if (Auth::check()) {
@@ -106,7 +106,7 @@ class ContactMailer extends Mailer
 
         $variables = [
             'organisation' => $organisation,
-            'client' => $client,
+            'relation' => $relation,
             'invitation' => $invitation,
             'amount' => $invoice->getRequestedAmount()
         ];
@@ -125,7 +125,7 @@ class ContactMailer extends Mailer
             'invoiceId' => $invoice->id,
             'invitation' => $invitation,
             'organisation' => $organisation,
-            'client' => $client,
+            'relation' => $relation,
             'invoice' => $invoice,
         ];
 
@@ -177,9 +177,9 @@ class ContactMailer extends Mailer
     public function sendPaymentConfirmation(Payment $payment)
     {
         $organisation = $payment->organisation;
-        $client = $payment->client;
+        $relation = $payment->relation;
 
-        $organisation->loadLocalizationSettings($client);
+        $organisation->loadLocalizationSettings($relation);
 
         $invoice = $payment->invoice;
         $accountName = $organisation->getDisplayName();
@@ -192,13 +192,13 @@ class ContactMailer extends Mailer
             $invitation = $payment->invitation;
         } else {
             $user = $payment->user;
-            $contact = $client->contacts[0];
+            $contact = $relation->contacts[0];
             $invitation = $payment->invoice->invitations[0];
         }
 
         $variables = [
             'organisation' => $organisation,
-            'client' => $client,
+            'relation' => $relation,
             'invitation' => $invitation,
             'amount' => $payment->amount,
         ];
@@ -207,7 +207,7 @@ class ContactMailer extends Mailer
             'body' => $this->processVariables($emailTemplate, $variables),
             'link' => $invitation->getLink(),
             'invoice' => $invoice,
-            'client' => $client,
+            'relation' => $relation,
             'organisation' => $organisation,
             'payment' => $payment,
             'entityType' => ENTITY_INVOICE,
@@ -248,7 +248,7 @@ class ContactMailer extends Mailer
         }
         
         $data = [
-            'client' => $name,
+            'relation' => $name,
             'amount' => Utils::formatMoney($amount, DEFAULT_CURRENCY, DEFAULT_COUNTRY),
             'license' => $license
         ];
@@ -259,20 +259,20 @@ class ContactMailer extends Mailer
     private function processVariables($template, $data)
     {
         $organisation = $data['organisation'];
-        $client = $data['client'];
+        $relation = $data['relation'];
         $invitation = $data['invitation'];
         $invoice = $invitation->invoice;
         $passwordHTML = isset($data['password'])?'<p>'.trans('texts.password').': '.$data['password'].'<p>':false;
 
         $variables = [
             '$footer' => $organisation->getEmailFooter(),
-            '$client' => $client->getDisplayName(),
+            '$relation' => $relation->getDisplayName(),
             '$organisation' => $organisation->getDisplayName(),
             '$dueDate' => $organisation->formatDate($invoice->due_date),
             '$invoiceDate' => $organisation->formatDate($invoice->invoice_date),
             '$contact' => $invitation->contact->getDisplayName(),
             '$firstName' => $invitation->contact->first_name,
-            '$amount' => $organisation->formatMoney($data['amount'], $client),
+            '$amount' => $organisation->formatMoney($data['amount'], $relation),
             '$invoice' => $invoice->invoice_number,
             '$quote' => $invoice->invoice_number,
             '$link' => $invitation->getLink(),
@@ -281,8 +281,8 @@ class ContactMailer extends Mailer
             '$viewButton' => Form::emailViewButton($invitation->getLink(), $invoice->getEntityType()).'$password',
             '$paymentLink' => $invitation->getLink('payment').'$password',
             '$paymentButton' => Form::emailPaymentButton($invitation->getLink('payment')).'$password',
-            '$customClient1' => $organisation->custom_client_label1,
-            '$customClient2' => $organisation->custom_client_label2,
+            '$customRelation1' => $organisation->custom_relation_label1,
+            '$customRelation2' => $organisation->custom_relation_label2,
             '$customInvoice1' => $organisation->custom_invoice_text_label1,
             '$customInvoice2' => $organisation->custom_invoice_text_label2,
         ];
