@@ -16,7 +16,7 @@ class ClientTransformer extends EntityTransformer
     * @SWG\Property(property="balance", type="float", example=10, readOnly=true)
     * @SWG\Property(property="paid_to_date", type="float", example=10, readOnly=true)
     * @SWG\Property(property="user_id", type="integer", example=1)
-    * @SWG\Property(property="account_key", type="string", example="123456")
+    * @SWG\Property(property="organisation_key", type="string", example="123456")
     * @SWG\Property(property="updated_at", type="timestamp", example="")
     * @SWG\Property(property="archived_at", type="timestamp", example="1451160233")
     * @SWG\Property(property="address1", type="string", example="10 Main St.")
@@ -83,7 +83,7 @@ class ClientTransformer extends EntityTransformer
             'balance' => (float) $client->balance,
             'paid_to_date' => (float) $client->paid_to_date,
             'user_id' => (int) $client->user->public_id + 1,
-            'account_key' => $this->organisation->account_key,
+            'organisation_key' => $this->organisation->organisation_key,
             'updated_at' => $this->getTimestamp($client->updated_at),
             'archived_at' => $this->getTimestamp($client->deleted_at),
             'address1' => $client->address1,

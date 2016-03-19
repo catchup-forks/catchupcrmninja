@@ -5,7 +5,7 @@ use Auth;
 use Session;
 use App\Models\Invitation;
 use App\Models\Contact;
-use App\Models\Account;
+use App\Models\Organisation;
 
 class Authenticate {
 	/**
@@ -41,7 +41,7 @@ class Authenticate {
 			}
 			
 			// Does this organisation require portal passwords?
-			$organisation = Account::whereId($organisation_id)->first();
+			$organisation = Organisation::whereId($organisation_id)->first();
 			if(!$organisation->enable_portal_password || !$organisation->isPro()){
 				$authenticated = true;
 			}

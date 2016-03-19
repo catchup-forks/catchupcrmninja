@@ -8,7 +8,7 @@ use App\Models\BankAccount;
 use App\Models\BankSubaccount;
 use App\Ninja\Repositories\BaseRepository;
 
-class BankOrganisationRepository extends BaseRepository
+class BankAccountRepository extends BaseRepository
 {
     public function getClassName()
     {

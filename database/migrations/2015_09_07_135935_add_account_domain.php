@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 
-class AddAccountDomain extends Migration
+class AddOrganisationDomain extends Migration
 {
     /**
      * Run the migrations.

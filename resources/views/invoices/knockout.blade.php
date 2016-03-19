@@ -341,7 +341,7 @@ function InvoiceModel(data) {
 
     self.formatMoney = function(amount) {
         var client = $.parseJSON(ko.toJSON(self.client()));
-        return formatMoneyAccount(amount, self.organisation, client);
+        return formatMoneyOrganisation(amount, self.organisation, client);
     }
 
     self.totals = ko.observable();

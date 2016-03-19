@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class SupportLockingAccount extends Migration {
+class SupportLockingOrganisation extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -17,7 +17,7 @@ class SupportLockingAccount extends Migration {
             $table->smallInteger('failed_logins')->nullable();
         });
 
-        Schema::table('account_gateways', function($table)
+        Schema::table('organisation_gateways', function($table)
         {
             $table->boolean('show_address')->default(true)->nullable();
             $table->boolean('update_address')->default(true)->nullable();
@@ -36,7 +36,7 @@ class SupportLockingAccount extends Migration {
             $table->dropColumn('failed_logins');
         });
 
-        Schema::table('account_gateways', function($table)
+        Schema::table('organisation_gateways', function($table)
         {
             $table->dropColumn('show_address');
             $table->dropColumn('update_address');

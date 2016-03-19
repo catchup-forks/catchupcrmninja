@@ -10,7 +10,7 @@ use Redirect;
 use Datatable;
 use URL;
 
-use App\Models\AccountToken;
+use App\Models\OrganisationToken;
 use App\Services\TokenService;
 use App\Ninja\Repositories\OrganisationRepository;
 
@@ -37,7 +37,7 @@ class TokenController extends BaseController
 
     public function edit($publicId)
     {
-        $token = AccountToken::where('organisation_id', '=', Auth::user()->organisation_id)
+        $token = OrganisationToken::where('organisation_id', '=', Auth::user()->organisation_id)
                         ->where('public_id', '=', $publicId)->firstOrFail();
 
         $data = [
@@ -99,7 +99,7 @@ class TokenController extends BaseController
             ];
 
             if ($tokenPublicId) {
-                $token = AccountToken::where('organisation_id', '=', Auth::user()->organisation_id)
+                $token = OrganisationToken::where('organisation_id', '=', Auth::user()->organisation_id)
                             ->where('public_id', '=', $tokenPublicId)->firstOrFail();
             }
 
@@ -112,7 +112,7 @@ class TokenController extends BaseController
             if ($tokenPublicId) {
                 $token->name = trim(Input::get('name'));
             } else {
-                $token = AccountToken::createNew();
+                $token = OrganisationToken::createNew();
                 $token->name = trim(Input::get('name'));
                 $token->token = str_random(RANDOM_KEY_LENGTH);
             }

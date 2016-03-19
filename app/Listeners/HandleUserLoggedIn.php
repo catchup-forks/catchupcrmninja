@@ -12,16 +12,16 @@ use Illuminate\Contracts\Queue\ShouldBeQueued;
 
 class HandleUserLoggedIn {
 
-    protected $accountRepo;
+    protected $organisationRepo;
 
 	/**
 	 * Create the event handler.
 	 *
 	 * @return void
 	 */
-	public function __construct(OrganisationRepository $accountRepo)
+	public function __construct(OrganisationRepository $organisationRepo)
 	{
-        $this->accountRepo = $accountRepo;
+        $this->organisationRepo = $organisationRepo;
 	}
 
 	/**
@@ -41,7 +41,7 @@ class HandleUserLoggedIn {
         $organisation->last_login = Carbon::now()->toDateTimeString();
         $organisation->save();
 
-        $users = $this->accountRepo->loadAccounts(Auth::user()->id);
+        $users = $this->organisationRepo->loadOrganisations(Auth::user()->id);
         Session::put(SESSION_USER_ORGANISATIONS, $users);
 
         $organisation->loadLocalizationSettings();

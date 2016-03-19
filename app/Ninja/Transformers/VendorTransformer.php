@@ -17,7 +17,7 @@ class VendorTransformer extends EntityTransformer
     * @SWG\Property(property="balance", type="float", example=10, readOnly=true)
     * @SWG\Property(property="paid_to_date", type="float", example=10, readOnly=true)
     * @SWG\Property(property="user_id", type="integer", example=1)
-    * @SWG\Property(property="account_key", type="string", example="123456")
+    * @SWG\Property(property="organisation_key", type="string", example="123456")
     * @SWG\Property(property="updated_at", type="timestamp", example="")
     * @SWG\Property(property="archived_at", type="timestamp", example="1451160233")
     * @SWG\Property(property="address1", type="string", example="10 Main St.")
@@ -67,7 +67,7 @@ class VendorTransformer extends EntityTransformer
             'balance' => (float) $vendor->balance,
             'paid_to_date' => (float) $vendor->paid_to_date,
             'user_id' => (int) $vendor->user->public_id + 1,
-            'account_key' => $this->organisation->account_key,
+            'organisation_key' => $this->organisation->organisation_key,
             'updated_at' => $this->getTimestamp($vendor->updated_at),
             'archived_at' => $this->getTimestamp($vendor->deleted_at),
             'address1' => $vendor->address1,

@@ -16,7 +16,7 @@ use Utils;
 use App\Models\Gateway;
 use App\Models\Organisation;
 use App\Models\BankAccount;
-use App\Ninja\Repositories\BankOrganisationRepository;
+use App\Ninja\Repositories\BankAccountRepository;
 use App\Services\BankAccountService;
 use App\Http\Requests\CreateBankAccountRequest;
 
@@ -25,7 +25,7 @@ class BankAccountController extends BaseController
     protected $bankAccountService;
     protected $bankAccountRepo;
 
-    public function __construct(BankAccountService $bankAccountService, BankOrganisationRepository $bankAccountRepo)
+    public function __construct(BankAccountService $bankAccountService, BankAccountRepository $bankAccountRepo)
     {
         //parent::__construct();
 
@@ -86,7 +86,7 @@ class BankAccountController extends BaseController
         return Redirect::to('settings/' . ORGANISATION_BANKS);
     }
 
-    public function validateAccount()
+    public function validateOrganisation()
     {
         $publicId = Input::get('public_id');
         $username = trim(Input::get('bank_username'));

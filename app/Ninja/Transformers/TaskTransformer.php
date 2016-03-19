@@ -41,7 +41,7 @@ class TaskTransformer extends EntityTransformer
     {
         return [
             'id' => (int) $task->public_id,
-            'account_key' => $this->organisation->account_key,
+            'organisation_key' => $this->organisation->organisation_key,
             'user_id' => (int) $task->user->public_id + 1,
             'description' => $task->description,
             'duration' => $task->getDuration()

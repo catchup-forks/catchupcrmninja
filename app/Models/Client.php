@@ -256,9 +256,9 @@ class Client extends EntityModel
 
     public function getGatewayToken()
     {
-        $this->organisation->load('account_gateways');
+        $this->organisation->load('organisation_gateways');
 
-        if (!count($this->organisation->account_gateways)) {
+        if (!count($this->organisation->organisation_gateways)) {
             return false;
         }
 

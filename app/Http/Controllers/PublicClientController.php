@@ -117,7 +117,7 @@ class PublicClientController extends BaseController
             'showApprove' => $showApprove,
             'showBreadcrumbs' => false,
             'hideLogo' => $organisation->isWhiteLabel(),
-            'hideHeader' => $organisation->isNinjaAccount(),
+            'hideHeader' => $organisation->isNinjaOrganisation(),
             'hideDashboard' => !$organisation->enable_client_portal,
             'clientViewCSS' => $organisation->clientViewCSS(),
             'clientFontUrl' => $organisation->getFontsUrl(),

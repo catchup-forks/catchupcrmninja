@@ -125,8 +125,8 @@ class OrganisationGatewayController extends BaseController
             }
         }
 
-        $organisation->load('account_gateways');
-        $currentGateways = $organisation->account_gateways;
+        $organisation->load('organisation_gateways');
+        $currentGateways = $organisation->organisation_gateways;
         $gateways = Gateway::where('payment_library_id', '=', 1)->orderBy('name')->get();
 
         foreach ($gateways as $gateway) {
@@ -227,7 +227,7 @@ class OrganisationGatewayController extends BaseController
                 ->withErrors($validator)
                 ->withInput();
         } else {
-            $organisation = Organisation::with('account_gateways')->findOrFail(Auth::user()->organisation_id);
+            $organisation = Organisation::with('organisation_gateways')->findOrFail(Auth::user()->organisation_id);
             $oldConfig = null;
 
             if ($OrganisationGatewayPublicId) {
@@ -274,7 +274,7 @@ class OrganisationGatewayController extends BaseController
             if ($OrganisationGatewayPublicId) {
                 $OrganisationGateway->save();
             } else {
-                $organisation->account_gateways()->save($OrganisationGateway);
+                $organisation->organisation_gateways()->save($OrganisationGateway);
             }
 
             if (Input::get('token_billing_type_id')) {

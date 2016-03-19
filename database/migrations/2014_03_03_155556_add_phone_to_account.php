@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddPhoneToAccount extends Migration {
+class AddPhoneToOrganisation extends Migration {
 
 	/**
 	 * Run the migrations.

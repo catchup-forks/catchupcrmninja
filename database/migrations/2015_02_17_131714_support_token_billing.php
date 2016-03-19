@@ -31,7 +31,7 @@ class SupportTokenBilling extends Migration {
 
             $table->foreign('organisation_id')->references('id')->on('organisations')->onDelete('cascade');
             $table->foreign('contact_id')->references('id')->on('contacts')->onDelete('cascade');
-            $table->foreign('account_gateway_id')->references('id')->on('account_gateways')->onDelete('cascade');
+            $table->foreign('account_gateway_id')->references('id')->on('organisation_gateways')->onDelete('cascade');
             $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
         });
 

@@ -180,8 +180,8 @@ Route::group([
     Route::get('start_trial', 'OrganisationController@startTrial');
     Route::get('restore_user/{user_id}', 'UserController@restoreUser');
     Route::post('users/change_password', 'UserController@changePassword');
-    Route::get('/switch_account/{user_id}', 'UserController@switchAccount');
-    Route::get('/unlink_account/{user_organisation_id}/{user_id}', 'UserController@unlinkAccount');
+    Route::get('/switch_account/{user_id}', 'UserController@switchOrganisation');
+    Route::get('/unlink_organisation/{user_organisation_id}/{user_id}', 'UserController@unlinkOrganisation');
     Route::get('/manage_companies', 'UserController@manageCompanies');
 
     Route::get('api/tokens', array('as'=>'api.tokens', 'uses'=>'TokenController@getDatatable'));
@@ -201,7 +201,7 @@ Route::group([
     Route::get('settings/charts_and_reports', 'ReportController@showReports');
     Route::post('settings/charts_and_reports', 'ReportController@showReports');
 
-    Route::post('settings/cancel_account', 'OrganisationController@cancelAccount');
+    Route::post('settings/cancel_account', 'OrganisationController@cancelOrganisation');
     Route::post('settings/company_details', 'OrganisationController@updateDetails');
     Route::get('settings/{section?}', 'OrganisationController@showSection');
     Route::post('settings/{section?}', 'OrganisationController@doSection');
@@ -221,12 +221,12 @@ Route::group([
 
     Route::resource('gateways', 'OrganisationGatewayController');
     Route::get('api/gateways', array('as'=>'api.gateways', 'uses'=>'OrganisationGatewayController@getDatatable'));
-    Route::post('account_gateways/bulk', 'OrganisationGatewayController@bulk');
+    Route::post('organisation_gateways/bulk', 'OrganisationGatewayController@bulk');
 
     Route::resource('bank_accounts', 'BankAccountController');
     Route::get('api/bank_accounts', array('as'=>'api.bank_accounts', 'uses'=>'BankAccountController@getDatatable'));
     Route::post('bank_accounts/bulk', 'BankAccountController@bulk');
-    Route::post('bank_accounts/validate', 'BankAccountController@validateAccount');
+    Route::post('bank_accounts/validate', 'BankAccountController@validateOrganisation');
     Route::post('bank_accounts/import_expenses/{bank_id}', 'BankAccountController@importExpenses');
 });
 
@@ -234,11 +234,11 @@ Route::group([
 Route::group(['middleware' => 'api', 'prefix' => 'api/v1'], function()
 {
     Route::get('ping', 'ClientApiController@ping');
-    Route::post('login', 'AccountApiController@login');
-    Route::post('register', 'AccountApiController@register');
-    Route::get('static', 'AccountApiController@getStaticData');
-    Route::get('organisations', 'AccountApiController@show');
-    Route::put('organisations', 'AccountApiController@update');
+    Route::post('login', 'OrganisationApiController@login');
+    Route::post('register', 'OrganisationApiController@register');
+    Route::get('static', 'OrganisationApiController@getStaticData');
+    Route::get('organisations', 'OrganisationApiController@show');
+    Route::put('organisations', 'OrganisationApiController@update');
     Route::resource('clients', 'ClientApiController');
     Route::get('quotes', 'QuoteApiController@index');
     Route::resource('quotes', 'QuoteApiController');
@@ -250,13 +250,13 @@ Route::group(['middleware' => 'api', 'prefix' => 'api/v1'], function()
     Route::resource('tasks', 'TaskApiController');
     Route::post('hooks', 'IntegrationController@subscribe');
     Route::post('email_invoice', 'InvoiceApiController@emailInvoice');
-    Route::get('user_accounts', 'AccountApiController@getUserAccounts');
+    Route::get('user_organisations', 'OrganisationApiController@getUserOrganisations');
     Route::resource('products', 'ProductApiController');
     Route::resource('tax_rates', 'TaxRateApiController');
     Route::resource('users', 'UserApiController');
     Route::resource('expenses','ExpenseApiController');
-    Route::post('add_token', 'AccountApiController@addDeviceToken');
-    Route::post('update_notifications', 'AccountApiController@updatePushNotifications');
+    Route::post('add_token', 'OrganisationApiController@addDeviceToken');
+    Route::post('update_notifications', 'OrganisationApiController@updatePushNotifications');
 
     // Vendor
     Route::resource('vendors', 'VendorApiController');
@@ -474,7 +474,7 @@ if (!defined('CONTACT_EMAIL')) {
     define('SESSION_DATETIME_FORMAT', 'datetimeFormat');
     define('SESSION_COUNTER', 'sessionCounter');
     define('SESSION_LOCALE', 'sessionLocale');
-    define('SESSION_USER_ORGANISATIONS', 'userAccounts');
+    define('SESSION_USER_ORGANISATIONS', 'userOrganisation');
     define('SESSION_REFERRAL_CODE', 'referralCode');
 
     define('SESSION_LAST_REQUEST_PAGE', 'SESSION_LAST_REQUEST_PAGE');

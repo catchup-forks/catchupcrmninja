@@ -11,7 +11,7 @@ use App\Events\UserSignedUp;
 
 class AuthService
 {
-    private $accountRepo;
+    private $organisationRepo;
 
     public static $providers = [
         1 => SOCIAL_GOOGLE,
@@ -22,7 +22,7 @@ class AuthService
 
     public function __construct(OrganisationRepository $repo)
     {
-        $this->accountRepo = $repo;
+        $this->organisationRepo = $repo;
     }
 
     public static function getProviders()
@@ -48,7 +48,7 @@ class AuthService
             $email = $socialiteUser->email;
             $oauthUserId = $socialiteUser->id;
             $name = Utils::splitName($socialiteUser->name);
-            $result = $this->accountRepo->updateUserFromOauth($user, $name[0], $name[1], $email, $providerId, $oauthUserId);
+            $result = $this->organisationRepo->updateUserFromOauth($user, $name[0], $name[1], $email, $providerId, $oauthUserId);
 
             if ($result === true) {
                 if (!$isRegistered) {
@@ -62,7 +62,7 @@ class AuthService
                 Session::flash('error', $result);
             }
         } else {
-            if ($user = $this->accountRepo->findUserByOauth($providerId, $socialiteUser->id)) {
+            if ($user = $this->organisationRepo->findUserByOauth($providerId, $socialiteUser->id)) {
                 Auth::login($user, true);
                 event(new UserLoggedIn());
             } else {

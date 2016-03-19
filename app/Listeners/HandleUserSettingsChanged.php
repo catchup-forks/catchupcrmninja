@@ -15,9 +15,9 @@ class HandleUserSettingsChanged {
 	 *
 	 * @return void
 	 */
-	public function __construct(OrganisationRepository $accountRepo, UserMailer $userMailer)
+	public function __construct(OrganisationRepository $organisationRepo, UserMailer $userMailer)
 	{
-        $this->accountRepo = $accountRepo;
+        $this->organisationRepo = $organisationRepo;
         $this->userMailer = $userMailer;
 	}
 
@@ -36,7 +36,7 @@ class HandleUserSettingsChanged {
         $organisation = Auth::user()->organisation;
         $organisation->loadLocalizationSettings();
 
-        $users = $this->accountRepo->loadAccounts(Auth::user()->id);
+        $users = $this->organisationRepo->loadOrganisations(Auth::user()->id);
         Session::put(SESSION_USER_ORGANISATIONS, $users);
 
         if ($event->user && $event->user->isEmailBeingChanged()) {

@@ -11,7 +11,7 @@ class InvoiceItemTransformer extends EntityTransformer
         return [
             'id' => (int) $item->public_id,
             'product_key' => $item->product_key,
-            'account_key' => $this->organisation->account_key,
+            'organisation_key' => $this->organisation->organisation_key,
             'user_id' => (int) $item->user_id,
             'updated_at' => $this->getTimestamp($item->updated_at),
             'archived_at' => $this->getTimestamp($item->deleted_at),

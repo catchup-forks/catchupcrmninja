@@ -19,7 +19,7 @@ class ExpenseTransformer extends EntityTransformer
             'transaction_id' => $expense->transaction_id,
             'bank_id' => $expense->bank_id,
             'expense_currency_id' => (int) $expense->expense_currency_id,
-            'account_key' => $this->organisation->account_key,
+            'organisation_key' => $this->organisation->organisation_key,
             'amount' => (float) $expense->amount,
             'expense_date' => $expense->expense_date,
             'exchange_rate' => (float) $expense->exchange_rate,

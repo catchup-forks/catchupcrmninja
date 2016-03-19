@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use League\Fractal\Manager;
 use League\Fractal\Resource\Item;
 use App\Ninja\Serializers\ArraySerializer;
-use App\Ninja\Transformers\AccountTransformer;
+use App\Ninja\Transformers\OrganisationTransformer;
 use App\Models\Client;
 use App\Models\Contact;
 use App\Models\Credit;
@@ -45,7 +45,7 @@ class ExportController extends BaseController
         $organisation = Auth::user()->organisation;
         $organisation->loadAllData();
 
-        $resource = new Item($organisation, new AccountTransformer);
+        $resource = new Item($organisation, new OrganisationTransformer);
         $data = $manager->createData($resource)->toArray();
 
         return response()->json($data);

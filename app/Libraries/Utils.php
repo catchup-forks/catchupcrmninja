@@ -108,7 +108,7 @@ class Utils
         return false;
     }
 
-    public static function allowNewAccounts()
+    public static function allowNewOrganisations()
     {
         return Utils::isNinja() || Auth::check();
     }
@@ -361,7 +361,7 @@ class Utils
         return $string;
     }
 
-    public static function maskAccountNumber($value)
+    public static function maskOrganisationNumber($value)
     {
         $length = strlen($value);
         if ($length < 4) {

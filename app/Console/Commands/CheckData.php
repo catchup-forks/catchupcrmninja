@@ -53,12 +53,12 @@ class CheckData extends Command {
 
         $this->checkBalances();
 
-        $this->checkAccountData();
+        $this->checkOrganisationData();
 
         $this->info('Done');
     }
 
-    private function checkAccountData()
+    private function checkOrganisationData()
     {
         $tables = [
             'activities' => [

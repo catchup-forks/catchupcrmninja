@@ -17,7 +17,7 @@ class Organisation extends Eloquent
     use PresentableTrait;
     use SoftDeletes;
 
-    protected $presenter = 'App\Ninja\Presenters\AccountPresenter';
+    protected $presenter = 'App\Ninja\Presenters\OrganisationPresenter';
     protected $dates = ['deleted_at'];
     protected $hidden = ['ip'];
 
@@ -76,7 +76,7 @@ class Organisation extends Eloquent
     */
     public function account_tokens()
     {
-        return $this->hasMany('App\Models\AccountToken');
+        return $this->hasMany('App\Models\OrganisationToken');
     }
 
     public function users()
@@ -99,7 +99,7 @@ class Organisation extends Eloquent
         return $this->hasMany('App\Models\Invoice');
     }
 
-    public function account_gateways()
+    public function organisation_gateways()
     {
         return $this->hasMany('App\Models\OrganisationGateway');
     }
@@ -193,12 +193,12 @@ class Organisation extends Eloquent
 
     public function isGatewayConfigured($gatewayId = 0)
     {
-        $this->load('account_gateways');
+        $this->load('organisation_gateways');
 
         if ($gatewayId) {
             return $this->getGatewayConfig($gatewayId) != false;
         } else {
-            return count($this->account_gateways) > 0;
+            return count($this->organisation_gateways) > 0;
         }
     }
 
@@ -360,7 +360,7 @@ class Organisation extends Eloquent
 
     public function getGatewayByType($type = PAYMENT_TYPE_ANY)
     {
-        foreach ($this->account_gateways as $gateway) {
+        foreach ($this->organisation_gateways as $gateway) {
             if (!$type || $type == PAYMENT_TYPE_ANY) {
                 return $gateway;
             } elseif ($gateway->isPaymentType($type)) {
@@ -373,7 +373,7 @@ class Organisation extends Eloquent
 
     public function getGatewayConfig($gatewayId)
     {
-        foreach ($this->account_gateways as $gateway) {
+        foreach ($this->organisation_gateways as $gateway) {
             if ($gateway->gateway_id == $gatewayId) {
                 return $gateway;
             }
@@ -389,14 +389,14 @@ class Organisation extends Eloquent
 
     public function getLogoPath()
     {
-        $fileName = 'logo/' . $this->account_key;
+        $fileName = 'logo/' . $this->organisation_key;
 
         return file_exists($fileName.'.png') ? $fileName.'.png' : $fileName.'.jpg';
     }
 
     public function getLogoFullPath()
     {
-        $fileName = public_path() . '/logo/' . $this->account_key;
+        $fileName = public_path() . '/logo/' . $this->organisation_key;
 
         return file_exists($fileName.'.png') ? $fileName.'.png' : $fileName.'.jpg';
     }
@@ -720,9 +720,9 @@ class Organisation extends Eloquent
         return $data;
     }
 
-    public function isNinjaAccount()
+    public function isNinjaOrganisation()
     {
-        return $this->account_key === NINJA_ORGANISATION_KEY;
+        return $this->organisation_key === NINJA_ORGANISATION_KEY;
     }
 
     public function startTrial()
@@ -741,7 +741,7 @@ class Organisation extends Eloquent
             return true;
         }
 
-        if ($this->isNinjaAccount()) {
+        if ($this->isNinjaOrganisation()) {
             return true;
         }
 
@@ -798,7 +798,7 @@ class Organisation extends Eloquent
 
     public function isWhiteLabel()
     {
-        if ($this->isNinjaAccount()) {
+        if ($this->isNinjaOrganisation()) {
             return false;
         }
 

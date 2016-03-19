@@ -8,36 +8,36 @@ use Validator;
 use Cache;
 use App\Models\Client;
 use App\Models\Organisation;
-use App\Models\AccountToken;
+use App\Models\OrganisationToken;
 use App\Ninja\Repositories\OrganisationRepository;
 use Illuminate\Http\Request;
 use League\Fractal;
 use League\Fractal\Manager;
 use App\Ninja\Serializers\ArraySerializer;
-use App\Ninja\Transformers\AccountTransformer;
-use App\Ninja\Transformers\UserAccountTransformer;
+use App\Ninja\Transformers\OrganisationTransformer;
+use App\Ninja\Transformers\UserOrganisationTransformer;
 use App\Http\Controllers\BaseAPIController;
 use Swagger\Annotations as SWG;
 
 use App\Events\UserSignedUp;
 use App\Http\Requests\RegisterRequest;
-use App\Http\Requests\UpdateAccountRequest;
+use App\Http\Requests\UpdateOrganisationRequest;
 
-class AccountApiController extends BaseAPIController
+class OrganisationApiController extends BaseAPIController
 {
-    protected $accountRepo;
+    protected $organisationRepo;
 
-    public function __construct(OrganisationRepository $accountRepo)
+    public function __construct(OrganisationRepository $organisationRepo)
     {
         parent::__construct();
 
-        $this->accountRepo = $accountRepo;
+        $this->organisationRepo = $organisationRepo;
     }
 
     public function register(RegisterRequest $request)
     {
 
-        $organisation = $this->accountRepo->create($request->first_name, $request->last_name, $request->email, $request->password);
+        $organisation = $this->organisationRepo->create($request->first_name, $request->last_name, $request->email, $request->password);
         $user = $organisation->users()->first();
         
         Auth::login($user, true);
@@ -60,10 +60,10 @@ class AccountApiController extends BaseAPIController
     {
         // Create a new token only if one does not already exist
         $user = Auth::user();
-        $this->accountRepo->createTokens($user, $request->token_name);
+        $this->organisationRepo->createTokens($user, $request->token_name);
 
-        $users = $this->accountRepo->findUsers($user, 'organisation.account_tokens');
-        $transformer = new UserAccountTransformer($user->organisation, $request->serializer, $request->token_name);
+        $users = $this->organisationRepo->findUsers($user, 'organisation.account_tokens');
+        $transformer = new UserOrganisationTransformer($user->organisation, $request->serializer, $request->token_name);
         $data = $this->createCollection($users, $transformer, 'user_account');
 
         return $this->response($data);
@@ -76,7 +76,7 @@ class AccountApiController extends BaseAPIController
 
         $organisation->loadAllData($updatedAt);
 
-        $transformer = new AccountTransformer(null, $request->serializer);
+        $transformer = new OrganisationTransformer(null, $request->serializer);
         $organisation = $this->createItem($organisation, $transformer, 'organisation');
 
         return $this->response($organisation);
@@ -94,17 +94,17 @@ class AccountApiController extends BaseAPIController
         return $this->response($data);
     }
 
-    public function getUserAccounts(Request $request)
+    public function getUserOrganisations(Request $request)
     {
         return $this->processLogin($request);
     }
 
-    public function update(UpdateAccountRequest $request)
+    public function update(UpdateOrganisationRequest $request)
     {
         $organisation = Auth::user()->organisation;
-        $this->accountRepo->save($request->input(), $organisation);
+        $this->organisationRepo->save($request->input(), $organisation);
 
-        $transformer = new AccountTransformer(null, $request->serializer);
+        $transformer = new OrganisationTransformer(null, $request->serializer);
         $organisation = $this->createItem($organisation, $transformer, 'organisation');
 
         return $this->response($organisation);
@@ -124,7 +124,7 @@ class AccountApiController extends BaseAPIController
                     $devices[$x]['token'] = $request->token; //update
                     $organisation->devices = json_encode($devices);
                     $organisation->save();
-                    $devices[$x]['account_key'] = $organisation->account_key;
+                    $devices[$x]['organisation_key'] = $organisation->organisation_key;
 
                     return $this->response($devices[$x]);
                 }
@@ -136,7 +136,7 @@ class AccountApiController extends BaseAPIController
             'token' => $request->token,
             'email' => $request->email,
             'device' => $request->device,
-            'account_key' => $organisation->account_key,
+            'organisation_key' => $organisation->organisation_key,
             'notify_sent' => TRUE,
             'notify_viewed' => TRUE,
             'notify_approved' => TRUE,
@@ -169,7 +169,7 @@ class AccountApiController extends BaseAPIController
                     'token' => $devices[$x]['token'],
                     'email' => $devices[$x]['email'],
                     'device' => $devices[$x]['device'],
-                    'account_key' => $organisation->account_key,
+                    'organisation_key' => $organisation->organisation_key,
                     'notify_sent' => $request->notify_sent,
                     'notify_viewed' => $request->notify_viewed,
                     'notify_approved' => $request->notify_approved,

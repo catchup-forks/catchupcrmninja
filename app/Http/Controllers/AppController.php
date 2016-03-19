@@ -24,15 +24,15 @@ use App\Services\EmailService;
 
 class AppController extends BaseController
 {
-    protected $accountRepo;
+    protected $organisationRepo;
     protected $mailer;
     protected $emailService;
 
-    public function __construct(OrganisationRepository $accountRepo, Mailer $mailer, EmailService $emailService)
+    public function __construct(OrganisationRepository $organisationRepo, Mailer $mailer, EmailService $emailService)
     {
         //parent::__construct();
 
-        $this->accountRepo = $accountRepo;
+        $this->organisationRepo = $organisationRepo;
         $this->mailer = $mailer;
         $this->emailService = $emailService;
     }
@@ -119,7 +119,7 @@ class AppController extends BaseController
         $lastName = trim(Input::get('last_name'));
         $email = trim(strtolower(Input::get('email')));
         $password = trim(Input::get('password'));
-        $organisation = $this->accountRepo->create($firstName, $lastName, $email, $password);
+        $organisation = $this->organisationRepo->create($firstName, $lastName, $email, $password);
         $user = $organisation->users()->first();
 
         return Redirect::to('/login');
@@ -297,7 +297,7 @@ class AppController extends BaseController
             $data = DB::table('organisations')
                             ->leftJoin('payments', 'payments.organisation_id', '=', 'organisations.id')
                             ->leftJoin('clients', 'clients.id', '=', 'payments.client_id')
-                            ->where('organisations.account_key', '=', NINJA_ORGANISATION_KEY)
+                            ->where('organisations.organisation_key', '=', NINJA_ORGANISATION_KEY)
                             ->where('payments.is_deleted', '=', false)
                             ->get([
                                 'clients.public_id as client_id',

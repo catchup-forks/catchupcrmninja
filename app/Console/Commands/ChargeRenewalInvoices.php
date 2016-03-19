@@ -14,7 +14,7 @@ class ChargeRenewalInvoices extends Command
     protected $description = 'Charge renewal invoices';
     
     protected $mailer;
-    protected $accountRepo;
+    protected $organisationRepo;
     protected $paymentService;
 
     public function __construct(Mailer $mailer, OrganisationRepository $repo, PaymentService $paymentService)
@@ -22,7 +22,7 @@ class ChargeRenewalInvoices extends Command
         parent::__construct();
 
         $this->mailer = $mailer;
-        $this->accountRepo = $repo;
+        $this->organisationRepo = $repo;
         $this->paymentService = $paymentService;
     }
 
@@ -30,7 +30,7 @@ class ChargeRenewalInvoices extends Command
     {
         $this->info(date('Y-m-d').' ChargeRenewalInvoices...');
 
-        $organisation = $this->accountRepo->getNinjaAccount();
+        $organisation = $this->organisationRepo->getNinjaAccount();
         $invoices = Invoice::whereOrganisationId($organisation->id)
                         ->whereDueDate(date('Y-m-d'))
                         ->with('client')

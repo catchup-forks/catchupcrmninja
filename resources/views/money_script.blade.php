@@ -36,10 +36,10 @@
         var organisation = invoice.organisation;
         var client = invoice.client;
 
-        return formatMoneyAccount(value, organisation, client, hideSymbol);
+        return formatMoneyOrganisation(value, organisation, client, hideSymbol);
     }
 
-    function formatMoneyAccount(value, organisation, client, hideSymbol) {
+    function formatMoneyOrganisation(value, organisation, client, hideSymbol) {
         var currencyId = false;
         var countryId = false;
 

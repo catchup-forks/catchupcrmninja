@@ -123,7 +123,7 @@
           handleSignedUp();
           NINJA.isRegistered = true;
           $('#signUpButton').hide();
-          $('#myAccountButton').html(result);
+          $('#myOrganisationButton').html(result);
         }
         $('#signUpSuccessDiv, #signUpFooter, #closeSignUpButton').show();
         $('#working, #saveSignUpButton').hide();
@@ -428,7 +428,7 @@
 
         <div class="btn-group user-dropdown">
           <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
-            <div id="myAccountButton" class="ellipsis nav-organisation-name" style="max-width:{{ Utils::isPro() && ! Utils::isTrial() ? '130' : '100' }}px;">
+            <div id="myOrganisationButton" class="ellipsis nav-organisation-name" style="max-width:{{ Utils::isPro() && ! Utils::isTrial() ? '130' : '100' }}px;">
                 @if (session(SESSION_USER_ORGANISATIONS) && count(session(SESSION_USER_ORGANISATIONS)))
                     {{ Auth::user()->organisation->getDisplayName() }}
                 @else

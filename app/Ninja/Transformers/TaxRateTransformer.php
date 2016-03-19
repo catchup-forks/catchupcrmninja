@@ -13,7 +13,7 @@ class TaxRateTransformer extends EntityTransformer
         /**
          * @SWG\Property(property="id", type="integer", example=1, readOnly=true)
          * @SWG\Property(property="name", type="string", example="GST")
-         * @SWG\Property(property="account_key", type="string", example="asimplestring", readOnly=true)
+         * @SWG\Property(property="organisation_key", type="string", example="asimplestring", readOnly=true)
          * @SWG\Property(property="rate", type="float", example=17.5)
          * @SWG\Property(property="updated_at", type="date-time", example="2016-01-01 12:10:00")
          * @SWG\Property(property="archived_at", type="date-time", example="2016-01-01 12:10:00")
@@ -27,7 +27,7 @@ class TaxRateTransformer extends EntityTransformer
             'rate' => (float) $taxRate->rate,
             'updated_at' => $this->getTimestamp($taxRate->updated_at),
             'archived_at' => $this->getTimestamp($taxRate->deleted_at),
-            'account_key' => $this->organisation->account_key,
+            'organisation_key' => $this->organisation->organisation_key,
             ];
     }
 }

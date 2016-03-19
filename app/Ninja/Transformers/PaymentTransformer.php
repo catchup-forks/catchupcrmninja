@@ -49,7 +49,7 @@ class PaymentTransformer extends EntityTransformer
         return [
             'id' => (int) $payment->public_id,
             'amount' => (float) $payment->amount,
-            'account_key' => $this->organisation->account_key,
+            'organisation_key' => $this->organisation->organisation_key,
             'user_id' => (int) $payment->user->public_id + 1,
             'transaction_reference' => $payment->transaction_reference,
             'payment_date' => $payment->payment_date,

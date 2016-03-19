@@ -86,8 +86,8 @@
                     ->withAttributes(['id' => 'loginButton'])
                     ->large()->submit()->block() !!}</p>
 
-            @if (Input::get('new_company') && Utils::allowNewAccounts())
-                {!! Former::hidden('link_accounts')->value('true') !!}
+            @if (Input::get('new_company') && Utils::allowNewOrganisations())
+                {!! Former::hidden('link_organisations')->value('true') !!}
                 <center><p>- {{ trans('texts.or') }} -</p></center>
                 <p>{!! Button::primary(trans('texts.new_company'))->asLinkTo(URL::to('/invoice_now?new_company=true&sign_up=true'))->large()->submit()->block() !!}</p><br/>
             @elseif (Utils::isOAuthEnabled())

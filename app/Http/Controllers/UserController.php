@@ -23,16 +23,16 @@ use App\Services\UserService;
 
 class UserController extends BaseController
 {
-    protected $accountRepo;
+    protected $organisationRepo;
     protected $contactMailer;
     protected $userMailer;
     protected $userService;
 
-    public function __construct(OrganisationRepository $accountRepo, ContactMailer $contactMailer, UserMailer $userMailer, UserService $userService)
+    public function __construct(OrganisationRepository $organisationRepo, ContactMailer $contactMailer, UserMailer $userMailer, UserService $userService)
     {
         //parent::__construct();
 
-        $this->accountRepo = $accountRepo;
+        $this->organisationRepo = $organisationRepo;
         $this->contactMailer = $contactMailer;
         $this->userMailer = $userMailer;
         $this->userService = $userService;
@@ -263,7 +263,7 @@ class UserController extends BaseController
             } else {
                 if (Session::has(REQUESTED_PRO_PLAN)) {
                     Session::forget(REQUESTED_PRO_PLAN);
-                    $invitation = $this->accountRepo->enableProPlan();
+                    $invitation = $this->organisationRepo->enableProPlan();
 
                     return Redirect::to($invitation->getLink());
                 } else {
@@ -287,7 +287,7 @@ class UserController extends BaseController
         if (Auth::check()) {
             if (!Auth::user()->registered) {
                 $organisation = Auth::user()->organisation;
-                $this->accountRepo->unlinkAccount($organisation);
+                $this->organisationRepo->unlinkOrganisation($organisation);
                 $organisation->forceDelete();
             }
         }
@@ -325,11 +325,11 @@ class UserController extends BaseController
         return RESULT_SUCCESS;
     }
 
-    public function switchAccount($newUserId)
+    public function switchOrganisation($newUserId)
     {
         $oldUserId = Auth::user()->id;
         $referer = Request::header('referer');
-        $organisation = $this->accountRepo->findUserAccounts($newUserId, $oldUserId);
+        $organisation = $this->organisationRepo->findUserOrganisations($newUserId, $oldUserId);
 
         if ($organisation) {
             if ($organisation->hasUserId($newUserId) && $organisation->hasUserId($oldUserId)) {
@@ -345,12 +345,12 @@ class UserController extends BaseController
         return Redirect::to($referer);
     }
 
-    public function unlinkAccount($userOrganisationId, $userId)
+    public function unlinkOrganisation($userOrganisationId, $userId)
     {
-        $this->accountRepo->unlinkUser($userOrganisationId, $userId);
+        $this->organisationRepo->unlinkUser($userOrganisationId, $userId);
         $referer = Request::header('referer');
 
-        $users = $this->accountRepo->loadAccounts(Auth::user()->id);
+        $users = $this->organisationRepo->loadOrganisations(Auth::user()->id);
         Session::put(SESSION_USER_ORGANISATIONS, $users);
 
         Session::flash('message', trans('texts.unlinked_account'));
@@ -359,7 +359,7 @@ class UserController extends BaseController
 
     public function manageCompanies()
     {
-        return View::make('users.account_management');
+        return View::make('users.organisation_management');
     }
 
 }

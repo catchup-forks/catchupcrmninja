@@ -24,11 +24,11 @@ class PaymentService extends BaseService
     public $lastError;
     protected $datatableService;
 
-    public function __construct(PaymentRepository $paymentRepo, OrganisationRepository $accountRepo, DatatableService $datatableService)
+    public function __construct(PaymentRepository $paymentRepo, OrganisationRepository $organisationRepo, DatatableService $datatableService)
     {
         $this->datatableService = $datatableService;
         $this->paymentRepo = $paymentRepo;
-        $this->accountRepo = $accountRepo;
+        $this->organisationRepo = $organisationRepo;
     }
 
     protected function getRepo()
@@ -216,14 +216,14 @@ class PaymentService extends BaseService
         $invoice = $invitation->invoice;
 
         // enable pro plan for hosted users
-        if ($invoice->organisation->account_key == NINJA_ORGANISATION_KEY && $invoice->amount == PRO_PLAN_PRICE) {
+        if ($invoice->organisation->organisation_key == NINJA_ORGANISATION_KEY && $invoice->amount == PRO_PLAN_PRICE) {
             $organisation = Organisation::with('users')->find($invoice->client->public_id);
             $organisation->pro_plan_paid = $organisation->getRenewalDate();
             $organisation->save();
 
             // sync pro organisations
             $user = $organisation->users()->first();
-            $this->accountRepo->syncAccounts($user->id, $organisation->pro_plan_paid);
+            $this->organisationRepo->syncOrganisations($user->id, $organisation->pro_plan_paid);
         }
 
         $payment = Payment::createNew($invitation);

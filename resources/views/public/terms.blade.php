@@ -52,7 +52,7 @@ body {
     <div class="row">
       <div class="col-md-8 col-md-offset-2">
         <h3>Definitions</h3>
-        <p>Invoiceninja.com users who access invoiceninja.com services are defined as “User Accounts”. User Organisation clients who use invoiceninja.com services to view and/or pay invoices are defined as “Clients.” The wording “data” and “content” are used interchangeably. </p></div>
+        <p>Invoiceninja.com users who access invoiceninja.com services are defined as “User Organisations”. User Organisation clients who use invoiceninja.com services to view and/or pay invoices are defined as “Clients.” The wording “data” and “content” are used interchangeably. </p></div>
     </div>
   </div>
   </section>
@@ -62,7 +62,7 @@ body {
     <div class="row">
       <div class="col-md-8 col-md-offset-2">
         <h3>Responsibility</h3>
-        <p>User Accounts must ensure the confidentiality of usernames and passwords used to access their organisation. User Accounts are responsible for all activity occurring under their organisation including all laws relating to data, privacy, personal information, international copyright and trademark laws.</p>
+        <p>User Organisations must ensure the confidentiality of usernames and passwords used to access their organisation. User Organisations are responsible for all activity occurring under their organisation including all laws relating to data, privacy, personal information, international copyright and trademark laws.</p>
       </div>
     </div>
   </div>
@@ -73,8 +73,8 @@ body {
     <div class="row">
       <div class="col-md-8 col-md-offset-2">
         <h3>Data Ownership</h3>
-        <p>The User Accounts owns all data generated in their invoiceninja.com organisation. Invoiceninja.com will not modify or distribute User Organisation data. Invoiceninja.com will store and access data solely for the purpose of providing services to User Accounts.</p>
-        <p>User Accounts are responsible for their data. Invoiceninja.com has no responsibility or liability for User Organisation data or Client experience. User Accounts are responsible for any loss or damage a User Organisation may cause to their Clients or other people. Although we have no obligation to do so, if deemed legally necessary invoiceninja.com has absolute discretion to remove or edit User Organisation data without notice or penalty.</p>
+        <p>The User Organisations owns all data generated in their invoiceninja.com organisation. Invoiceninja.com will not modify or distribute User Organisation data. Invoiceninja.com will store and access data solely for the purpose of providing services to User Organisations.</p>
+        <p>User Organisations are responsible for their data. Invoiceninja.com has no responsibility or liability for User Organisation data or Client experience. User Organisations are responsible for any loss or damage a User Organisation may cause to their Clients or other people. Although we have no obligation to do so, if deemed legally necessary invoiceninja.com has absolute discretion to remove or edit User Organisation data without notice or penalty.</p>
         <p>Invoiceninja.com does not own User Organisation data, but we do reserve the right to use User Organisation data as necessary to operate invoiceninja.com and improve User Organisation services.</p>
       </div>
     </div>
@@ -87,7 +87,7 @@ body {
     <div class="row">
       <div class="col-md-8 col-md-offset-2">
         <h3>Copyright & Trademarks</h3>
-        <p>User Accounts are responsible that company logos, graphics, and content uploaded to invoiceninja.com do not infringe on international copyright & trademark law.</p>
+        <p>User Organisations are responsible that company logos, graphics, and content uploaded to invoiceninja.com do not infringe on international copyright & trademark law.</p>
       </div>
     </div>
   </div>
@@ -111,7 +111,7 @@ body {
     <div class="row">
       <div class="col-md-8 col-md-offset-2">
         <h3>User Organisation Limited License </h3>
-        <p>Invoiceninja.com grants User Accounts & Clients a limited license to access the invoiceninja.com services such as User Organisation creation and all invoiceninja.om services, and Client services such as viewing invoices, downloading invoices, and printing invoices. This limited license may be revoked if deemed legally necessary without notice or penalty.</p>
+        <p>Invoiceninja.com grants User Organisations & Clients a limited license to access the invoiceninja.com services such as User Organisation creation and all invoiceninja.om services, and Client services such as viewing invoices, downloading invoices, and printing invoices. This limited license may be revoked if deemed legally necessary without notice or penalty.</p>
       </div>
     </div>
   </div>
@@ -148,7 +148,7 @@ body {
     <div class="row">
       <div class="col-md-8 col-md-offset-2">
         <h3>Limited Liability</h3>
-        <p>User Accounts and Clients agree to indemnify, defend, and hold invoiceninja.com, its directors or employees harmless against any and all liability and cost as a result of using invoiceninja.com. User Accounts and Clients shall not assert any claim or allegation of any nature whatsoever against invoiceninja.com, its directors or employees. </p>
+        <p>User Organisations and Clients agree to indemnify, defend, and hold invoiceninja.com, its directors or employees harmless against any and all liability and cost as a result of using invoiceninja.com. User Organisations and Clients shall not assert any claim or allegation of any nature whatsoever against invoiceninja.com, its directors or employees. </p>
         <p>Invoiceninja.com shall not be liable for damages of any kind, including but not limited to loss of site use, loss of profits or loss of data, tort or otherwise, arising out of or in any way connected with the use of or inability to use invoiceninja.com.</p>
         <p>You shall defend, indemnify and hold harmless invoiceninja.com from any loss, damages, liabilities, expenses, claims and proceedings arising out of your use of invoiceninja.com.</p>
       </div>

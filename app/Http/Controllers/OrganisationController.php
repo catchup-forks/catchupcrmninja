@@ -30,20 +30,20 @@ use App\Events\UserSignedUp;
 use App\Events\UserSettingsChanged;
 use App\Services\AuthService;
 
-use App\Http\Requests\UpdateAccountRequest;
+use App\Http\Requests\UpdateOrganisationRequest;
 
 class OrganisationController extends BaseController
 {
-    protected $accountRepo;
+    protected $organisationRepo;
     protected $userMailer;
     protected $contactMailer;
     protected $referralRepository;
 
-    public function __construct(OrganisationRepository $accountRepo, UserMailer $userMailer, ContactMailer $contactMailer, ReferralRepository $referralRepository)
+    public function __construct(OrganisationRepository $organisationRepo, UserMailer $userMailer, ContactMailer $contactMailer, ReferralRepository $referralRepository)
     {
         //parent::__construct();
 
-        $this->accountRepo = $accountRepo;
+        $this->organisationRepo = $organisationRepo;
         $this->userMailer = $userMailer;
         $this->contactMailer = $contactMailer;
         $this->referralRepository = $referralRepository;
@@ -88,13 +88,13 @@ class OrganisationController extends BaseController
         }
 
         if (!$user) {
-            $organisation = $this->accountRepo->create();
+            $organisation = $this->organisationRepo->create();
             $user = $organisation->users()->first();
 
             Session::forget(RECENTLY_VIEWED);
 
             if ($prevUserId) {
-                $users = $this->accountRepo->associateAccounts($user->id, $prevUserId);
+                $users = $this->organisationRepo->associateOrganisations($user->id, $prevUserId);
                 Session::put(SESSION_USER_ORGANISATIONS, $users);
             }
         }
@@ -109,7 +109,7 @@ class OrganisationController extends BaseController
 
     public function enableProPlan()
     {
-        $invitation = $this->accountRepo->enableProPlan();
+        $invitation = $this->organisationRepo->enableProPlan();
 
         return $invitation->invitation_key;
     }
@@ -124,7 +124,7 @@ class OrganisationController extends BaseController
     public function getSearchData()
     {
         $organisation = Auth::user()->organisation;
-        $data = $this->accountRepo->getSearchData($organisation);
+        $data = $this->organisationRepo->getSearchData($organisation);
 
         return Response::json($data);
     }
@@ -282,8 +282,8 @@ class OrganisationController extends BaseController
     private function showOnlinePayments()
     {
         $organisation = Auth::user()->organisation;
-        $organisation->load('account_gateways');
-        $count = count($organisation->account_gateways);
+        $organisation->load('organisation_gateways');
+        $count = count($organisation->organisation_gateways);
 
         if ($OrganisationGateway = $organisation->getGatewayConfig(GATEWAY_STRIPE)) {
             if (! $OrganisationGateway->getPublishableStripeKey()) {
@@ -787,32 +787,32 @@ class OrganisationController extends BaseController
         return Redirect::to('settings/'.ORGANISATION_NOTIFICATIONS);
     }
 
-    public function updateDetails(UpdateAccountRequest $request)
+    public function updateDetails(UpdateOrganisationRequest $request)
     {
         $organisation = Auth::user()->organisation;
-        $this->accountRepo->save($request->input(), $organisation);
+        $this->organisationRepo->save($request->input(), $organisation);
 
         /* Logo image file */
         if ($file = Input::file('logo')) {
             $path = Input::file('logo')->getRealPath();
-            File::delete('logo/'.$organisation->account_key.'.jpg');
-            File::delete('logo/'.$organisation->account_key.'.png');
+            File::delete('logo/'.$organisation->organisation_key.'.jpg');
+            File::delete('logo/'.$organisation->organisation_key.'.png');
 
             $mimeType = $file->getMimeType();
 
             if ($mimeType == 'image/jpeg') {
-                $path = 'logo/'.$organisation->account_key.'.jpg';
-                $file->move('logo/', $organisation->account_key.'.jpg');
+                $path = 'logo/'.$organisation->organisation_key.'.jpg';
+                $file->move('logo/', $organisation->organisation_key.'.jpg');
             } elseif ($mimeType == 'image/png') {
-                $path = 'logo/'.$organisation->account_key.'.png';
-                $file->move('logo/', $organisation->account_key.'.png');
+                $path = 'logo/'.$organisation->organisation_key.'.png';
+                $file->move('logo/', $organisation->organisation_key.'.png');
             } else {
                 if (extension_loaded('fileinfo')) {
                     $image = Image::make($path);
                     $image->resize(200, 120, function ($constraint) {
                         $constraint->aspectRatio();
                     });
-                    $path = 'logo/'.$organisation->account_key.'.jpg';
+                    $path = 'logo/'.$organisation->organisation_key.'.jpg';
                     Image::canvas($image->width(), $image->height(), '#FFFFFF')
                         ->insert($image)->save($path);
                 } else {
@@ -854,7 +854,7 @@ class OrganisationController extends BaseController
 
             if (Utils::isNinja()) {
                 if (Input::get('referral_code') && !$user->referral_code) {
-                    $user->referral_code = $this->accountRepo->getReferralCode();
+                    $user->referral_code = $this->organisationRepo->getReferralCode();
                 }
             }
             if (Utils::isNinjaDev()) {
@@ -891,8 +891,8 @@ class OrganisationController extends BaseController
 
     public function removeLogo()
     {
-        File::delete('logo/'.Auth::user()->organisation->account_key.'.jpg');
-        File::delete('logo/'.Auth::user()->organisation->account_key.'.png');
+        File::delete('logo/'.Auth::user()->organisation->organisation_key.'.jpg');
+        File::delete('logo/'.Auth::user()->organisation->organisation_key.'.png');
 
         Session::flash('message', trans('texts.removed_logo'));
 
@@ -966,7 +966,7 @@ class OrganisationController extends BaseController
         return RESULT_SUCCESS;
     }
 
-    public function cancelAccount()
+    public function cancelOrganisation()
     {
         if ($reason = trim(Input::get('reason'))) {
             $email = Auth::user()->email;
@@ -989,7 +989,7 @@ class OrganisationController extends BaseController
         $organisation = Auth::user()->organisation;
         \Log::info("Canceled Organisation: {$organisation->name} - {$user->email}");
 
-        $this->accountRepo->unlinkAccount($organisation);
+        $this->organisationRepo->unlinkOrganisation($organisation);
         $organisation->forceDelete();
 
         Auth::logout();

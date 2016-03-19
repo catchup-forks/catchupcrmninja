@@ -6,7 +6,7 @@ use League\Fractal;
 use League\Fractal\TransformerAbstract;
 use League\Fractal\Resource\Item;
 
-class UserAccountTransformer extends EntityTransformer
+class UserOrganisationTransformer extends EntityTransformer
 {
     protected $defaultIncludes = [
         'user'
@@ -30,7 +30,7 @@ class UserAccountTransformer extends EntityTransformer
     public function transform(User $user)
     {
         return [
-            'account_key' => $user->organisation->account_key,
+            'organisation_key' => $user->organisation->organisation_key,
             'name' => $user->organisation->present()->name,
             'token' => $user->organisation->getToken($this->tokenName),
             'default_url' => SITE_URL

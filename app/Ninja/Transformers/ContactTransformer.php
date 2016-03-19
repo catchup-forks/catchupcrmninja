@@ -18,7 +18,7 @@ class ContactTransformer extends EntityTransformer
             'is_primary' => (bool) $contact->is_primary,
             'phone' => $contact->phone,
             'last_login' => $contact->last_login,
-            'account_key' => $this->organisation->account_key,
+            'organisation_key' => $this->organisation->organisation_key,
             'send_invoice' => (bool) $contact->send_invoice,
         ];
     }

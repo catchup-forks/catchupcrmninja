@@ -12,7 +12,7 @@ class MultiCompanySupport extends Migration {
 	 */
 	public function up()
 	{
-        Schema::create('user_accounts', function($table)
+        Schema::create('user_organisations', function($table)
         {
             $table->increments('id');
             
@@ -37,6 +37,6 @@ class MultiCompanySupport extends Migration {
 	 */
 	public function down()
 	{
-        Schema::dropIfExists('user_accounts');
+        Schema::dropIfExists('user_organisations');
 	}
 }

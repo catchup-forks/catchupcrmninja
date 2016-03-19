@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class AccountToken extends EntityModel
+class OrganisationToken extends EntityModel
 {
     use SoftDeletes;
     protected $dates = ['deleted_at'];

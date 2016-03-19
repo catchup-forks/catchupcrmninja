@@ -2,7 +2,7 @@
 
 use Eloquent;
 
-class UserAccount extends Eloquent
+class UserOrganisation extends Eloquent
 {
     public $timestamps = false;
 

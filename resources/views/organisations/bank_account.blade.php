@@ -71,7 +71,7 @@
                         <td data-bind="text: balance"></td>
                         <td style="text-align:center">
                             <input type="checkbox" value="1" 
-                                data-bind="checked: includeAccount, attr: {name: 'bank_accounts[' + $index() + '][include]'}"/>
+                                data-bind="checked: includeOrganisation, attr: {name: 'bank_accounts[' + $index() + '][include]'}"/>
                         </td>
                     </tr>
                 </tbody>
@@ -341,7 +341,7 @@
 
     var BankAccountModel = function(data) {
         var self = this;
-        self.includeAccount = ko.observable(true);
+        self.includeOrganisation = ko.observable(true);
         self.checkall = ko.observable();
         self.hashed_account_number = ko.observable(data.hashed_account_number);
         self.masked_account_number = ko.observable(data.masked_account_number);
@@ -457,18 +457,18 @@
             if (self.disableValidate()) {
                 return true;
             }
-            var hasAccount = false;
+            var hasOrganisation = false;
             for (var i=0; i<self.bank_accounts().length; i++) {
                 var organisation = self.bank_accounts()[i];
-                if (organisation.includeAccount()) {
+                if (organisation.includeOrganisation()) {
                     if (organisation.isValid()) {
-                        hasAccount = true;
+                        hasOrganisation = true;
                     } else {
                         return true;
                     }
                 }
             }
-            return !hasAccount;
+            return !hasOrganisation;
         }, self);
 
         self.disableSaveExpenses = ko.computed(function() {

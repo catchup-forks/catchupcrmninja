@@ -1,14 +1,14 @@
 <?php namespace App\Ninja\Transformers;
 
 use App\Models\Organisation;
-use App\Models\AccountToken;
+use App\Models\OrganisationToken;
 use App\Models\Contact;
 use App\Models\Product;
 use App\Models\TaxRate;
 use League\Fractal;
 use League\Fractal\TransformerAbstract;
 
-class AccountTransformer extends EntityTransformer
+class OrganisationTransformer extends EntityTransformer
 {
     protected $defaultIncludes = [
         'users',
@@ -61,7 +61,7 @@ class AccountTransformer extends EntityTransformer
     public function transform(Organisation $organisation)
     {
         return [
-            'account_key' => $organisation->account_key,
+            'organisation_key' => $organisation->organisation_key,
             'name' => $organisation->present()->name,
             'currency_id' => (int) $organisation->currency_id,
             'timezone_id' => (int) $organisation->timezone_id,

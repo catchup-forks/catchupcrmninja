@@ -9,7 +9,7 @@ use App\Ninja\Mailers\UserMailer;
 
 class HandleUserSignedUp
 {
-    protected $accountRepo;
+    protected $organisationRepo;
     protected $userMailer;
 
     /**
@@ -17,9 +17,9 @@ class HandleUserSignedUp
      *
      * @return void
      */
-    public function __construct(OrganisationRepository $accountRepo, UserMailer $userMailer)
+    public function __construct(OrganisationRepository $organisationRepo, UserMailer $userMailer)
     {
-        $this->accountRepo = $accountRepo;
+        $this->organisationRepo = $organisationRepo;
         $this->userMailer = $userMailer;
     }
 
@@ -38,7 +38,7 @@ class HandleUserSignedUp
         } elseif (Utils::isNinjaDev()) {
             // do nothing
         } else {
-            $this->accountRepo->registerNinjaUser($user);
+            $this->organisationRepo->registerNinjaUser($user);
         }
 
         session([SESSION_COUNTER => -1]);

@@ -29,7 +29,7 @@ class AuthController extends Controller {
 
     protected $redirectTo = '/dashboard';
     protected $authService;
-    protected $accountRepo;
+    protected $organisationRepo;
 
 	/**
 	 * Create a new authentication controller instance.
@@ -40,7 +40,7 @@ class AuthController extends Controller {
 	 */
 	public function __construct(OrganisationRepository $repo, AuthService $authService)
 	{
-        $this->accountRepo = $repo;
+        $this->organisationRepo = $repo;
         $this->authService = $authService;
 
 		//$this->middleware('guest', ['except' => 'getLogout']);
@@ -77,7 +77,7 @@ class AuthController extends Controller {
 
     public function authUnlink()
     {
-        $this->accountRepo->unlinkUserFromOauth(Auth::user());
+        $this->organisationRepo->unlinkUserFromOauth(Auth::user());
 
         Session::flash('message', trans('texts.updated_settings'));
         return redirect()->to('/settings/' . ORGANISATION_USER_DETAILS);
@@ -111,12 +111,12 @@ class AuthController extends Controller {
 
             $users = false;
             // we're linking a new organisation
-            if ($request->link_accounts && $userId && Auth::user()->id != $userId) {
-                $users = $this->accountRepo->associateAccounts($userId, Auth::user()->id);
+            if ($request->link_organisations && $userId && Auth::user()->id != $userId) {
+                $users = $this->organisationRepo->associateOrganisations($userId, Auth::user()->id);
                 Session::flash('message', trans('texts.associated_accounts'));
             // check if other organisations are linked
             } else {
-                $users = $this->accountRepo->loadAccounts(Auth::user()->id);
+                $users = $this->organisationRepo->loadOrganisations(Auth::user()->id);
             }
             Session::put(SESSION_USER_ORGANISATIONS, $users);
 
@@ -133,7 +133,7 @@ class AuthController extends Controller {
     {
         if (Auth::check() && !Auth::user()->registered) {
             $organisation = Auth::user()->organisation;
-            $this->accountRepo->unlinkAccount($organisation);
+            $this->organisationRepo->unlinkOrganisation($organisation);
             $organisation->forceDelete();
         }
 

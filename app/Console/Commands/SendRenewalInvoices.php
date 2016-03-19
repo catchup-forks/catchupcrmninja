@@ -14,14 +14,14 @@ class SendRenewalInvoices extends Command
     protected $name = 'ninja:send-renewals';
     protected $description = 'Send renewal invoices';
     protected $mailer;
-    protected $accountRepo;
+    protected $organisationRepo;
 
     public function __construct(Mailer $mailer, OrganisationRepository $repo)
     {
         parent::__construct();
 
         $this->mailer = $mailer;
-        $this->accountRepo = $repo;
+        $this->organisationRepo = $repo;
     }
 
     public function fire()
@@ -38,7 +38,7 @@ class SendRenewalInvoices extends Command
 
         foreach ($accounts as $organisation) {
             // don't send multiple invoices to multi-company users
-            if ($userOrganisationId = $this->accountRepo->getUserOrganisationId($organisation)) {
+            if ($userOrganisationId = $this->organisationRepo->getUserOrganisationId($organisation)) {
                 if (isset($sentTo[$userOrganisationId])) {
                     continue;
                 } else {
@@ -46,8 +46,8 @@ class SendRenewalInvoices extends Command
                 }
             }
 
-            $client = $this->accountRepo->getNinjaClient($organisation);
-            $invitation = $this->accountRepo->createNinjaInvoice($client, $organisation);
+            $client = $this->organisationRepo->getNinjaClient($organisation);
+            $invitation = $this->organisationRepo->createNinjaInvoice($client, $organisation);
 
             // set the due date to 10 days from now
             $invoice = $invitation->invoice;

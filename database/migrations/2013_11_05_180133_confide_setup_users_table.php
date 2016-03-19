@@ -16,7 +16,7 @@ class ConfideSetupUsersTable extends Migration {
         Schema::dropIfExists('activities');
         Schema::dropIfExists('invitations');
         Schema::dropIfExists('payments');
-        Schema::dropIfExists('account_gateways');
+        Schema::dropIfExists('organisation_gateways');
         Schema::dropIfExists('invoice_items');
         Schema::dropIfExists('products');
         Schema::dropIfExists('tax_rates');        
@@ -134,7 +134,7 @@ class ConfideSetupUsersTable extends Migration {
 
             $t->string('name')->nullable();
             $t->string('ip');
-            $t->string('account_key')->unique();
+            $t->string('organisation_key')->unique();
             $t->timestamp('last_login')->nullable();
             
             $t->string('address1')->nullable();
@@ -198,7 +198,7 @@ class ConfideSetupUsersTable extends Migration {
             $t->unique( array('organisation_id','public_id') );
         });
 
-        Schema::create('account_gateways', function($t)
+        Schema::create('organisation_gateways', function($t)
         {
             $t->increments('id');
             $t->unsignedInteger('organisation_id');
@@ -455,7 +455,7 @@ class ConfideSetupUsersTable extends Migration {
             $t->foreign('organisation_id')->references('id')->on('organisations')->onDelete('cascade');
             $t->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
             $t->foreign('contact_id')->references('id')->on('contacts')->onDelete('cascade');
-            $t->foreign('account_gateway_id')->references('id')->on('account_gateways')->onDelete('cascade');
+            $t->foreign('account_gateway_id')->references('id')->on('organisation_gateways')->onDelete('cascade');
             $t->foreign('user_id')->references('id')->on('users')->onDelete('cascade');;
             $t->foreign('payment_type_id')->references('id')->on('payment_types');
             
@@ -525,7 +525,7 @@ class ConfideSetupUsersTable extends Migration {
         Schema::dropIfExists('activities');
         Schema::dropIfExists('invitations');
         Schema::dropIfExists('payments');
-        Schema::dropIfExists('account_gateways');
+        Schema::dropIfExists('organisation_gateways');
         Schema::dropIfExists('invoice_items');
         Schema::dropIfExists('products');
         Schema::dropIfExists('tax_rates');

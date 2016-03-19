@@ -10,7 +10,7 @@ class TokenRepository extends BaseRepository
 {
     public function getClassName()
     {
-        return 'App\Models\AccountToken';
+        return 'App\Models\OrganisationToken';
     }
 
     public function find($organisationId)

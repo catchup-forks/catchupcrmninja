@@ -3,7 +3,7 @@
 use Utils;
 use Laracasts\Presenter\Presenter;
 
-class AccountPresenter extends Presenter {
+class OrganisationPresenter extends Presenter {
 
     public function name()
     {

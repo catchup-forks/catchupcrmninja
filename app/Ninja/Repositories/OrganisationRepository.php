@@ -18,8 +18,8 @@ use App\Models\Language;
 use App\Models\Contact;
 use App\Models\Organisation;
 use App\Models\User;
-use App\Models\UserAccount;
-use App\Models\AccountToken;
+use App\Models\UserOrganisation;
+use App\Models\OrganisationToken;
 
 class OrganisationRepository
 {
@@ -27,7 +27,7 @@ class OrganisationRepository
     {
         $organisation = new Organisation();
         $organisation->ip = Request::getClientIp();
-        $organisation->account_key = str_random(RANDOM_KEY_LENGTH);
+        $organisation->organisation_key = str_random(RANDOM_KEY_LENGTH);
 
         // Track referal code
         if ($referralCode = Session::get(SESSION_REFERRAL_CODE)) {
@@ -72,14 +72,14 @@ class OrganisationRepository
 
     public function getSearchData($organisation)
     {
-        $data = $this->getAccountSearchData($organisation);
+        $data = $this->getOrganisationSearchData($organisation);
 
         $data['navigation'] = $this->getNavigationSearchData();
 
         return $data;
     }
 
-    private function getAccountSearchData($organisation)
+    private function getOrganisationSearchData($organisation)
     {
         $data = [
             'clients' => [],
@@ -218,7 +218,7 @@ class OrganisationRepository
         return $invitation;
     }
 
-    public function createNinjaInvoice($client, $clientAccount)
+    public function createNinjaInvoice($client, $clientOrganisation)
     {
         $organisation = $this->getNinjaAccount();
         $lastInvoice = Invoice::withTrashed()->whereOrganisationId($organisation->id)->orderBy('public_id', 'DESC')->first();
@@ -229,7 +229,7 @@ class OrganisationRepository
         $invoice->public_id = $publicId;
         $invoice->client_id = $client->id;
         $invoice->invoice_number = $organisation->getNextInvoiceNumber($invoice);
-        $invoice->invoice_date = $clientAccount->getRenewalDate();
+        $invoice->invoice_date = $clientOrganisation->getRenewalDate();
         $invoice->amount = PRO_PLAN_PRICE;
         $invoice->balance = PRO_PLAN_PRICE;
         $invoice->save();
@@ -258,7 +258,7 @@ class OrganisationRepository
 
     public function getNinjaAccount()
     {
-        $organisation = Organisation::whereAccountKey(NINJA_ORGANISATION_KEY)->first();
+        $organisation = Organisation::whereOrganisationKey(NINJA_ORGANISATION_KEY)->first();
 
         if ($organisation) {
             return $organisation;
@@ -267,7 +267,7 @@ class OrganisationRepository
             $organisation->name = 'Invoice Ninja';
             $organisation->work_email = 'contact@invoiceninja.com';
             $organisation->work_phone = '(800) 763-1948';
-            $organisation->account_key = NINJA_ORGANISATION_KEY;
+            $organisation->organisation_key = NINJA_ORGANISATION_KEY;
             $organisation->save();
 
             $random = str_random(RANDOM_KEY_LENGTH);
@@ -288,7 +288,7 @@ class OrganisationRepository
             $OrganisationGateway->gateway_id = NINJA_GATEWAY_ID;
             $OrganisationGateway->public_id = 1;
             $OrganisationGateway->setConfig(json_decode(env(NINJA_GATEWAY_CONFIG)));
-            $organisation->account_gateways()->save($OrganisationGateway);
+            $organisation->organisation_gateways()->save($OrganisationGateway);
         }
 
         return $organisation;
@@ -297,22 +297,22 @@ class OrganisationRepository
     public function getNinjaClient($organisation)
     {
         $organisation->load('users');
-        $ninjaAccount = $this->getNinjaAccount();
-        $client = Client::whereOrganisationId($ninjaAccount->id)->wherePublicId($organisation->id)->first();
+        $ninjaOrganisation = $this->getNinjaAccount();
+        $client = Client::whereOrganisationId($ninjaOrganisation->id)->wherePublicId($organisation->id)->first();
 
         if (!$client) {
             $client = new Client();
             $client->public_id = $organisation->id;
-            $client->user_id = $ninjaAccount->users()->first()->id;
+            $client->user_id = $ninjaOrganisation->users()->first()->id;
             $client->currency_id = 1;
             foreach (['name', 'address1', 'housenumber', 'city', 'state', 'postal_code', 'country_id', 'work_phone', 'language_id'] as $field) {
                 $client->$field = $organisation->$field;
             }
-            $ninjaAccount->clients()->save($client);
+            $ninjaOrganisation->clients()->save($client);
 
             $contact = new Contact();
-            $contact->user_id = $ninjaAccount->users()->first()->id;
-            $contact->organisation_id = $ninjaAccount->id;
+            $contact->user_id = $ninjaOrganisation->users()->first()->id;
+            $contact->organisation_id = $ninjaOrganisation->id;
             $contact->public_id = $organisation->id;
             $contact->is_primary = true;
             foreach (['first_name', 'last_name', 'email', 'phone'] as $field) {
@@ -326,7 +326,7 @@ class OrganisationRepository
 
     public function findByKey($key)
     {
-        $organisation = Organisation::whereAccountKey($key)
+        $organisation = Organisation::whereOrganisationKey($key)
                     ->with('clients.invoices.invoice_items', 'clients.contacts')
                     ->firstOrFail();
 
@@ -402,22 +402,22 @@ class OrganisationRepository
 
     public function findUsers($user, $with = null)
     {
-        $accounts = $this->findUserAccounts($user->id);
+        $accounts = $this->findUserOrganisations($user->id);
 
         if ($accounts) {
-            return $this->getUserAccounts($accounts, $with);
+            return $this->getUserOrganisations($accounts, $with);
         } else {
             return [$user];
         }
     }
 
-    public function findUserAccounts($userId1, $userId2 = false)
+    public function findUserOrganisations($userId1, $userId2 = false)
     {
-        if (!Schema::hasTable('user_accounts')) {
+        if (!Schema::hasTable('user_organisations')) {
             return false;
         }
 
-        $query = UserAccount::where('user_id1', '=', $userId1)
+        $query = UserOrganisation::where('user_id1', '=', $userId1)
                                 ->orWhere('user_id2', '=', $userId1)
                                 ->orWhere('user_id3', '=', $userId1)
                                 ->orWhere('user_id4', '=', $userId1)
@@ -434,7 +434,7 @@ class OrganisationRepository
         return $query->first(['id', 'user_id1', 'user_id2', 'user_id3', 'user_id4', 'user_id5']);
     }
 
-    public function getUserAccounts($record, $with = null)
+    public function getUserOrganisations($record, $with = null)
     {
         if (!$record) {
             return false;
@@ -464,7 +464,7 @@ class OrganisationRepository
             return false;
         }
 
-        $users = $this->getUserAccounts($record);
+        $users = $this->getUserOrganisations($record);
 
         $data = [];
         foreach ($users as $user) {
@@ -482,17 +482,17 @@ class OrganisationRepository
         return $data;
     }
 
-    public function loadAccounts($userId) {
-        $record = self::findUserAccounts($userId);
+    public function loadOrganisations($userId) {
+        $record = self::findUserOrganisations($userId);
         return self::prepareUsersData($record);
     }
 
-    public function syncAccounts($userId, $proPlanPaid) {
-        $users = self::loadAccounts($userId);
-        self::syncUserAccounts($users, $proPlanPaid);
+    public function syncOrganisations($userId, $proPlanPaid) {
+        $users = self::loadOrganisations($userId);
+        self::syncUserOrganisations($users, $proPlanPaid);
     }
 
-    public function syncUserAccounts($users, $proPlanPaid = false) {
+    public function syncUserOrganisations($users, $proPlanPaid = false) {
         if (!$users) {
             return;
         }
@@ -524,9 +524,9 @@ class OrganisationRepository
         }
     }
 
-    public function associateAccounts($userId1, $userId2) {
+    public function associateOrganisations($userId1, $userId2) {
 
-        $record = self::findUserAccounts($userId1, $userId2);
+        $record = self::findUserOrganisations($userId1, $userId2);
 
         if ($record) {
             foreach ([$userId1, $userId2] as $userId) {
@@ -535,7 +535,7 @@ class OrganisationRepository
                 }
             }
         } else {
-            $record = new UserAccount();
+            $record = new UserOrganisation();
             $record->user_id1 = $userId1;
             $record->user_id2 = $userId2;
         }
@@ -543,25 +543,25 @@ class OrganisationRepository
         $record->save();
 
         $users = self::prepareUsersData($record);
-        self::syncUserAccounts($users);
+        self::syncUserOrganisations($users);
 
         return $users;
     }
 
-    public function unlinkAccount($organisation) {
+    public function unlinkOrganisation($organisation) {
         foreach ($organisation->users as $user) {
-            if ($userAccount = self::findUserAccounts($user->id)) {
-                $userAccount->removeUserId($user->id);
-                $userAccount->save();
+            if ($userOrganisation = self::findUserOrganisations($user->id)) {
+                $userOrganisation->removeUserId($user->id);
+                $userOrganisation->save();
             }
         }
     }
 
     public function unlinkUser($userOrganisationId, $userId) {
-        $userAccount = UserAccount::whereId($userOrganisationId)->first();
-        if ($userAccount->hasUserId($userId)) {
-            $userAccount->removeUserId($userId);
-            $userAccount->save();
+        $userOrganisation = UserOrganisation::whereId($userOrganisationId)->first();
+        if ($userOrganisation->hasUserId($userId)) {
+            $userOrganisation->removeUserId($userId);
+            $userOrganisation->save();
         }
     }
 
@@ -588,11 +588,11 @@ class OrganisationRepository
         $users = $this->findUsers($user);
 
         foreach ($users as $user) {
-            if ($token = AccountToken::whereUserId($user->id)->whereName($name)->first()) {
+            if ($token = OrganisationToken::whereUserId($user->id)->whereName($name)->first()) {
                 continue;
             }
 
-            $token = AccountToken::createNew($user);
+            $token = OrganisationToken::createNew($user);
             $token->name = $name;
             $token->token = str_random(RANDOM_KEY_LENGTH);
             $token->save();
@@ -602,9 +602,9 @@ class OrganisationRepository
     public function getUserOrganisationId($organisation)
     {
         $user = $organisation->users()->first();
-        $userAccount = $this->findUserAccounts($user->id);
+        $userOrganisation = $this->findUserOrganisations($user->id);
 
-        return $userAccount ? $userAccount->id : false;
+        return $userOrganisation ? $userOrganisation->id : false;
     }
 
     public function save($data, $organisation)

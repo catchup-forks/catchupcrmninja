@@ -13,7 +13,7 @@ class ProductTransformer extends EntityTransformer
             'notes' => $product->notes,
             'cost' => $product->cost,
             'qty' => $product->qty,
-            'account_key' =>$this->organisation->account_key,
+            'organisation_key' =>$this->organisation->organisation_key,
             'default_tax_rate_id' =>$product->default_tax_rate_id,
             'updated_at' =>$this->getTimestamp($product->updated_at),
             'archived_at' => $this->getTimestamp($product->deleted_at),

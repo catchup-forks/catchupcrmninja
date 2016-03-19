@@ -15,7 +15,7 @@ class CreditTransformer extends EntityTransformer
             'updated_at' => $this->getTimestamp($credit->updated_at),
             'archived_at' => $this->getTimestamp($credit->deleted_at),
             'is_deleted' => (bool) $credit->is_deleted,
-            'account_key' => $this->organisation->account_key,
+            'organisation_key' => $this->organisation->organisation_key,
             'credit_date' => $credit->credit_date,
             'credit_number' => $credit->credit_number,
             'private_notes' => $credit->private_notes,

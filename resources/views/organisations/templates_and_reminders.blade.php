@@ -106,7 +106,7 @@
                         @if ($organisation->custom_invoice_text_label2)
                             <li>$customInvoice1</li>
                         @endif
-                        @if (count($organisation->account_gateways) > 1)
+                        @if (count($organisation->organisation_gateways) > 1)
                             @foreach (\App\Models\Gateway::$paymentTypes as $type)
                                 @if ($organisation->getGatewayByType($type))
                                     <li>${{ \App\Models\Gateway::getPaymentTypeName($type) }}Link</li>

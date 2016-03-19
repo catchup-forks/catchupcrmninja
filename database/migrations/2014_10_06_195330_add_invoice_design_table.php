@@ -49,7 +49,7 @@ class AddInvoiceDesignTable extends Migration {
 
 	    doc.setFontSize(9);
 	    SetPdfColor('LightBlue', doc, 'primary');
-	    displayAccount(doc, invoice, 220, layout.accountTop, layout);
+	    displayOrganisation(doc, invoice, 220, layout.accountTop, layout);
 
 	    SetPdfColor('LightBlue', doc, 'primary');
 	    doc.setFontSize('11');
@@ -180,7 +180,7 @@ class AddInvoiceDesignTable extends Migration {
 			  doc.setFontType('bold');
 			  SetPdfColor('White',doc);
 
-			  displayAccount(doc, invoice, 300, layout.accountTop, layout);
+			  displayOrganisation(doc, invoice, 300, layout.accountTop, layout);
 
 
 			  var y = layout.accountTop;
@@ -343,7 +343,7 @@ class AddInvoiceDesignTable extends Migration {
 
 	    doc.setFontSize(10);  
 	    var marginLeft = 340;
-	    displayAccount(doc, invoice, marginLeft, 780, layout);
+	    displayOrganisation(doc, invoice, marginLeft, 780, layout);
 
 
 	    SetPdfColor('White',doc);    
@@ -446,7 +446,7 @@ class AddInvoiceDesignTable extends Migration {
 		  doc.setFontSize(10);
 		  doc.setFontType('normal');
 
-		  displayAccount(doc, invoice, layout.marginLeft, layout.accountTop, layout);
+		  displayOrganisation(doc, invoice, layout.marginLeft, layout.accountTop, layout);
 		  displayClient(doc, invoice, layout.marginLeft, layout.headerTop, layout);
 
 		  displayInvoice(doc, invoice, layout.headerLeft, layout.headerTop, layout, layout.headerRight);

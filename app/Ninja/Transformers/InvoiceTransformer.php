@@ -96,7 +96,7 @@ class InvoiceTransformer extends EntityTransformer
             'partial' => (float) $invoice->partial,
             'has_tasks' => (bool) $invoice->has_tasks,
             'auto_bill' => (bool) $invoice->auto_bill,
-            'account_key' => $this->organisation->account_key,
+            'organisation_key' => $this->organisation->organisation_key,
             'user_id' => (int) $invoice->user->public_id + 1,
             'custom_value1' => (float) $invoice->custom_value1,
             'custom_value2' => (float) $invoice->custom_value2,

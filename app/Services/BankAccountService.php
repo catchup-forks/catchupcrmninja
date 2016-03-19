@@ -8,7 +8,7 @@ use App\Models\BankSubaccount;
 use App\Models\Vendor;
 use App\Models\Expense;
 use App\Services\BaseService;
-use App\Ninja\Repositories\BankOrganisationRepository;
+use App\Ninja\Repositories\BankAccountRepository;
 use App\Ninja\Repositories\ExpenseRepository;
 use App\Ninja\Repositories\VendorRepository;
 use App\Libraries\Finance;
@@ -21,7 +21,7 @@ class BankAccountService extends BaseService
     protected $vendorRepo;
     protected $datatableService;
 
-    public function __construct(BankOrganisationRepository $bankAccountRepo, ExpenseRepository $expenseRepo, VendorRepository $vendorRepo, DatatableService $datatableService)
+    public function __construct(BankAccountRepository $bankAccountRepo, ExpenseRepository $expenseRepo, VendorRepository $vendorRepo, DatatableService $datatableService)
     {
         $this->bankAccountRepo = $bankAccountRepo;
         $this->vendorRepo = $vendorRepo;
@@ -100,7 +100,7 @@ class BankAccountService extends BaseService
             return false;
         }
 
-        $obj->masked_account_number = Utils::maskAccountNumber($organisation->id);
+        $obj->masked_account_number = Utils::maskOrganisationNumber($organisation->id);
         $obj->hashed_account_number = bcrypt($organisation->id);
         $obj->type = $organisation->type;
         $obj->balance = Utils::formatMoney($organisation->ledgerBalance, CURRENCY_DOLLAR);

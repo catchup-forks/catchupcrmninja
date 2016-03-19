@@ -8,7 +8,6 @@
         {!! Button::success(trans('texts.add_company'))->asLinkTo('/login?new_company=true') !!}
     @endif
 </center>
-
 <p>&nbsp;</p>
 
 <div class="row">
@@ -50,7 +49,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id="myModalLabel">{{ trans('texts.unlink_account') }}</h4>
+        <h4 class="modal-title" id="myModalLabel">{{ trans('texts.unlink_organisation') }}</h4>
       </div>
 
       <div class="container">        
@@ -59,7 +58,7 @@
 
       <div class="modal-footer" id="signUpFooter">          
         <button type="button" class="btn btn-default" data-dismiss="modal">{{ trans('texts.cancel') }}</button>
-        <button type="button" class="btn btn-primary" onclick="unlinkAccount()">{{ trans('texts.unlink') }}</button>           
+        <button type="button" class="btn btn-primary" onclick="unlinkOrganisation()">{{ trans('texts.unlink') }}</button>
       </div>
     </div>
   </div>
@@ -76,8 +75,8 @@
         return false;
       }
 
-      function unlinkAccount() {    
-        window.location = '{{ URL::to('/unlink_account') }}' + '/' + NINJA.unlink.userOrganisationId + '/' + NINJA.unlink.userId;
+      function unlinkOrganisation() {
+        window.location = '{{ URL::to('/unlink_organisation') }}' + '/' + NINJA.unlink.userOrganisationId + '/' + NINJA.unlink.userId;
       }
 
     </script>

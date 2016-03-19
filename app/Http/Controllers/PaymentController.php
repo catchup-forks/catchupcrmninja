@@ -32,13 +32,13 @@ class PaymentController extends BaseController
 {
     protected $model = 'App\Models\Payment';
     
-    public function __construct(PaymentRepository $paymentRepo, InvoiceRepository $invoiceRepo, OrganisationRepository $accountRepo, ContactMailer $contactMailer, PaymentService $paymentService)
+    public function __construct(PaymentRepository $paymentRepo, InvoiceRepository $invoiceRepo, OrganisationRepository $organisationRepo, ContactMailer $contactMailer, PaymentService $paymentService)
     {
         // parent::__construct();
 
         $this->paymentRepo = $paymentRepo;
         $this->invoiceRepo = $invoiceRepo;
-        $this->accountRepo = $accountRepo;
+        $this->organisationRepo = $organisationRepo;
         $this->contactMailer = $contactMailer;
         $this->paymentService = $paymentService;
     }
@@ -138,7 +138,7 @@ class PaymentController extends BaseController
     public function show_payment($invitationKey, $paymentType = false)
     {
 
-        $invitation = Invitation::with('invoice.invoice_items', 'invoice.client.currency', 'invoice.client.organisation.account_gateways.gateway')->where('invitation_key', '=', $invitationKey)->firstOrFail();
+        $invitation = Invitation::with('invoice.invoice_items', 'invoice.client.currency', 'invoice.client.organisation.organisation_gateways.gateway')->where('invitation_key', '=', $invitationKey)->firstOrFail();
         $invoice = $invitation->invoice;
         $client = $invoice->client;
         $organisation = $client->organisation;
@@ -148,7 +148,7 @@ class PaymentController extends BaseController
             $paymentType = 'PAYMENT_TYPE_' . strtoupper($paymentType);
         } else {
             $paymentType = Session::get($invitation->id . 'payment_type') ?:
-                                $organisation->account_gateways[0]->getPaymentType();
+                                $organisation->organisation_gateways[0]->getPaymentType();
         }
 
         if ($paymentType == PAYMENT_TYPE_TOKEN) {
@@ -192,7 +192,7 @@ class PaymentController extends BaseController
             'currencyCode' => $client->currency ? $client->currency->code : ($organisation->currency ? $organisation->currency->code : 'USD'),
             'organisation' => $client->organisation,
             'hideLogo' => $organisation->isWhiteLabel(),
-            'hideHeader' => $organisation->isNinjaAccount(),
+            'hideHeader' => $organisation->isNinjaOrganisation(),
             'clientViewCSS' => $organisation->clientViewCSS(),
             'clientFontUrl' => $organisation->getFontsUrl(),
             'showAddress' => $OrganisationGateway->show_address,
@@ -227,8 +227,8 @@ class PaymentController extends BaseController
             Session::set('test_mode', Input::get('test_mode'));
         }
 
-        $organisation = $this->accountRepo->getNinjaAccount();
-        $organisation->load('account_gateways.gateway');
+        $organisation = $this->organisationRepo->getNinjaAccount();
+        $organisation->load('organisation_gateways.gateway');
         $OrganisationGateway = $organisation->getGatewayByType(PAYMENT_TYPE_CREDIT_CARD);
         $gateway = $OrganisationGateway->gateway;
         $acceptedCreditCardTypes = $OrganisationGateway->getCreditcardTypes();
@@ -283,8 +283,8 @@ class PaymentController extends BaseController
                 ->withInput();
         }
 
-        $organisation = $this->accountRepo->getNinjaAccount();
-        $organisation->load('account_gateways.gateway');
+        $organisation = $this->organisationRepo->getNinjaAccount();
+        $organisation->load('organisation_gateways.gateway');
         $OrganisationGateway = $organisation->getGatewayByType(PAYMENT_TYPE_CREDIT_CARD);
 
         try {
@@ -363,7 +363,7 @@ class PaymentController extends BaseController
 
     public function do_payment($invitationKey, $onSite = true, $useToken = false)
     {
-        $invitation = Invitation::with('invoice.invoice_items', 'invoice.client.currency', 'invoice.client.organisation.currency', 'invoice.client.organisation.account_gateways.gateway')->where('invitation_key', '=', $invitationKey)->firstOrFail();
+        $invitation = Invitation::with('invoice.invoice_items', 'invoice.client.currency', 'invoice.client.organisation.currency', 'invoice.client.organisation.organisation_gateways.gateway')->where('invitation_key', '=', $invitationKey)->firstOrFail();
         $invoice = $invitation->invoice;
         $client = $invoice->client;
         $organisation = $client->organisation;
@@ -479,7 +479,7 @@ class PaymentController extends BaseController
                 $payment = $this->paymentService->createPayment($invitation, $OrganisationGateway, $ref);
                 Session::flash('message', trans('texts.applied_payment'));
 
-                if ($organisation->account_key == NINJA_ORGANISATION_KEY) {
+                if ($organisation->organisation_key == NINJA_ORGANISATION_KEY) {
                     Session::flash('trackEventCategory', '/organisation');
                     Session::flash('trackEventAction', '/buy_pro_plan');
                 }
@@ -522,7 +522,7 @@ class PaymentController extends BaseController
             return redirect(NINJA_WEB_URL);
         }
 
-        $invitation = Invitation::with('invoice.client.currency', 'invoice.client.organisation.account_gateways.gateway')->where('transaction_reference', '=', $token)->firstOrFail();
+        $invitation = Invitation::with('invoice.client.currency', 'invoice.client.organisation.organisation_gateways.gateway')->where('transaction_reference', '=', $token)->firstOrFail();
         $invoice = $invitation->invoice;
         $client = $invoice->client;
         $organisation = $client->organisation;

@@ -8,7 +8,7 @@ use Response;
 use Auth;
 use Cache;
 
-use App\Models\AccountToken;
+use App\Models\OrganisationToken;
 
 class ApiCheck {
 
@@ -32,7 +32,7 @@ class ApiCheck {
             }
         } else {
             // check for a valid token
-            $token = AccountToken::where('token', '=', Request::header('X-Ninja-Token'))->first(['id', 'user_id']);
+            $token = OrganisationToken::where('token', '=', Request::header('X-Ninja-Token'))->first(['id', 'user_id']);
 
             if ($token) {
                 Auth::loginUsingId($token->user_id);

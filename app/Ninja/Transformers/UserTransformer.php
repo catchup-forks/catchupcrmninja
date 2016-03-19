@@ -13,7 +13,7 @@ class UserTransformer extends EntityTransformer
             'first_name' => $user->first_name,
             'last_name' => $user->last_name,
             'email' => $user->email,
-            'account_key' => $user->organisation->account_key,
+            'organisation_key' => $user->organisation->organisation_key,
             'updated_at' => $this->getTimestamp($user->updated_at),
             'deleted_at' => $this->getTimestamp($user->deleted_at),
             'phone' => $user->phone,

@@ -16,15 +16,15 @@ class SendReminders extends Command
     protected $description = 'Send reminder emails';
     protected $mailer;
     protected $invoiceRepo;
-    protected $accountRepo;
+    protected $organisationRepo;
 
-    public function __construct(Mailer $mailer, InvoiceRepository $invoiceRepo, OrganisationRepository $accountRepo)
+    public function __construct(Mailer $mailer, InvoiceRepository $invoiceRepo, OrganisationRepository $organisationRepo)
     {
         parent::__construct();
 
         $this->mailer = $mailer;
         $this->invoiceRepo = $invoiceRepo;
-        $this->accountRepo = $accountRepo;
+        $this->organisationRepo = $organisationRepo;
     }
 
     public function fire()
@@ -32,7 +32,7 @@ class SendReminders extends Command
         $this->info(date('Y-m-d').' Running SendReminders...');
         $today = new DateTime();
 
-        $accounts = $this->accountRepo->findWithReminders();
+        $accounts = $this->organisationRepo->findWithReminders();
         $this->info(count($accounts).' organisations found');
 
         foreach ($accounts as $organisation) {

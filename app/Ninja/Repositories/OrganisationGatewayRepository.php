@@ -15,10 +15,10 @@ class OrganisationGatewayRepository extends BaseRepository
 
     public function find($organisationId)
     {
-        return DB::table('account_gateways')
-                    ->join('gateways', 'gateways.id', '=', 'account_gateways.gateway_id')
-                    ->where('account_gateways.deleted_at', '=', null)
-                    ->where('account_gateways.organisation_id', '=', $organisationId)
-                    ->select('account_gateways.public_id', 'gateways.name', 'account_gateways.deleted_at', 'account_gateways.gateway_id');
+        return DB::table('organisation_gateways')
+                    ->join('gateways', 'gateways.id', '=', 'organisation_gateways.gateway_id')
+                    ->where('organisation_gateways.deleted_at', '=', null)
+                    ->where('organisation_gateways.organisation_id', '=', $organisationId)
+                    ->select('organisation_gateways.public_id', 'gateways.name', 'organisation_gateways.deleted_at', 'organisation_gateways.gateway_id');
     }
 }

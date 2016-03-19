@@ -6,7 +6,7 @@ class NinjaRepository
 {
     public function updateProPlanPaid($clientPublicId, $proPlanPaid)
     {
-        $organisation = Account::whereId($clientPublicId)->first();
+        $organisation = Organisation::whereId($clientPublicId)->first();
 
         if (!$organisation) {
             return;
