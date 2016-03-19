@@ -70,11 +70,7 @@ class AppServiceProvider extends ServiceProvider {
                 if(!empty($items))$items[] = '<li class="divider"></li>';
                 $items[] = '<li><a href="'.URL::to('credits').'">'.trans("texts.credits").'</a></li>';
                 if(Credit::canCreate())$items[] = '<li><a href="'.URL::to('credits/create').'">'.trans("texts.new_credit").'</a></li>';
-            } else if ($type == ENTITY_EXPENSE) {
-				if(!empty($items))$items[] = '<li class="divider"></li>';
-                $items[] = '<li><a href="'.URL::to('vendors').'">'.trans("texts.vendors").'</a></li>';
-                if(Vendor::canCreate())$items[] = '<li><a href="'.URL::to('vendors/create').'">'.trans("texts.new_vendor").'</a></li>';
-			}
+            }
             
             if(!empty($items)){
                 $str.= '<ul class="dropdown-menu" id="menu1">'.implode($items).'</ul>';

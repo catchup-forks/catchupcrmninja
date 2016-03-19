@@ -400,7 +400,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a href="{{ URL::to(NINJA_WEB_URL) }}" class='navbar-brand' target="_blank">
+      <a href="#" class='navbar-brand' target="_blank">
         {{-- Per our license, please do not remove or modify this link. --}}
         <img src="{{ asset('images/invoiceninja-logo.png') }}" style="height:20px;width:auto;padding-right:10px"/>
       </a>	    
@@ -409,11 +409,9 @@
     <div class="collapse navbar-collapse" id="navbar-collapse-1">
       <ul class="nav navbar-nav" style="font-weight: bold">
         {!! Form::nav_link('dashboard', 'dashboard') !!}
+        {!! Form::menu_link('invoice') !!}
         {!! Form::menu_link('client') !!}
         {!! Form::menu_link('task') !!}
-        {!! Form::menu_link('expense') !!}
-        {!! Form::menu_link('invoice') !!}
-        {!! Form::menu_link('payment') !!}
       </ul>
 
       <div id="navbar-options">
