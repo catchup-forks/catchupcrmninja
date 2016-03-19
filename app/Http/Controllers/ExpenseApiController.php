@@ -33,7 +33,7 @@ class ExpenseApiController extends BaseAPIController
 
         $expenses = $expenses->paginate();
 
-        $transformer = new ExpenseTransformer(Auth::user()->account, Input::get('serializer'));
+        $transformer = new ExpenseTransformer(Auth::user()->organisation, Input::get('serializer'));
         $paginator = Expense::scope()->withTrashed()->paginate();
 
         $data = $this->createCollection($expenses, $transformer, ENTITY_EXPENSE, $paginator);

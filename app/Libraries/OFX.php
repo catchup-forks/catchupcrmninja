@@ -121,15 +121,15 @@ class Login
         $o->go();
         $x = $o->xml();
         foreach ($x->xpath('/OFX/SIGNUPMSGSRSV1/ACCTINFOTRNRS/ACCTINFORS/ACCTINFO/BANKACCTINFO/BANKACCTFROM') as $a) {
-            $this->accounts[] = new Account($this, (string) $a->ACCTID, 'BANK', (string) $a->ACCTTYPE, (string) $a->BANKID);
+            $this->organisations[] = new Organisation($this, (string) $a->ACCTID, 'BANK', (string) $a->ACCTTYPE, (string) $a->BANKID);
         }
         foreach ($x->xpath('/OFX/SIGNUPMSGSRSV1/ACCTINFOTRNRS/ACCTINFORS/ACCTINFO/CCACCTINFO/CCACCTFROM') as $a) {
-            $this->accounts[] = new Account($this, (string) $a->ACCTID, 'CC');
+            $this->organisations[] = new Organisation($this, (string) $a->ACCTID, 'CC');
         }
     }
 }
 
-class Account
+class Organisation
 {
     public $login;
     public $id;

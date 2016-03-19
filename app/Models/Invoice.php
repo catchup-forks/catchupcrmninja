@@ -155,9 +155,9 @@ class Invoice extends EntityModel implements BalanceAffecting
         return self::parentTrashed();
     }
 
-    public function account()
+    public function organisation()
     {
-        return $this->belongsTo('App\Models\Account');
+        return $this->belongsTo('App\Models\Organisation');
     }
 
     public function user()
@@ -363,8 +363,8 @@ class Invoice extends EntityModel implements BalanceAffecting
     {
         if ($this->client->currency) {
             return $this->client->currency->code;
-        } elseif ($this->account->currency) {
-            return $this->account->currency->code;
+        } elseif ($this->organisation->currency) {
+            return $this->organisation->currency->code;
         } else {
             return 'USD';
         }
@@ -388,7 +388,7 @@ class Invoice extends EntityModel implements BalanceAffecting
             'client',
             'tax_name',
             'tax_rate',
-            'account',
+            'organisation',
             'invoice_design',
             'invoice_design_id',
             'invoice_fonts',
@@ -423,7 +423,7 @@ class Invoice extends EntityModel implements BalanceAffecting
             'custom_value2',
         ]);
 
-        $this->account->setVisible([
+        $this->organisation->setVisible([
             'name',
             'website',
             'id_number',
@@ -491,10 +491,10 @@ class Invoice extends EntityModel implements BalanceAffecting
         }
 
         $startDate = $this->getOriginal('last_sent_date') ?: $this->getOriginal('start_date');
-        $startDate .= ' ' . $this->account->recurring_hour . ':00:00';
-        $startDate = $this->account->getDateTime($startDate);
-        $endDate = $this->end_date ? $this->account->getDateTime($this->getOriginal('end_date')) : null;
-        $timezone = $this->account->getTimezone();
+        $startDate .= ' ' . $this->organisation->recurring_hour . ':00:00';
+        $startDate = $this->organisation->getDateTime($startDate);
+        $endDate = $this->end_date ? $this->organisation->getDateTime($this->getOriginal('end_date')) : null;
+        $timezone = $this->organisation->getTimezone();
 
         $rule = $this->getRecurrenceRule();
         $rule = new \Recurr\Rule("{$rule}", $startDate, $endDate, $timezone);
@@ -517,8 +517,8 @@ class Invoice extends EntityModel implements BalanceAffecting
     public function getNextSendDate()
     {
         if ($this->start_date && !$this->last_sent_date) {
-            $startDate = $this->getOriginal('start_date') . ' ' . $this->account->recurring_hour . ':00:00';
-            return $this->account->getDateTime($startDate);
+            $startDate = $this->getOriginal('start_date') . ' ' . $this->organisation->recurring_hour . ':00:00';
+            return $this->organisation->getDateTime($startDate);
         }
 
         if (!$schedule = $this->getSchedule()) {
@@ -631,11 +631,11 @@ class Invoice extends EntityModel implements BalanceAffecting
         for ($i=$min; $i<min($max, count($schedule)); $i++) {
             $date = $schedule[$i];
             $dateStart = $date->getStart();
-            $date = $this->account->formatDate($dateStart);
+            $date = $this->organisation->formatDate($dateStart);
             $dueDate = $this->getDueDate($dateStart);
             
             if($dueDate) {
-                $date .= ' <small>(' . trans('texts.due') . ' ' . $this->account->formatDate($dueDate) . ')</small>';
+                $date .= ' <small>(' . trans('texts.due') . ' ' . $this->organisation->formatDate($dueDate) . ')</small>';
             }
             
             $dates[] = $date;
@@ -686,7 +686,7 @@ class Invoice extends EntityModel implements BalanceAffecting
             return false;
         }
 
-        return $this->account->getDateTime() >= $nextSendDate;
+        return $this->organisation->getDateTime() >= $nextSendDate;
     }
     */
 
@@ -865,7 +865,7 @@ class Invoice extends EntityModel implements BalanceAffecting
 
 Invoice::creating(function ($invoice) {
     if (!$invoice->is_recurring) {
-        $invoice->account->incrementCounter($invoice);
+        $invoice->organisation->incrementCounter($invoice);
     }
 });
 

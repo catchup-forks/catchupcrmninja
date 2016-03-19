@@ -92,7 +92,7 @@ class StartupCheck
             }
         }
 
-        // Check if we're requesting to change the account's language
+        // Check if we're requesting to change the organisation's language
         if (Input::has('lang')) {
             $locale = Input::get('lang');
             App::setLocale($locale);
@@ -100,19 +100,19 @@ class StartupCheck
 
             if (Auth::check()) {
                 if ($language = Language::whereLocale($locale)->first()) {
-                    $account = Auth::user()->account;
-                    $account->language_id = $language->id;
-                    $account->save();
+                    $organisation = Auth::user()->organisation;
+                    $organisation->language_id = $language->id;
+                    $organisation->save();
                 }
             }
         } elseif (Auth::check()) {
-            $locale = Auth::user()->account->language ? Auth::user()->account->language->locale : DEFAULT_LOCALE;
+            $locale = Auth::user()->organisation->language ? Auth::user()->organisation->language->locale : DEFAULT_LOCALE;
             App::setLocale($locale);
         } elseif (session(SESSION_LOCALE)) {
             App::setLocale(session(SESSION_LOCALE));
         }
 
-        // Make sure the account/user localization settings are in the session
+        // Make sure the organisation/user localization settings are in the session
         if (Auth::check() && !Session::has(SESSION_TIMEZONE)) {
             Event::fire(new UserSettingsChanged());
         }
@@ -141,9 +141,9 @@ class StartupCheck
                     }
                 } elseif ($productId == PRODUCT_WHITE_LABEL) {
                     if ($data == 'valid') {
-                        $account = Auth::user()->account;
-                        $account->pro_plan_paid = date_create()->format('Y-m-d');
-                        $account->save();
+                        $organisation = Auth::user()->organisation;
+                        $organisation->pro_plan_paid = date_create()->format('Y-m-d');
+                        $organisation->save();
 
                         Session::flash('message', trans('texts.bought_white_label'));
                     }

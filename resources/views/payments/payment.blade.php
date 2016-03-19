@@ -3,10 +3,10 @@
 @section('head')
     @parent
 
-    @if ($accountGateway->getPublishableStripeKey())
+    @if ($OrganisationGateway->getPublishableStripeKey())
         <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
         <script type="text/javascript">
-            Stripe.setPublishableKey('{{ $accountGateway->getPublishableStripeKey() }}');
+            Stripe.setPublishableKey('{{ $OrganisationGateway->getPublishableStripeKey() }}');
             $(function() {
               $('.payment-form').submit(function(event) {
                 var $form = $(this);
@@ -112,8 +112,8 @@
   {{ Former::populate($client) }}
   {{ Former::populateField('first_name', $contact->first_name) }}
   {{ Former::populateField('last_name', $contact->last_name) }}
-  @if (!$client->country_id && $client->account->country_id)
-    {{ Former::populateField('country_id', $client->account->country_id) }}
+  @if (!$client->country_id && $client->organisation->country_id)
+    {{ Former::populateField('country_id', $client->organisation->country_id) }}
   @endif
 @endif
 
@@ -139,7 +139,7 @@
             <header>
                 @if ($client)
                     <h2>{{ $client->getDisplayName() }}</h2>
-                    <h3>{{ trans('texts.invoice') . ' ' . $invoiceNumber }}<span>|&nbsp; {{ trans('texts.amount_due') }}: <em>{{ $account->formatMoney($amount, $client, true) }}</em></span></h3>
+                    <h3>{{ trans('texts.invoice') . ' ' . $invoiceNumber }}<span>|&nbsp; {{ trans('texts.amount_due') }}: <em>{{ $organisation->formatMoney($amount, $client, true) }}</em></span></h3>
                 @elseif ($paymentTitle)
                     <h2>{{ $paymentTitle }}<br/><small>{{ $paymentSubtitle }}</small></h2>
                 @endif
@@ -238,14 +238,14 @@
         <h3>{{ trans('texts.billing_method') }}</h3>
         <div class="row">
             <div class="col-md-9">
-                {!! Former::text($accountGateway->getPublishableStripeKey() ? '' : 'card_number')
+                {!! Former::text($OrganisationGateway->getPublishableStripeKey() ? '' : 'card_number')
                         ->id('card_number')
                         ->placeholder(trans('texts.card_number'))
                         ->autocomplete('cc-number')
                         ->label('') !!}
             </div>
             <div class="col-md-3">
-                {!! Former::text($accountGateway->getPublishableStripeKey() ? '' : 'cvv')
+                {!! Former::text($OrganisationGateway->getPublishableStripeKey() ? '' : 'cvv')
                         ->id('cvv')
                         ->placeholder(trans('texts.cvv'))
                         ->autocomplete('off')
@@ -254,7 +254,7 @@
         </div>
         <div class="row">
             <div class="col-md-6">
-                {!! Former::select($accountGateway->getPublishableStripeKey() ? '' : 'expiration_month')
+                {!! Former::select($OrganisationGateway->getPublishableStripeKey() ? '' : 'expiration_month')
                         ->id('expiration_month')
                         ->autocomplete('cc-exp-month')
                         ->placeholder(trans('texts.expiration_month'))
@@ -273,7 +273,7 @@
                         !!}
             </div>
             <div class="col-md-6">
-                {!! Former::select($accountGateway->getPublishableStripeKey() ? '' : 'expiration_year')
+                {!! Former::select($OrganisationGateway->getPublishableStripeKey() ? '' : 'expiration_year')
                         ->id('expiration_year')
                         ->autocomplete('cc-exp-year')
                         ->placeholder(trans('texts.expiration_year'))
@@ -295,8 +295,8 @@
 
         <div class="row" style="padding-top:18px">
             <div class="col-md-5">
-                @if ($client && $account->showTokenCheckbox())
-                    <input id="token_billing" type="checkbox" name="token_billing" {{ $account->selectTokenCheckbox() ? 'CHECKED' : '' }} value="1" style="margin-left:0px; vertical-align:top">
+                @if ($client && $organisation->showTokenCheckbox())
+                    <input id="token_billing" type="checkbox" name="token_billing" {{ $organisation->selectTokenCheckbox() ? 'CHECKED' : '' }} value="1" style="margin-left:0px; vertical-align:top">
                     <label for="token_billing" class="checkbox" style="display: inline;">{{ trans('texts.token_billing') }}</label>
                     <span class="help-block" style="font-size:15px">{!! trans('texts.token_billing_secure', ['stripe_link' => link_to('https://stripe.com/', 'Stripe.com', ['target' => '_blank'])]) !!}</span>
                 @endif
@@ -316,7 +316,7 @@
 
         <p>&nbsp;</p>
         <center>
-            {!! Button::success(strtoupper(trans('texts.pay_now') . ' - ' . $account->formatMoney($amount, $client, true)  ))
+            {!! Button::success(strtoupper(trans('texts.pay_now') . ' - ' . $organisation->formatMoney($amount, $client, true)  ))
                             ->submit()
                             ->large() !!}
         </center>        

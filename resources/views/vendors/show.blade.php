@@ -74,11 +74,11 @@
                 {{ $vendor->country->name }}<br/>
             @endif
 
-            @if ($vendor->account->custom_vendor_label1 && $vendor->custom_value1)
-                {{ $vendor->account->custom_vendor_label1 . ': ' . $vendor->custom_value1 }}<br/>
+            @if ($vendor->organisation->custom_vendor_label1 && $vendor->custom_value1)
+                {{ $vendor->organisation->custom_vendor_label1 . ': ' . $vendor->custom_value1 }}<br/>
             @endif
-            @if ($vendor->account->custom_vendor_label2 && $vendor->custom_value2)
-                {{ $vendor->account->custom_vendor_label2 . ': ' . $vendor->custom_value2 }}<br/>
+            @if ($vendor->organisation->custom_vendor_label2 && $vendor->custom_value2)
+                {{ $vendor->organisation->custom_vendor_label2 . ': ' . $vendor->custom_value2 }}<br/>
             @endif
 
             @if ($vendor->work_phone)

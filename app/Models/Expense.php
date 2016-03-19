@@ -28,9 +28,9 @@ class Expense extends EntityModel
         'bank_id',
         'transaction_id',
     ];
-    public function account()
+    public function organisation()
     {
-        return $this->belongsTo('App\Models\Account');
+        return $this->belongsTo('App\Models\Organisation');
     }
 
     public function user()

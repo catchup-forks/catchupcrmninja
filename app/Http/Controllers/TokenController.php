@@ -12,7 +12,7 @@ use URL;
 
 use App\Models\AccountToken;
 use App\Services\TokenService;
-use App\Ninja\Repositories\AccountRepository;
+use App\Ninja\Repositories\OrganisationRepository;
 
 class TokenController extends BaseController
 {
@@ -27,17 +27,17 @@ class TokenController extends BaseController
 
     public function index()
     {
-        return Redirect::to('settings/' . ACCOUNT_API_TOKENS);
+        return Redirect::to('settings/' . ORGANISATION_API_TOKENS);
     }
 
     public function getDatatable()
     {
-        return $this->tokenService->getDatatable(Auth::user()->account_id);
+        return $this->tokenService->getDatatable(Auth::user()->organisation_id);
     }
 
     public function edit($publicId)
     {
-        $token = AccountToken::where('account_id', '=', Auth::user()->account_id)
+        $token = AccountToken::where('organisation_id', '=', Auth::user()->organisation_id)
                         ->where('public_id', '=', $publicId)->firstOrFail();
 
         $data = [
@@ -47,7 +47,7 @@ class TokenController extends BaseController
             'title' => trans('texts.edit_token'),
         ];
 
-        return View::make('accounts.token', $data);
+        return View::make('organisations.token', $data);
     }
 
     public function update($publicId)
@@ -61,7 +61,7 @@ class TokenController extends BaseController
     }
 
     /**
-     * Displays the form for account creation
+     * Displays the form for organisation creation
      *
      */
     public function create()
@@ -73,7 +73,7 @@ class TokenController extends BaseController
           'title' => trans('texts.add_token'),
         ];
 
-        return View::make('accounts.token', $data);
+        return View::make('organisations.token', $data);
     }
 
     public function bulk()
@@ -84,22 +84,22 @@ class TokenController extends BaseController
 
         Session::flash('message', trans('texts.archived_token'));
 
-        return Redirect::to('settings/' . ACCOUNT_API_TOKENS);
+        return Redirect::to('settings/' . ORGANISATION_API_TOKENS);
     }
 
     /**
-     * Stores new account
+     * Stores new organisation
      *
      */
     public function save($tokenPublicId = false)
     {
-        if (Auth::user()->account->isPro()) {
+        if (Auth::user()->organisation->isPro()) {
             $rules = [
                 'name' => 'required',
             ];
 
             if ($tokenPublicId) {
-                $token = AccountToken::where('account_id', '=', Auth::user()->account_id)
+                $token = AccountToken::where('organisation_id', '=', Auth::user()->organisation_id)
                             ->where('public_id', '=', $tokenPublicId)->firstOrFail();
             }
 
@@ -128,7 +128,7 @@ class TokenController extends BaseController
             Session::flash('message', $message);
         }
 
-        return Redirect::to('settings/' . ACCOUNT_API_TOKENS);
+        return Redirect::to('settings/' . ORGANISATION_API_TOKENS);
     }
 
 }

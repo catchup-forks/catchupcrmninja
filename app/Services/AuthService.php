@@ -5,7 +5,7 @@ use Auth;
 use Utils;
 use Input;
 use Socialite;
-use App\Ninja\Repositories\AccountRepository;
+use App\Ninja\Repositories\OrganisationRepository;
 use App\Events\UserLoggedIn;
 use App\Events\UserSignedUp;
 
@@ -20,7 +20,7 @@ class AuthService
         4 => SOCIAL_LINKEDIN
     ];
 
-    public function __construct(AccountRepository $repo)
+    public function __construct(OrganisationRepository $repo)
     {
         $this->accountRepo = $repo;
     }
@@ -56,7 +56,7 @@ class AuthService
                     Session::flash('onReady', 'handleSignedUp();');
                 } else {
                     Session::flash('message', trans('texts.updated_settings'));
-                    return redirect()->to('/settings/' . ACCOUNT_USER_DETAILS);
+                    return redirect()->to('/settings/' . ORGANISATION_USER_DETAILS);
                 }
             } else {
                 Session::flash('error', $result);

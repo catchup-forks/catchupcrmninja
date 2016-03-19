@@ -20,12 +20,12 @@ class InvoiceListener
 
         if (Auth::check()) {
             $invoice = $event->invoice;
-            $account = Auth::user()->account;
+            $organisation = Auth::user()->organisation;
 
             if ($invoice->invoice_design_id
-                    && $account->invoice_design_id != $invoice->invoice_design_id) {
-                $account->invoice_design_id = $invoice->invoice_design_id;
-                $account->save();
+                    && $organisation->invoice_design_id != $invoice->invoice_design_id) {
+                $organisation->invoice_design_id = $invoice->invoice_design_id;
+                $organisation->save();
             }
         }
     }

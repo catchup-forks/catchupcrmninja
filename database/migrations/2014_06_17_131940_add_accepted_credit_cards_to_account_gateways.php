@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddAcceptedCreditCardsToAccountGateways extends Migration {
+class AddAcceptedCreditCardsToOrganisationGateways extends Migration {
 
 	/**
 	 * Run the migrations.

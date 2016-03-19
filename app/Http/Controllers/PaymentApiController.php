@@ -59,7 +59,7 @@ class PaymentApiController extends BaseAPIController
         $payments = $payments->orderBy('created_at', 'desc')->paginate();
         $paginator = $paginator->paginate();
 
-        $transformer = new PaymentTransformer(Auth::user()->account, Input::get('serializer'));
+        $transformer = new PaymentTransformer(Auth::user()->organisation, Input::get('serializer'));
         $data = $this->createCollection($payments, $transformer, 'payments', $paginator);
 
         return $this->response($data);
@@ -98,7 +98,7 @@ class PaymentApiController extends BaseAPIController
                 $payment = Payment::scope($publicId)->withTrashed()->firstOrFail();
                 $this->paymentRepo->archive($payment);
 
-                $transformer = new PaymentTransformer(\Auth::user()->account, Input::get('serializer'));
+                $transformer = new PaymentTransformer(\Auth::user()->organisation, Input::get('serializer'));
                 $data = $this->createItem($payment, $transformer, 'invoice');
 
                 return $this->response($data);
@@ -116,7 +116,7 @@ class PaymentApiController extends BaseAPIController
             }])->withTrashed()->first();
             */
 
-            $transformer = new PaymentTransformer(\Auth::user()->account, Input::get('serializer'));
+            $transformer = new PaymentTransformer(\Auth::user()->organisation, Input::get('serializer'));
             $data = $this->createItem($payment, $transformer, 'invoice');
 
             return $this->response($data);
@@ -183,7 +183,7 @@ class PaymentApiController extends BaseAPIController
         }])->first();
         */
 
-        $transformer = new PaymentTransformer(\Auth::user()->account, Input::get('serializer'));
+        $transformer = new PaymentTransformer(\Auth::user()->organisation, Input::get('serializer'));
         $data = $this->createItem($payment, $transformer, 'invoice');
 
         return $this->response($data);
@@ -225,7 +225,7 @@ class PaymentApiController extends BaseAPIController
                 $query->withTrashed();
             }])->first();
             */
-            $transformer = new PaymentTransformer(\Auth::user()->account, Input::get('serializer'));
+            $transformer = new PaymentTransformer(\Auth::user()->organisation, Input::get('serializer'));
             $data = $this->createItem($payment, $transformer, 'invoice');
 
             return $this->response($data);

@@ -79,7 +79,7 @@ class InvoiceApiController extends BaseAPIController
         }
         */
 
-        $transformer = new InvoiceTransformer(Auth::user()->account, Input::get('serializer'));
+        $transformer = new InvoiceTransformer(Auth::user()->organisation, Input::get('serializer'));
         $paginator = $paginator->paginate();
 
         $data = $this->createCollection($invoices, $transformer, 'invoices', $paginator);
@@ -112,7 +112,7 @@ class InvoiceApiController extends BaseAPIController
         if(!$invoice)
             return $this->errorResponse(['message'=>'Invoice does not exist!'], 404);
 
-        $transformer = new InvoiceTransformer(\Auth::user()->account, Input::get('serializer'));
+        $transformer = new InvoiceTransformer(\Auth::user()->organisation, Input::get('serializer'));
         $data = $this->createItem($invoice, $transformer, 'invoice');
 
         return $this->response($data);
@@ -210,7 +210,7 @@ class InvoiceApiController extends BaseAPIController
         }
 
         $invoice = Invoice::scope($invoice->public_id)->with('client', 'invoice_items', 'invitations')->first();
-        $transformer = new InvoiceTransformer(\Auth::user()->account, Input::get('serializer'));
+        $transformer = new InvoiceTransformer(\Auth::user()->organisation, Input::get('serializer'));
         $data = $this->createItem($invoice, $transformer, 'invoice');
 
         return $this->response($data);
@@ -218,8 +218,8 @@ class InvoiceApiController extends BaseAPIController
 
     private function prepareData($data, $client)
     {
-        $account = Auth::user()->account;
-        $account->loadLocalizationSettings($client);
+        $organisation = Auth::user()->organisation;
+        $organisation->loadLocalizationSettings($client);
 
         // set defaults for optional fields
         $fields = [
@@ -229,7 +229,7 @@ class InvoiceApiController extends BaseAPIController
             'invoice_footer' => '',
             'public_notes' => '',
             'po_number' => '',
-            'invoice_design_id' => $account->invoice_design_id,
+            'invoice_design_id' => $organisation->invoice_design_id,
             'invoice_items' => [],
             'custom_value1' => 0,
             'custom_value2' => 0,
@@ -355,7 +355,7 @@ class InvoiceApiController extends BaseAPIController
             $invoice = Invoice::scope($publicId)->firstOrFail();
             $this->invoiceRepo->archive($invoice);
 
-            $transformer = new InvoiceTransformer(\Auth::user()->account, Input::get('serializer'));
+            $transformer = new InvoiceTransformer(\Auth::user()->organisation, Input::get('serializer'));
             $data = $this->createItem($invoice, $transformer, 'invoice');
 
             return $this->response($data);
@@ -364,7 +364,7 @@ class InvoiceApiController extends BaseAPIController
             $quote = Invoice::scope($publicId)->firstOrFail();
             $invoice = $this->invoiceRepo->cloneInvoice($quote, $quote->id);
 
-            $transformer = new InvoiceTransformer(\Auth::user()->account, Input::get('serializer'));
+            $transformer = new InvoiceTransformer(\Auth::user()->organisation, Input::get('serializer'));
             $data = $this->createItem($invoice, $transformer, 'invoice');
 
             return $this->response($data);
@@ -373,7 +373,7 @@ class InvoiceApiController extends BaseAPIController
             $invoice = Invoice::scope($publicId)->withTrashed()->firstOrFail();
             $this->invoiceRepo->restore($invoice);
 
-            $transformer = new InvoiceTransformer(\Auth::user()->account, Input::get('serializer'));
+            $transformer = new InvoiceTransformer(\Auth::user()->organisation, Input::get('serializer'));
             $data = $this->createItem($invoice, $transformer, 'invoice');
 
             return $this->response($data);
@@ -384,7 +384,7 @@ class InvoiceApiController extends BaseAPIController
         $this->invoiceService->save($data);
 
         $invoice = Invoice::scope($publicId)->with('client', 'invoice_items', 'invitations')->firstOrFail();
-        $transformer = new InvoiceTransformer(\Auth::user()->account, Input::get('serializer'));
+        $transformer = new InvoiceTransformer(\Auth::user()->organisation, Input::get('serializer'));
         $data = $this->createItem($invoice, $transformer, 'invoice');
 
         return $this->response($data);
@@ -419,7 +419,7 @@ class InvoiceApiController extends BaseAPIController
 
         $this->invoiceRepo->delete($invoice);
 
-        $transformer = new InvoiceTransformer(\Auth::user()->account, Input::get('serializer'));
+        $transformer = new InvoiceTransformer(\Auth::user()->organisation, Input::get('serializer'));
         $data = $this->createItem($invoice, $transformer, 'invoice');
 
         return $this->response($data);

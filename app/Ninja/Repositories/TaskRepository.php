@@ -16,7 +16,7 @@ class TaskRepository
                     ->leftJoin('clients', 'tasks.client_id', '=', 'clients.id')
                     ->leftJoin('contacts', 'contacts.client_id', '=', 'clients.id')
                     ->leftJoin('invoices', 'invoices.id', '=', 'tasks.invoice_id')
-                    ->where('tasks.account_id', '=', Auth::user()->account_id)
+                    ->where('tasks.organisation_id', '=', Auth::user()->organisation_id)
                     ->where(function ($query) {
                         $query->where('contacts.is_primary', '=', true)
                                 ->orWhere('contacts.is_primary', '=', null);

@@ -12,7 +12,7 @@ class SupportHidingQuantity extends Migration {
 	 */
 	public function up()
 	{
-		Schema::table('accounts', function($table)
+		Schema::table('organisations', function($table)
 		{
 			$table->boolean('hide_quantity')->default(0);
 			$table->boolean('hide_paid_to_date')->default(0);
@@ -41,7 +41,7 @@ class SupportHidingQuantity extends Migration {
 	 */
 	public function down()
 	{
-		Schema::table('accounts', function($table)
+		Schema::table('organisations', function($table)
 		{
 			$table->dropColumn('hide_quantity');
 			$table->dropColumn('hide_paid_to_date');

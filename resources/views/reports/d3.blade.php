@@ -31,7 +31,7 @@
 
 @section('content')
   @parent
-  @include('accounts.nav', ['selected' => ACCOUNT_DATA_VISUALIZATIONS, 'advanced' => true])
+  @include('organisations.nav', ['selected' => ORGANISATION_DATA_VISUALIZATIONS, 'advanced' => true])
 
   <div id="tooltip" class="hidden">
     <p>
@@ -268,7 +268,7 @@
         return -1;
       }
       var dayInSeconds = 1000*60*60*24;
-      @if (Auth::user()->account->isPro())
+      @if (Auth::user()->organisation->isPro())
         var date = convertToJsDate(invoice.created_at);
       @else
         var date = new Date().getTime() - (dayInSeconds * Math.random() * 100);

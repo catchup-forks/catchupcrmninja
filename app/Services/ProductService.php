@@ -64,7 +64,7 @@ class ProductService extends BaseService
                 function ($model) {
                     return $model->tax_rate ? ($model->tax_name . ' ' . $model->tax_rate . '%') : '';
                 },
-                Auth::user()->account->invoice_item_taxes
+                Auth::user()->organisation->invoice_item_taxes
             ]
         ];
     }

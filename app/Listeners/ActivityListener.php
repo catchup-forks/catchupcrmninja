@@ -92,7 +92,7 @@ class ActivityListener
             return;
         }
 
-        $backupInvoice = Invoice::with('invoice_items', 'client.account', 'client.contacts')->find($event->invoice->id);
+        $backupInvoice = Invoice::with('invoice_items', 'client.organisation', 'client.contacts')->find($event->invoice->id);
 
         $activity = $this->activityRepo->create(
             $event->invoice,
@@ -177,7 +177,7 @@ class ActivityListener
             return;
         }
 
-        $backupQuote = Invoice::with('invoice_items', 'client.account', 'client.contacts')->find($event->quote->id);
+        $backupQuote = Invoice::with('invoice_items', 'client.organisation', 'client.contacts')->find($event->quote->id);
 
         $activity = $this->activityRepo->create(
             $event->quote,

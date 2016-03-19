@@ -32,9 +32,9 @@ class Payment extends EntityModel
         return $this->belongsTo('App\Models\User')->withTrashed();
     }
 
-    public function account()
+    public function organisation()
     {
-        return $this->belongsTo('App\Models\Account');
+        return $this->belongsTo('App\Models\Organisation');
     }
 
     public function contact()
@@ -44,7 +44,7 @@ class Payment extends EntityModel
 
     public function account_gateway()
     {
-        return $this->belongsTo('App\Models\AccountGateway');
+        return $this->belongsTo('App\Models\OrganisationGateway');
     }
 
     public function payment_type()

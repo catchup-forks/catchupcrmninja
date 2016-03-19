@@ -5,9 +5,9 @@ use DateTime;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
-use App\Models\Account;
+use App\Models\Organisation;
 use App\Ninja\Mailers\ContactMailer as Mailer;
-use App\Ninja\Repositories\AccountRepository;
+use App\Ninja\Repositories\OrganisationRepository;
 
 class SendRenewalInvoices extends Command
 {
@@ -16,7 +16,7 @@ class SendRenewalInvoices extends Command
     protected $mailer;
     protected $accountRepo;
 
-    public function __construct(Mailer $mailer, AccountRepository $repo)
+    public function __construct(Mailer $mailer, OrganisationRepository $repo)
     {
         parent::__construct();
 
@@ -30,15 +30,15 @@ class SendRenewalInvoices extends Command
         $today = new DateTime();
         $sentTo = [];
 
-        // get all accounts with pro plans expiring in 10 days
-        $accounts = Account::whereRaw('datediff(curdate(), pro_plan_paid) = 355')
+        // get all organisations with pro plans expiring in 10 days
+        $accounts = Organisation::whereRaw('datediff(curdate(), pro_plan_paid) = 355')
                         ->orderBy('id')
                         ->get();
-        $this->info(count($accounts).' accounts found');
+        $this->info(count($accounts).' organisations found');
 
-        foreach ($accounts as $account) {
+        foreach ($accounts as $organisation) {
             // don't send multiple invoices to multi-company users
-            if ($userAccountId = $this->accountRepo->getUserAccountId($account)) {
+            if ($userAccountId = $this->accountRepo->getUserAccountId($organisation)) {
                 if (isset($sentTo[$userAccountId])) {
                     continue;
                 } else {
@@ -46,8 +46,8 @@ class SendRenewalInvoices extends Command
                 }
             }
 
-            $client = $this->accountRepo->getNinjaClient($account);
-            $invitation = $this->accountRepo->createNinjaInvoice($client, $account);
+            $client = $this->accountRepo->getNinjaClient($organisation);
+            $invitation = $this->accountRepo->createNinjaInvoice($client, $organisation);
 
             // set the due date to 10 days from now
             $invoice = $invitation->invoice;

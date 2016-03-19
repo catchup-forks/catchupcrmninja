@@ -84,9 +84,9 @@ class Client extends EntityModel
         ];
     }
 
-    public function account()
+    public function organisation()
     {
-        return $this->belongsTo('App\Models\Account');
+        return $this->belongsTo('App\Models\Organisation');
     }
 
     public function user()
@@ -155,7 +155,7 @@ class Client extends EntityModel
             $contact->send_invoice = true;
         }
         
-        if (!Utils::isPro() || $this->account->enable_portal_password){
+        if (!Utils::isPro() || $this->organisation->enable_portal_password){
             if(!empty($data['password']) && $data['password']!='-%unchanged%-'){
                 $contact->password = bcrypt($data['password']);
             } else if(empty($data['password'])){
@@ -256,20 +256,20 @@ class Client extends EntityModel
 
     public function getGatewayToken()
     {
-        $this->account->load('account_gateways');
+        $this->organisation->load('account_gateways');
 
-        if (!count($this->account->account_gateways)) {
+        if (!count($this->organisation->account_gateways)) {
             return false;
         }
 
-        $accountGateway = $this->account->getGatewayConfig(GATEWAY_STRIPE);
+        $OrganisationGateway = $this->organisation->getGatewayConfig(GATEWAY_STRIPE);
         
-        if (!$accountGateway) {
+        if (!$OrganisationGateway) {
             return false;
         }
 
-        $token = AccountGatewayToken::where('client_id', '=', $this->id)
-                    ->where('account_gateway_id', '=', $accountGateway->id)->first();
+        $token = OrganisationGatewayToken::where('client_id', '=', $this->id)
+                    ->where('account_gateway_id', '=', $OrganisationGateway->id)->first();
 
         return $token ? $token->token : false;
     }
@@ -291,11 +291,11 @@ class Client extends EntityModel
             return $this->currency_id;
         }
 
-        if (!$this->account) {
-            $this->load('account');
+        if (!$this->organisation) {
+            $this->load('organisation');
         }
 
-        return $this->account->currency_id ?: DEFAULT_CURRENCY;
+        return $this->organisation->currency_id ?: DEFAULT_CURRENCY;
     }
 
     public function getCounter($isQuote)

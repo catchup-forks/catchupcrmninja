@@ -1,6 +1,6 @@
 <?php namespace App\Ninja\Transformers;
 
-use App\Models\Account;
+use App\Models\Organisation;
 use App\Models\Expense;
 use League\Fractal;
 
@@ -19,7 +19,7 @@ class ExpenseTransformer extends EntityTransformer
             'transaction_id' => $expense->transaction_id,
             'bank_id' => $expense->bank_id,
             'expense_currency_id' => (int) $expense->expense_currency_id,
-            'account_key' => $this->account->account_key,
+            'account_key' => $this->organisation->account_key,
             'amount' => (float) $expense->amount,
             'expense_date' => $expense->expense_date,
             'exchange_rate' => (float) $expense->exchange_rate,

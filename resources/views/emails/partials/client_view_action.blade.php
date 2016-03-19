@@ -10,7 +10,7 @@
   @endif
   "provider": {
     "@type": "Organization",
-    "name": "{{ $account->getDisplayName() }}"
+    "name": "{{ $organisation->getDisplayName() }}"
   },
   "broker": {
     "@type": "Organization",
@@ -19,7 +19,7 @@
   },
   "totalPaymentDue": {
     "@type": "PriceSpecification",
-    "price": "{{ $account->formatMoney(isset($payment) ? $payment->amount : $invoice->getRequestedAmount(), $client) }}"
+    "price": "{{ $organisation->formatMoney(isset($payment) ? $payment->amount : $invoice->getRequestedAmount(), $client) }}"
   },
   "action": {
     "@type": "ViewAction",

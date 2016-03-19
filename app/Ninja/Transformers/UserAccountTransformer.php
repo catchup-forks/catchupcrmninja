@@ -1,7 +1,7 @@
 <?php namespace App\Ninja\Transformers;
 
 use App\Models\User;
-use App\Models\Account;
+use App\Models\Organisation;
 use League\Fractal;
 use League\Fractal\TransformerAbstract;
 use League\Fractal\Resource\Item;
@@ -14,25 +14,25 @@ class UserAccountTransformer extends EntityTransformer
 
     protected $tokenName;
     
-    public function __construct(Account $account, $serializer, $tokenName)
+    public function __construct(Organisation $organisation, $serializer, $tokenName)
     {
-        parent::__construct($account, $serializer);
+        parent::__construct($organisation, $serializer);
 
         $this->tokenName = $tokenName;
     }
 
     public function includeUser(User $user)
     {
-        $transformer = new UserTransformer($this->account, $this->serializer);
+        $transformer = new UserTransformer($this->organisation, $this->serializer);
         return $this->includeItem($user, $transformer, 'user');
     }
 
     public function transform(User $user)
     {
         return [
-            'account_key' => $user->account->account_key,
-            'name' => $user->account->present()->name,
-            'token' => $user->account->getToken($this->tokenName),
+            'account_key' => $user->organisation->account_key,
+            'name' => $user->organisation->present()->name,
+            'token' => $user->organisation->getToken($this->tokenName),
             'default_url' => SITE_URL
         ];
     }

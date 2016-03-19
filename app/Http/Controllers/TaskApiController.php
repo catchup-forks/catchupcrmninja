@@ -52,7 +52,7 @@ class TaskApiController extends BaseAPIController
 
         $tasks = $tasks->orderBy('created_at', 'desc')->paginate();
         $paginator = $paginator->paginate();
-        $transformer = new TaskTransformer(\Auth::user()->account, Input::get('serializer'));
+        $transformer = new TaskTransformer(\Auth::user()->organisation, Input::get('serializer'));
 
         $data = $this->createCollection($tasks, $transformer, 'tasks', $paginator);
 
@@ -92,7 +92,7 @@ class TaskApiController extends BaseAPIController
         $task = $this->taskRepo->save($taskId, $data);
         $task = Task::scope($task->public_id)->with('client')->first();
 
-        $transformer = new TaskTransformer(Auth::user()->account, Input::get('serializer'));
+        $transformer = new TaskTransformer(Auth::user()->organisation, Input::get('serializer'));
         $data = $this->createItem($task, $transformer, 'task');
 
         return $this->response($data);

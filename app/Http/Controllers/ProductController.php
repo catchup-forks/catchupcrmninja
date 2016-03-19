@@ -28,44 +28,44 @@ class ProductController extends BaseController
 
     public function index()
     {
-        return Redirect::to('settings/' . ACCOUNT_PRODUCTS);
+        return Redirect::to('settings/' . ORGANISATION_PRODUCTS);
     }
 
     public function getDatatable()
     {
-        return $this->productService->getDatatable(Auth::user()->account_id);
+        return $this->productService->getDatatable(Auth::user()->organisation_id);
     }
 
     public function edit($publicId)
     {
-        $account = Auth::user()->account;
+        $organisation = Auth::user()->organisation;
 
         $data = [
-          'account' => $account,
-          'taxRates' => $account->invoice_item_taxes ? TaxRate::scope()->get(['id', 'name', 'rate']) : null,
+          'organisation' => $organisation,
+          'taxRates' => $organisation->invoice_item_taxes ? TaxRate::scope()->get(['id', 'name', 'rate']) : null,
           'product' => Product::scope($publicId)->firstOrFail(),
           'method' => 'PUT',
           'url' => 'products/'.$publicId,
           'title' => trans('texts.edit_product'),
         ];
 
-        return View::make('accounts.product', $data);
+        return View::make('organisations.product', $data);
     }
 
     public function create()
     {
-        $account = Auth::user()->account;
+        $organisation = Auth::user()->organisation;
 
         $data = [
-          'account' => $account,
-          'taxRates' => $account->invoice_item_taxes ? TaxRate::scope()->get(['id', 'name', 'rate']) : null,
+          'organisation' => $organisation,
+          'taxRates' => $organisation->invoice_item_taxes ? TaxRate::scope()->get(['id', 'name', 'rate']) : null,
           'product' => null,
           'method' => 'POST',
           'url' => 'products',
           'title' => trans('texts.create_product'),
         ];
 
-        return View::make('accounts.product', $data);
+        return View::make('organisations.product', $data);
     }
 
     public function store()
@@ -96,7 +96,7 @@ class ProductController extends BaseController
         $message = $productPublicId ? trans('texts.updated_product') : trans('texts.created_product');
         Session::flash('message', $message);
 
-        return Redirect::to('settings/' . ACCOUNT_PRODUCTS);
+        return Redirect::to('settings/' . ORGANISATION_PRODUCTS);
     }
 
     public function bulk()
@@ -107,6 +107,6 @@ class ProductController extends BaseController
 
         Session::flash('message', trans('texts.archived_product'));
 
-        return Redirect::to('settings/' . ACCOUNT_PRODUCTS);
+        return Redirect::to('settings/' . ORGANISATION_PRODUCTS);
     }
 }

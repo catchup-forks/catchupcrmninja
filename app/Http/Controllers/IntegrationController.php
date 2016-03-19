@@ -16,12 +16,12 @@ class IntegrationController extends Controller
             return Response::json('Event is invalid', 500);
         }
 
-        $subscription = Subscription::where('account_id', '=', Auth::user()->account_id)
+        $subscription = Subscription::where('organisation_id', '=', Auth::user()->organisation_id)
                             ->where('event_id', '=', $eventId)->first();
 
         if (!$subscription) {
             $subscription = new Subscription();
-            $subscription->account_id = Auth::user()->account_id;
+            $subscription->organisation_id = Auth::user()->organisation_id;
             $subscription->event_id = $eventId;
         }
 

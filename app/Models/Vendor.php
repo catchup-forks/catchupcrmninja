@@ -79,9 +79,9 @@ class Vendor extends EntityModel
         ];
     }
 
-    public function account()
+    public function organisation()
     {
-        return $this->belongsTo('App\Models\Account');
+        return $this->belongsTo('App\Models\Organisation');
     }
 
     public function user()
@@ -206,11 +206,11 @@ class Vendor extends EntityModel
             return $this->currency_id;
         }
 
-        if (!$this->account) {
-            $this->load('account');
+        if (!$this->organisation) {
+            $this->load('organisation');
         }
 
-        return $this->account->currency_id ?: DEFAULT_CURRENCY;
+        return $this->organisation->currency_id ?: DEFAULT_CURRENCY;
     }
 
     public function getTotalExpense()

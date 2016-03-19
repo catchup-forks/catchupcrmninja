@@ -9,7 +9,7 @@ use DateInterval;
 use DatePeriod;
 use Session;
 use View;
-use App\Models\Account;
+use App\Models\Organisation;
 use App\Models\Client;
 use App\Models\Payment;
 use App\Models\Expense;
@@ -21,12 +21,12 @@ class ReportController extends BaseController
         $message = '';
         $fileName = storage_path().'/dataviz_sample.txt';
 
-        if (Auth::user()->account->isPro()) {
-            $account = Account::where('id', '=', Auth::user()->account->id)
+        if (Auth::user()->organisation->isPro()) {
+            $organisation = Organisation::where('id', '=', Auth::user()->organisation->id)
                             ->with(['clients.invoices.invoice_items', 'clients.contacts'])
                             ->first();
-            $account = $account->hideFieldsForViz();
-            $clients = $account->clients->toJson();
+            $organisation = $organisation->hideFieldsForViz();
+            $clients = $organisation->clients->toJson();
         } elseif (file_exists($fileName)) {
             $clients = file_get_contents($fileName);
             $message = trans('texts.sample_data');
@@ -99,7 +99,7 @@ class ReportController extends BaseController
             'title' => trans('texts.charts_and_reports'),
         ];
 
-        if (Auth::user()->account->isPro()) {
+        if (Auth::user()->organisation->isPro()) {
             if ($enableReport) {
                 $isExport = $action == 'export';
                 $params = array_merge($params, self::generateReport($reportType, $startDate, $endDate, $dateField, $isExport));
@@ -159,7 +159,7 @@ class ReportController extends BaseController
 
             $records = DB::table($entityType.'s')
                 ->select(DB::raw('sum(amount) as total, '.$timeframe.' as '.$groupBy))
-                ->where('account_id', '=', Auth::user()->account_id)
+                ->where('organisation_id', '=', Auth::user()->organisation_id)
                 ->where($entityType.'s.is_deleted', '=', false)
                 ->where($entityType.'s.'.$entityType.'_date', '>=', $startDate->format('Y-m-d'))
                 ->where($entityType.'s.'.$entityType.'_date', '<=', $endDate->format('Y-m-d'))
@@ -235,7 +235,7 @@ class ReportController extends BaseController
     {
         $columns = ['tax_name', 'tax_rate', 'amount', 'paid'];
 
-        $account = Auth::user()->account;
+        $organisation = Auth::user()->organisation;
         $displayData = [];
         $reportTotals = [];
 
@@ -262,7 +262,7 @@ class ReportController extends BaseController
                         }]);
 
         foreach ($clients->get() as $client) {
-            $currencyId = $client->currency_id ?: Auth::user()->account->getCurrencyId();
+            $currencyId = $client->currency_id ?: Auth::user()->organisation->getCurrencyId();
             $amount = 0;
             $paid = 0;
             $taxTotals = [];
@@ -289,8 +289,8 @@ class ReportController extends BaseController
                     $displayData[] = [
                         $tax['name'],
                         $tax['rate'] . '%',
-                        $account->formatMoney($tax['amount'], $client),
-                        $account->formatMoney($tax['paid'], $client)
+                        $organisation->formatMoney($tax['amount'], $client),
+                        $organisation->formatMoney($tax['paid'], $client)
                     ];
                 }
     
@@ -311,7 +311,7 @@ class ReportController extends BaseController
     {
         $columns = ['client', 'invoice_number', 'invoice_date', 'amount', 'payment_date', 'paid', 'method'];
 
-        $account = Auth::user()->account;
+        $organisation = Auth::user()->organisation;
         $displayData = [];
         $reportTotals = [];
         
@@ -335,9 +335,9 @@ class ReportController extends BaseController
                 $isExport ? $client->getDisplayName() : $client->present()->link,
                 $isExport ? $invoice->invoice_number : $invoice->present()->link,
                 $invoice->present()->invoice_date,
-                $account->formatMoney($invoice->amount, $client),
+                $organisation->formatMoney($invoice->amount, $client),
                 $payment->present()->payment_date,
-                $account->formatMoney($payment->amount, $client),
+                $organisation->formatMoney($payment->amount, $client),
                 $payment->present()->method,
             ];
 
@@ -356,7 +356,7 @@ class ReportController extends BaseController
     {
         $columns = ['client', 'invoice_number', 'invoice_date', 'amount', 'paid', 'balance'];
 
-        $account = Auth::user()->account;
+        $organisation = Auth::user()->organisation;
         $displayData = [];
         $reportTotals = [];
         
@@ -379,16 +379,16 @@ class ReportController extends BaseController
                         }]);
         
         foreach ($clients->get() as $client) {
-            $currencyId = $client->currency_id ?: Auth::user()->account->getCurrencyId();
+            $currencyId = $client->currency_id ?: Auth::user()->organisation->getCurrencyId();
 
             foreach ($client->invoices as $invoice) {
                 $displayData[] = [
                     $isExport ? $client->getDisplayName() : $client->present()->link,
                     $isExport ? $invoice->invoice_number : $invoice->present()->link,
                     $invoice->present()->invoice_date,
-                    $account->formatMoney($invoice->amount, $client),
-                    $account->formatMoney($invoice->getAmountPaid(), $client),
-                    $account->formatMoney($invoice->balance, $client),
+                    $organisation->formatMoney($invoice->amount, $client),
+                    $organisation->formatMoney($invoice->getAmountPaid(), $client),
+                    $organisation->formatMoney($invoice->balance, $client),
                 ];
                 $reportTotals = $this->addToTotals($reportTotals, $client->currency_id, 'amount', $invoice->amount);
                 $reportTotals = $this->addToTotals($reportTotals, $client->currency_id, 'paid', $invoice->getAmountPaid());
@@ -407,7 +407,7 @@ class ReportController extends BaseController
     {
         $columns = ['client', 'amount', 'paid', 'balance'];
 
-        $account = Auth::user()->account;
+        $organisation = Auth::user()->organisation;
         $displayData = [];
         $reportTotals = [];
 
@@ -433,9 +433,9 @@ class ReportController extends BaseController
 
             $displayData[] = [
                 $isExport ? $client->getDisplayName() : $client->present()->link,
-                $account->formatMoney($amount, $client),
-                $account->formatMoney($paid, $client),
-                $account->formatMoney($amount - $paid, $client)
+                $organisation->formatMoney($amount, $client),
+                $organisation->formatMoney($paid, $client),
+                $organisation->formatMoney($amount - $paid, $client)
             ];
 
             $reportTotals = $this->addToTotals($reportTotals, $client->currency_id, 'amount', $amount);
@@ -454,7 +454,7 @@ class ReportController extends BaseController
     {
         $columns = ['vendor', 'client', 'date', 'expense_amount', 'invoiced_amount'];
 
-        $account = Auth::user()->account;
+        $organisation = Auth::user()->organisation;
         $displayData = [];
         $reportTotals = [];
 
@@ -492,7 +492,7 @@ class ReportController extends BaseController
     }
 
     private function addToTotals($data, $currencyId, $field, $value) {
-        $currencyId = $currencyId ?: Auth::user()->account->getCurrencyId();
+        $currencyId = $currencyId ?: Auth::user()->organisation->getCurrencyId();
 
         if (!isset($data[$currencyId][$field])) {
             $data[$currencyId][$field] = 0;

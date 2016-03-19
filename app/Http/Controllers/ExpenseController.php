@@ -146,9 +146,9 @@ class ExpenseController extends BaseController
 
         $data = array_merge($data, self::getViewModel());
 
-        if (Auth::user()->account->isNinjaAccount()) {
-            if ($account = Account::whereId($client->public_id)->first()) {
-                $data['proPlanPaid'] = $account['pro_plan_paid'];
+        if (Auth::user()->organisation->isNinjaAccount()) {
+            if ($organisation = Organisation::whereId($client->public_id)->first()) {
+                $data['proPlanPaid'] = $organisation['pro_plan_paid'];
             }
         }
 
@@ -221,7 +221,7 @@ class ExpenseController extends BaseController
                         return Redirect::to('expenses');
                     }
 
-                    $account = Auth::user()->account;
+                    $organisation = Auth::user()->organisation;
                     $data[] = [
                         'publicId' => $expense->public_id,
                         'description' => $expense->public_notes,
@@ -251,15 +251,15 @@ class ExpenseController extends BaseController
     {
         return [
             'data' => Input::old('data'),
-            'account' => Auth::user()->account,
+            'organisation' => Auth::user()->organisation,
             'sizes' => Cache::get('sizes'),
             'paymentTerms' => Cache::get('paymentTerms'),
             'industries' => Cache::get('industries'),
             'currencies' => Cache::get('currencies'),
             'languages' => Cache::get('languages'),
             'countries' => Cache::get('countries'),
-            'customLabel1' => Auth::user()->account->custom_vendor_label1,
-            'customLabel2' => Auth::user()->account->custom_vendor_label2,
+            'customLabel1' => Auth::user()->organisation->custom_vendor_label1,
+            'customLabel2' => Auth::user()->organisation->custom_vendor_label2,
         ];
     }
 

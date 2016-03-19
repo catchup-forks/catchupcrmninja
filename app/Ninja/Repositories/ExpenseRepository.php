@@ -27,10 +27,10 @@ class ExpenseRepository extends BaseRepository
     public function findVendor($vendorPublicId)
     {
         $vendorId = Vendor::getPrivateId($vendorPublicId);
-        $accountid = \Auth::user()->account_id;
+        $accountid = \Auth::user()->organisation_id;
         $query = DB::table('expenses')
-                    ->join('accounts', 'accounts.id', '=', 'expenses.account_id')
-                    ->where('expenses.account_id', '=', $accountid)
+                    ->join('organisations', 'organisations.id', '=', 'expenses.organisation_id')
+                    ->where('expenses.organisation_id', '=', $accountid)
                     ->where('expenses.vendor_id', '=', $vendorId)
                     ->select(
                         'expenses.id',
@@ -49,14 +49,14 @@ class ExpenseRepository extends BaseRepository
 
     public function find($filter = null)
     {
-        $accountid = \Auth::user()->account_id;
+        $accountid = \Auth::user()->organisation_id;
         $query = DB::table('expenses')
-                    ->join('accounts', 'accounts.id', '=', 'expenses.account_id')
+                    ->join('organisations', 'organisations.id', '=', 'expenses.organisation_id')
                     ->leftjoin('clients', 'clients.id', '=', 'expenses.client_id')
                     ->leftJoin('contacts', 'contacts.client_id', '=', 'clients.id')
                     ->leftjoin('vendors', 'vendors.id', '=', 'expenses.vendor_id')
                     ->leftJoin('invoices', 'invoices.id', '=', 'expenses.invoice_id')
-                    ->where('expenses.account_id', '=', $accountid)
+                    ->where('expenses.organisation_id', '=', $accountid)
                     ->where('contacts.deleted_at', '=', null)
                     ->where('vendors.deleted_at', '=', null)
                     ->where('clients.deleted_at', '=', null)
@@ -66,7 +66,7 @@ class ExpenseRepository extends BaseRepository
                     })
                     ->select(
                         DB::raw('COALESCE(expenses.invoice_id, expenses.should_be_invoiced) expense_status_id'),
-                        'expenses.account_id',
+                        'expenses.organisation_id',
                         'expenses.amount',
                         'expenses.deleted_at',
                         'expenses.exchange_rate',
@@ -135,10 +135,10 @@ class ExpenseRepository extends BaseRepository
         $expense->should_be_invoiced = isset($input['should_be_invoiced']) || $expense->client_id ? true : false;
 
         if ( ! $expense->expense_currency_id) {
-            $expense->expense_currency_id = \Auth::user()->account->getCurrencyId();
+            $expense->expense_currency_id = \Auth::user()->organisation->getCurrencyId();
         }
         if ( ! $expense->invoice_currency_id) {
-            $expense->invoice_currency_id = \Auth::user()->account->getCurrencyId();
+            $expense->invoice_currency_id = \Auth::user()->organisation->getCurrencyId();
         }
 
         $rate = isset($input['exchange_rate']) ? Utils::parseFloat($input['exchange_rate']) : 1;

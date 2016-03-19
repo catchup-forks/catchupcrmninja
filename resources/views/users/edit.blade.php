@@ -2,7 +2,7 @@
 
 @section('content') 
   @parent
-  @include('accounts.nav', ['selected' => ACCOUNT_USER_MANAGEMENT])
+  @include('organisations.nav', ['selected' => ORGANISATION_USER_MANAGEMENT])
 
   {!! Former::open($url)->method($method)->addClass('warn-on-exit')->rules(array(
       'first_name' => 'required',

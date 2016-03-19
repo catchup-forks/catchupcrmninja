@@ -1,6 +1,6 @@
 <?php namespace App\Ninja\Transformers;
 
-use App\Models\Account;
+use App\Models\Organisation;
 use App\Models\Task;
 use App\Models\Client;
 use League\Fractal;
@@ -21,16 +21,16 @@ class TaskTransformer extends EntityTransformer
     ];
 
 
-    public function __construct(Account $account)
+    public function __construct(Organisation $organisation)
     {
-        parent::__construct($account);
+        parent::__construct($organisation);
 
     }
 
     public function includeClient(Task $task)
     {
         if ($task->client) {
-            $transformer = new ClientTransformer($this->account, $this->serializer);
+            $transformer = new ClientTransformer($this->organisation, $this->serializer);
             return $this->includeItem($task->client, $transformer, 'client');
         } else {
             return null;
@@ -41,7 +41,7 @@ class TaskTransformer extends EntityTransformer
     {
         return [
             'id' => (int) $task->public_id,
-            'account_key' => $this->account->account_key,
+            'account_key' => $this->organisation->account_key,
             'user_id' => (int) $task->user->public_id + 1,
             'description' => $task->description,
             'duration' => $task->getDuration()

@@ -175,7 +175,7 @@ return array(
     'payment_type_id' => 'Betalingstype',
     'amount' => 'Bedrag',
 
-    // account/company pages
+    // organisation/company pages
     'work_email' => 'E-mail',
     'language_id' => 'Taal',
     'timezone_id' => 'Tijdszone',
@@ -252,9 +252,9 @@ return array(
 
     // E-mails
     'confirmation_subject' => 'InvoiceNinja Accountbevestiging',
-    'confirmation_header' => 'Bevestiging Account',
-    'confirmation_message' => 'Klik op onderstaande link om uw account te bevestigen.',
-    'invoice_subject' => 'Nieuwe factuur :invoice van :account',
+    'confirmation_header' => 'Bevestiging Organisation',
+    'confirmation_message' => 'Klik op onderstaande link om uw organisation te bevestigen.',
+    'invoice_subject' => 'Nieuwe factuur :invoice van :organisation',
     'invoice_message' => 'Klik op onderstaande link ow uw factuur van :amount in te zien.',
     'payment_subject' => 'Betaling ontvangen',
     'payment_message' => 'Bedankt voor uw betaling van :amount.',
@@ -269,7 +269,7 @@ return array(
     'notification_invoice_paid' => 'Een betaling voor :amount is gemaakt door klant :client voor Factuur :invoice.',
     'notification_invoice_sent' => 'De volgende klant :client heeft Factuur :invoice voor :amount gemaild gekregen.',
     'notification_invoice_viewed' => 'De volgende klant :client heeft Factuur :invoice voor :amount bekeken.',
-    'reset_password' => 'U kunt het wachtwoord van uw account resetten door op de volgende link te klikken:',
+    'reset_password' => 'U kunt het wachtwoord van uw organisation resetten door op de volgende link te klikken:',
     'reset_password_footer' => 'Neem a.u.b. contact op met onze helpdesk indien u deze wachtwoordreset niet heeft aangevraagd. Het e-mailadres van de helpdesk is '.CONTACT_EMAIL,
 
     // Payment page
@@ -283,7 +283,7 @@ return array(
     'security' => [
     'too_many_attempts' => 'Te veel pogingen. Probeer opnieuw binnen enkele minuten.',
     'wrong_credentials' => 'Verkeerd e-mailadres of wachtwoord.',
-    'confirmation' => 'Uw account is bevestigd!',
+    'confirmation' => 'Uw organisation is bevestigd!',
     'wrong_confirmation' => 'Verkeerde bevestigingscode.',
     'password_forgot' => 'De informatie over uw wachtwoordreset is verzonden naar uw e-mailadres.',
     'password_reset' => 'Uw wachtwoord is succesvol aangepast.',
@@ -306,7 +306,7 @@ return array(
     'success_message' => 'U bent succesvol geregistreerd. Ga alstublieft naar de link in de bevestigingsmail om uw e-mailadres te verifi&euml;ren.',
     'erase_data' => 'Dit zal uw data permanent verwijderen.',
     'password' => 'Wachtwoord',
-    'invoice_subject' => 'Nieuwe factuur :invoice van :account',
+    'invoice_subject' => 'Nieuwe factuur :invoice van :organisation',
     'close' => 'Sluiten',
 
     'pro_plan_product' => 'Pro Plan',
@@ -383,7 +383,7 @@ return array(
     'deleted_quotes' => ':count offertes succesvol verwijderd',
     'converted_to_invoice' => 'Offerte succesvol omgezet naar factuur',
 
-    'quote_subject' => 'Nieuwe offerte van :account',
+    'quote_subject' => 'Nieuwe offerte van :organisation',
     'quote_message' => 'Om uw offerte voor :amount te bekijken, klik op de link hieronder.',
     'quote_link_message' => 'Klik op de link hieronder om de offerte te bekijken:',
     'notification_quote_sent_subject' => 'Offerte :invoice is verstuurd naar :client',
@@ -421,7 +421,7 @@ return array(
     'confirm_email_quote' => 'Weet u zeker dat u deze offerte wilt mailen?',
     'confirm_recurring_email_invoice' => 'Terugkeren (herhalen) staat aan, weet u zeker dat u deze factuur wilt mailen?',
 
-    'cancel_account' => 'Zeg Account Op',
+    'cancel_account' => 'Zeg Organisation Op',
     'cancel_account_message' => 'Waarschuwing: Dit zal al uw data verwijderen. Er is geen manier om dit ongedaan te maken',
     'go_back' => 'Ga Terug',
 
@@ -700,7 +700,7 @@ return array(
     'confirm_recurring_timing' => 'Opmerking: emails worden aan het begin van het uur verzonden.',
     'old_browser' => 'Gebruik a.u.b. een <a href="'.OUTDATE_BROWSER_URL.'" target="_blank">nieuwere browser</a>',
     'payment_terms_help' => 'Stel de standaard factuurvervaldatum in',
-    'unlink_account' => 'Koppel account los',
+    'unlink_account' => 'Koppel organisation los',
     'unlink' => 'Koppel los',
     'show_address' => 'Toon Adres',
     'show_address_help' => 'Verplicht de klant om zijn factuur adres op te geven',
@@ -774,7 +774,7 @@ return array(
     'second_reminder' => 'Tweede herinnering',
     'third_reminder' => 'Derde herinnering',
     'num_days_reminder' => 'Dagen na vervaldatum',
-    'reminder_subject' => 'Herinnering: Factuur :invoice van :account',
+    'reminder_subject' => 'Herinnering: Factuur :invoice van :organisation',
     'reset' => 'Reset',
     'invoice_not_found' => 'De opgevraagde factuur is niet beschikbaar',
 
@@ -818,7 +818,7 @@ return array(
     'no_longer_running' => 'Deze factuur is niet ingepland',
     'general_settings' => 'Algemene instellingen',
     'customize' => 'Pas aan',
-    'oneclick_login_help' => 'Verbind een account om zonder wachtwoord in te kunnen loggen',
+    'oneclick_login_help' => 'Verbind een organisation om zonder wachtwoord in te kunnen loggen',
     'referral_code_help' => 'Verdien geld door onze applicatie online te delen',
 
     'enable_with_stripe' => 'Aanzetten | Vereist Stripe',
@@ -925,8 +925,8 @@ return array(
     'inactive_client' => 'Emails can not be sent to inactive clients',
     'inactive_contact' => 'Emails can not be sent to inactive contacts',
     'inactive_invoice' => 'Emails can not be sent to inactive invoices',
-    'user_unregistered' => 'Please register your account to send emails',
-    'user_unconfirmed' => 'Please confirm your account to send emails',
+    'user_unregistered' => 'Please register your organisation to send emails',
+    'user_unconfirmed' => 'Please confirm your organisation to send emails',
     'invalid_contact_email' => 'Invalid contact email',
     ],
 
@@ -1079,7 +1079,7 @@ return array(
     'payment_type_direct_debit' => 'Direct Debit',
     'bank_accounts' => 'Bank Accounts',
     'add_bank_account' => 'Add Bank Account',
-    'setup_account' => 'Setup Account',
+    'setup_account' => 'Setup Organisation',
     'import_expenses' => 'Import Expenses',
     'bank_id' => 'bank',
     'integration_type' => 'Integration Type',
@@ -1093,9 +1093,9 @@ return array(
     'bank_password_help' => 'Note: your password is transmitted securely and never stored on our servers.',
     'bank_password_warning' => 'Warning: your password may be transmitted in plain text, consider enabling HTTPS.',
     'username' => 'Username',
-    'account_number' => 'Account Number',
-    'account_name' => 'Account Name',
-    'bank_account_error' => 'Failed to retreive account details, please check your credentials.',
+    'account_number' => 'Organisation Number',
+    'account_name' => 'Organisation Name',
+    'bank_account_error' => 'Failed to retreive organisation details, please check your credentials.',
     'status_approved' => 'Approved',
     'quote_settings' => 'Quote Settings',
     'auto_convert_quote' => 'Auto convert quote',
@@ -1118,7 +1118,7 @@ return array(
     'enable_https' => 'We strongly recommend using HTTPS to accept credit card details online.',
     'quote_issued_to' => 'Quote issued to',
     'show_currency_code' => 'Currency Code',
-    'trial_message' => 'Your account will receive a free two week trial of our pro plan.',
+    'trial_message' => 'Your organisation will receive a free two week trial of our pro plan.',
     'trial_footer' => 'Your free trial lasts :count more days, :link to upgrade now.',
     'trial_footer_last_day' => 'This is the last day of your free trial, :link to upgrade now.',
     'trial_call_to_action' => 'Start Free Trial',

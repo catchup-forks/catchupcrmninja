@@ -24,25 +24,25 @@ class SubscriptionListener
 {
     public function createdClient(ClientWasCreated $event)
     {
-        $transformer = new ClientTransformer($event->client->account);
+        $transformer = new ClientTransformer($event->client->organisation);
         $this->checkSubscriptions(EVENT_CREATE_CLIENT, $event->client, $transformer);
     }
 
     public function createdQuote(QuoteWasCreated $event)
     {
-        $transformer = new InvoiceTransformer($event->quote->account);
+        $transformer = new InvoiceTransformer($event->quote->organisation);
         $this->checkSubscriptions(EVENT_CREATE_QUOTE, $event->quote, $transformer, ENTITY_CLIENT);
     }
 
     public function createdPayment(PaymentWasCreated $event)
     {
-        $transformer = new PaymentTransformer($event->payment->account);
+        $transformer = new PaymentTransformer($event->payment->organisation);
         $this->checkSubscriptions(EVENT_CREATE_PAYMENT, $event->payment, $transformer, [ENTITY_CLIENT, ENTITY_INVOICE]);
     }
 
     public function createdInvoice(InvoiceWasCreated $event)
     {
-        $transformer = new InvoiceTransformer($event->invoice->account);
+        $transformer = new InvoiceTransformer($event->invoice->organisation);
         $this->checkSubscriptions(EVENT_CREATE_INVOICE, $event->invoice, $transformer, ENTITY_CLIENT);
     }
 
@@ -63,7 +63,7 @@ class SubscriptionListener
 
     private function checkSubscriptions($eventId, $entity, $transformer, $include = '')
     {
-        $subscription = $entity->account->getSubscription($eventId);
+        $subscription = $entity->organisation->getSubscription($eventId);
 
         if ($subscription) {
             $manager = new Manager();

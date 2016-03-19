@@ -1,6 +1,6 @@
 <?php namespace App\Ninja\Transformers;
 
-use App\Models\Account;
+use App\Models\Organisation;
 use App\Models\TaxRate;
 use League\Fractal;
 
@@ -27,7 +27,7 @@ class TaxRateTransformer extends EntityTransformer
             'rate' => (float) $taxRate->rate,
             'updated_at' => $this->getTimestamp($taxRate->updated_at),
             'archived_at' => $this->getTimestamp($taxRate->deleted_at),
-            'account_key' => $this->account->account_key,
+            'account_key' => $this->organisation->account_key,
             ];
     }
 }

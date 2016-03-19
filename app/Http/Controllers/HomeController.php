@@ -6,7 +6,7 @@ use Auth;
 use View;
 use Input;
 use Session;
-use App\Models\Account;
+use App\Models\Organisation;
 use App\Libraries\Utils;
 use App\Ninja\Mailers\Mailer;
 use Symfony\Component\Security\Core\Util\StringUtils;
@@ -26,7 +26,7 @@ class HomeController extends BaseController
     {
         Session::reflash();
         
-        if (!Utils::isNinja() && (!Utils::isDatabaseSetup() || Account::count() == 0)) {
+        if (!Utils::isNinja() && (!Utils::isDatabaseSetup() || Organisation::count() == 0)) {
             return Redirect::to('/setup');
         } elseif (Auth::check()) {
             return Redirect::to('/dashboard');

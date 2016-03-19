@@ -16,7 +16,7 @@ use Utils;
 use Validator;
 use App\Models\User;
 use App\Http\Requests;
-use App\Ninja\Repositories\AccountRepository;
+use App\Ninja\Repositories\OrganisationRepository;
 use App\Ninja\Mailers\ContactMailer;
 use App\Ninja\Mailers\UserMailer;
 use App\Services\UserService;
@@ -28,7 +28,7 @@ class UserController extends BaseController
     protected $userMailer;
     protected $userService;
 
-    public function __construct(AccountRepository $accountRepo, ContactMailer $contactMailer, UserMailer $userMailer, UserService $userService)
+    public function __construct(OrganisationRepository $accountRepo, ContactMailer $contactMailer, UserMailer $userMailer, UserService $userService)
     {
         //parent::__construct();
 
@@ -40,12 +40,12 @@ class UserController extends BaseController
 
     public function index()
     {
-        return Redirect::to('settings/' . ACCOUNT_USER_MANAGEMENT);
+        return Redirect::to('settings/' . ORGANISATION_USER_MANAGEMENT);
     }
 
     public function getDatatable()
     {
-        return $this->userService->getDatatable(Auth::user()->account_id);
+        return $this->userService->getDatatable(Auth::user()->organisation_id);
     }
 
     public function setTheme()
@@ -70,7 +70,7 @@ class UserController extends BaseController
 
     public function edit($publicId)
     {
-        $user = User::where('account_id', '=', Auth::user()->account_id)
+        $user = User::where('organisation_id', '=', Auth::user()->organisation_id)
                         ->where('public_id', '=', $publicId)->firstOrFail();
 
         $data = [
@@ -94,25 +94,25 @@ class UserController extends BaseController
     }
 
     /**
-     * Displays the form for account creation
+     * Displays the form for organisation creation
      *
      */
     public function create()
     {
         if (!Auth::user()->registered) {
             Session::flash('error', trans('texts.register_to_add_user'));
-            return Redirect::to('settings/' . ACCOUNT_USER_MANAGEMENT);
+            return Redirect::to('settings/' . ORGANISATION_USER_MANAGEMENT);
         }
         if (!Auth::user()->confirmed) {
             Session::flash('error', trans('texts.confirmation_required'));
-            return Redirect::to('settings/' . ACCOUNT_USER_MANAGEMENT);
+            return Redirect::to('settings/' . ORGANISATION_USER_MANAGEMENT);
         }
 
         if (Utils::isNinja()) {
-            $count = User::where('account_id', '=', Auth::user()->account_id)->count();
+            $count = User::where('organisation_id', '=', Auth::user()->organisation_id)->count();
             if ($count >= MAX_NUM_USERS) {
                 Session::flash('error', trans('texts.limit_users'));
-                return Redirect::to('settings/' . ACCOUNT_USER_MANAGEMENT);
+                return Redirect::to('settings/' . ORGANISATION_USER_MANAGEMENT);
             }
         }
 
@@ -131,7 +131,7 @@ class UserController extends BaseController
         $action = Input::get('bulk_action');
         $id = Input::get('bulk_public_id');
 
-        $user = User::where('account_id', '=', Auth::user()->account_id)
+        $user = User::where('organisation_id', '=', Auth::user()->organisation_id)
                     ->where('public_id', '=', $id)
                     ->withTrashed()
                     ->firstOrFail();
@@ -144,12 +144,12 @@ class UserController extends BaseController
 
         Session::flash('message', trans("texts.{$action}d_user"));
 
-        return Redirect::to('settings/' . ACCOUNT_USER_MANAGEMENT);
+        return Redirect::to('settings/' . ORGANISATION_USER_MANAGEMENT);
     }
 
     public function restoreUser($userPublicId)
     {
-        $user = User::where('account_id', '=', Auth::user()->account_id)
+        $user = User::where('organisation_id', '=', Auth::user()->organisation_id)
                     ->where('public_id', '=', $userPublicId)
                     ->withTrashed()->firstOrFail();
 
@@ -157,11 +157,11 @@ class UserController extends BaseController
 
         Session::flash('message', trans('texts.restored_user'));
 
-        return Redirect::to('settings/' . ACCOUNT_USER_MANAGEMENT);
+        return Redirect::to('settings/' . ORGANISATION_USER_MANAGEMENT);
     }
 
     /**
-     * Stores new account
+     * Stores new organisation
      *
      */
     public function save($userPublicId = false)
@@ -173,7 +173,7 @@ class UserController extends BaseController
             ];
 
             if ($userPublicId) {
-                $user = User::where('account_id', '=', Auth::user()->account_id)
+                $user = User::where('organisation_id', '=', Auth::user()->organisation_id)
                             ->where('public_id', '=', $userPublicId)->firstOrFail();
 
                 $rules['email'] = 'required|email|unique:users,email,'.$user->id.',id';
@@ -195,11 +195,11 @@ class UserController extends BaseController
                 $user->is_admin = boolval(Input::get('is_admin'));
                 $user->permissions = Input::get('permissions');
             } else {
-                $lastUser = User::withTrashed()->where('account_id', '=', Auth::user()->account_id)
+                $lastUser = User::withTrashed()->where('organisation_id', '=', Auth::user()->organisation_id)
                             ->orderBy('public_id', 'DESC')->first();
 
                 $user = new User();
-                $user->account_id = Auth::user()->account_id;
+                $user->organisation_id = Auth::user()->organisation_id;
                 $user->first_name = trim(Input::get('first_name'));
                 $user->last_name = trim(Input::get('last_name'));
                 $user->username = trim(Input::get('email'));
@@ -224,23 +224,23 @@ class UserController extends BaseController
             Session::flash('message', $message);
         }
 
-        return Redirect::to('settings/' . ACCOUNT_USER_MANAGEMENT);
+        return Redirect::to('settings/' . ORGANISATION_USER_MANAGEMENT);
     }
 
     public function sendConfirmation($userPublicId)
     {
-        $user = User::where('account_id', '=', Auth::user()->account_id)
+        $user = User::where('organisation_id', '=', Auth::user()->organisation_id)
                     ->where('public_id', '=', $userPublicId)->firstOrFail();
 
         $this->userMailer->sendConfirmation($user, Auth::user());
         Session::flash('message', trans('texts.sent_invite'));
 
-        return Redirect::to('settings/' . ACCOUNT_USER_MANAGEMENT);
+        return Redirect::to('settings/' . ORGANISATION_USER_MANAGEMENT);
     }
 
 
     /**
-     * Attempt to confirm account with code
+     * Attempt to confirm organisation with code
      *
      * @param string $code
      */
@@ -286,9 +286,9 @@ class UserController extends BaseController
     {
         if (Auth::check()) {
             if (!Auth::user()->registered) {
-                $account = Auth::user()->account;
-                $this->accountRepo->unlinkAccount($account);
-                $account->forceDelete();
+                $organisation = Auth::user()->organisation;
+                $this->accountRepo->unlinkAccount($organisation);
+                $organisation->forceDelete();
             }
         }
 
@@ -329,15 +329,15 @@ class UserController extends BaseController
     {
         $oldUserId = Auth::user()->id;
         $referer = Request::header('referer');
-        $account = $this->accountRepo->findUserAccounts($newUserId, $oldUserId);
+        $organisation = $this->accountRepo->findUserAccounts($newUserId, $oldUserId);
 
-        if ($account) {
-            if ($account->hasUserId($newUserId) && $account->hasUserId($oldUserId)) {
+        if ($organisation) {
+            if ($organisation->hasUserId($newUserId) && $organisation->hasUserId($oldUserId)) {
                 Auth::loginUsingId($newUserId);
-                Auth::user()->account->loadLocalizationSettings();
+                Auth::user()->organisation->loadLocalizationSettings();
 
                 // regenerate token to prevent open pages
-                // from saving under the wrong account
+                // from saving under the wrong organisation
                 Session::put('_token', str_random(40));
             }
         }
@@ -351,7 +351,7 @@ class UserController extends BaseController
         $referer = Request::header('referer');
 
         $users = $this->accountRepo->loadAccounts(Auth::user()->id);
-        Session::put(SESSION_USER_ACCOUNTS, $users);
+        Session::put(SESSION_USER_ORGANISATIONS, $users);
 
         Session::flash('message', trans('texts.unlinked_account'));
         return Redirect::to('/dashboard');

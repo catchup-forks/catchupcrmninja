@@ -5,7 +5,7 @@
 
 		@include('money_script')
 		
-		@foreach ($invoice->client->account->getFontFolders() as $font)
+		@foreach ($invoice->client->organisation->getFontFolders() as $font)
         <script src="{{ asset('js/vfs_fonts/'.$font.'.js') }}" type="text/javascript"></script>
     	@endforeach
         <script src="{{ asset('pdf.built.js') }}" type="text/javascript"></script>
@@ -31,7 +31,7 @@
                 @if ($showApprove)
                     {!! Button::success(trans('texts.approve'))->asLinkTo(URL::to('/approve/' . $invitation->invitation_key))->large() !!}
                 @endif
-    		@elseif ($invoice->client->account->isGatewayConfigured() && !$invoice->isPaid() && !$invoice->is_recurring)
+    		@elseif ($invoice->client->organisation->isGatewayConfigured() && !$invoice->isPaid() && !$invoice->is_recurring)
                 {!! Button::normal(trans('texts.download_pdf'))->withAttributes(['onclick' => 'onDownloadClick()'])->large() !!}&nbsp;&nbsp;
                 @if (count($paymentTypes) > 1)
                     {!! DropdownButton::success(trans('texts.pay_now'))->withContents($paymentTypes)->large() !!}
@@ -49,7 +49,7 @@
 		<script type="text/javascript">
 
 			window.invoice = {!! $invoice->toJson() !!};
-			invoice.is_pro = {{ $invoice->client->account->isPro() ? 'true' : 'false' }};
+			invoice.is_pro = {{ $invoice->client->organisation->isPro() ? 'true' : 'false' }};
 			invoice.is_quote = {{ $invoice->is_quote ? 'true' : 'false' }};
 			invoice.contact = {!! $contact->toJson() !!};
 
@@ -85,7 +85,7 @@
 
 		</script>
 
-		@include('invoices.pdf', ['account' => $invoice->client->account, 'viewPDF' => true])
+		@include('invoices.pdf', ['organisation' => $invoice->client->organisation, 'viewPDF' => true])
 
 		<p>&nbsp;</p>
 		<p>&nbsp;</p>

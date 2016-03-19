@@ -25,12 +25,12 @@ class UserApiController extends BaseAPIController
     public function index()
     {
         $user = Auth::user();
-        $users = User::whereAccountId($user->account_id)->withTrashed();
+        $users = User::whereAccountId($user->organisation_id)->withTrashed();
         $users = $users->paginate();
 
-        $paginator = User::whereAccountId($user->account_id)->withTrashed()->paginate();
+        $paginator = User::whereAccountId($user->organisation_id)->withTrashed()->paginate();
 
-        $transformer = new UserTransformer(Auth::user()->account, $this->serializer);
+        $transformer = new UserTransformer(Auth::user()->organisation, $this->serializer);
         $data = $this->createCollection($users, $transformer, 'users', $paginator);
 
         return $this->response($data);
@@ -55,7 +55,7 @@ class UserApiController extends BaseAPIController
         if ($request->action == ACTION_ARCHIVE) {
             $this->userRepo->archive($user);
 
-            $transformer = new UserTransformer(Auth::user()->account, $request->serializer);
+            $transformer = new UserTransformer(Auth::user()->organisation, $request->serializer);
             $data = $this->createItem($user, $transformer, 'users');
 
             return $this->response($data);
@@ -68,7 +68,7 @@ class UserApiController extends BaseAPIController
     {
         $user = $this->userRepo->save($request->input(), $user);
 
-        $transformer = new UserTransformer(\Auth::user()->account, $request->serializer);
+        $transformer = new UserTransformer(\Auth::user()->organisation, $request->serializer);
         $data = $this->createItem($user, $transformer, 'users');
 
         return $this->response($data);

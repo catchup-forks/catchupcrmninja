@@ -74,22 +74,22 @@
   logoImages.imageLogoWidth3 =325/2;
   logoImages.imageLogoHeight3 = 81/2;
 
-  @if ($account->hasLogo())
-  window.accountLogo = "{{ Form::image_data($account->getLogoPath()) }}";
+  @if ($organisation->hasLogo())
+  window.accountLogo = "{{ Form::image_data($organisation->getLogoPath()) }}";
   if (window.invoice) {
     invoice.image = window.accountLogo;
-    invoice.imageWidth = {{ $account->getLogoWidth() }};
-    invoice.imageHeight = {{ $account->getLogoHeight() }};    
+    invoice.imageWidth = {{ $organisation->getLogoWidth() }};
+    invoice.imageHeight = {{ $organisation->getLogoHeight() }};
   }
   @endif
 
   var NINJA = NINJA || {};
-  @if ($account->isPro())
-      NINJA.primaryColor = "{{ $account->primary_color }}";
-      NINJA.secondaryColor = "{{ $account->secondary_color }}";
-      NINJA.fontSize = {{ $account->font_size }};
-      NINJA.headerFont = {!! json_encode($account->getHeaderFontName()) !!};
-      NINJA.bodyFont = {!! json_encode($account->getBodyFontName()) !!};
+  @if ($organisation->isPro())
+      NINJA.primaryColor = "{{ $organisation->primary_color }}";
+      NINJA.secondaryColor = "{{ $organisation->secondary_color }}";
+      NINJA.fontSize = {{ $organisation->font_size }};
+      NINJA.headerFont = {!! json_encode($organisation->getHeaderFontName()) !!};
+      NINJA.bodyFont = {!! json_encode($organisation->getBodyFontName()) !!};
   @else
       NINJA.primaryColor = "";
       NINJA.secondaryColor = "";
@@ -98,7 +98,7 @@
       NINJA.bodyFont = "Roboto";    
   @endif
   
-  var invoiceLabels = {!! json_encode($account->getInvoiceLabels()) !!};
+  var invoiceLabels = {!! json_encode($organisation->getInvoiceLabels()) !!};
 
   if (window.invoice) {
     //invoiceLabels.item = invoice.has_tasks ? invoiceLabels.date : invoiceLabels.item_orig;
@@ -153,7 +153,7 @@
 
   function showMoreDesigns() {
     loadImages('#designThumbs');
-    trackEvent('/account', '/view_more_designs');
+    trackEvent('/organisation', '/view_more_designs');
     $('#moreDesignsModal').modal('show');
   }
 

@@ -1,6 +1,6 @@
 <?php namespace App\Ninja\Transformers;
 
-use App\Models\Account;
+use App\Models\Organisation;
 use App\Models\Client;
 use App\Models\Contact;
 use League\Fractal;
@@ -52,25 +52,25 @@ class ClientTransformer extends EntityTransformer
     
     public function includeContacts(Client $client)
     {
-        $transformer = new ContactTransformer($this->account, $this->serializer);
+        $transformer = new ContactTransformer($this->organisation, $this->serializer);
         return $this->includeCollection($client->contacts, $transformer, ENTITY_CONTACT);
     }
 
     public function includeInvoices(Client $client)
     {
-        $transformer = new InvoiceTransformer($this->account, $this->serializer);
+        $transformer = new InvoiceTransformer($this->organisation, $this->serializer);
         return $this->includeCollection($client->invoices, $transformer, ENTITY_INVOICE);
     }
 
     public function includeCredits(Client $client)
     {
-        $transformer = new CreditTransformer($this->account, $this->serializer);
+        $transformer = new CreditTransformer($this->organisation, $this->serializer);
         return $this->includeCollection($client->credits, $transformer, ENTITY_CREDIT);
     }
 
     public function includeExpenses(Client $client)
     {
-        $transformer = new ExpenseTransformer($this->account, $this->serializer);
+        $transformer = new ExpenseTransformer($this->organisation, $this->serializer);
         return $this->includeCollection($client->expenses, $transformer, ENTITY_EXPENSE);
     }
 
@@ -83,7 +83,7 @@ class ClientTransformer extends EntityTransformer
             'balance' => (float) $client->balance,
             'paid_to_date' => (float) $client->paid_to_date,
             'user_id' => (int) $client->user->public_id + 1,
-            'account_key' => $this->account->account_key,
+            'account_key' => $this->organisation->account_key,
             'updated_at' => $this->getTimestamp($client->updated_at),
             'archived_at' => $this->getTimestamp($client->deleted_at),
             'address1' => $client->address1,

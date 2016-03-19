@@ -94,13 +94,13 @@ class InvoiceService extends BaseService
 
     public function approveQuote($quote, $invitation = null)
     {
-        $account = $quote->account;
+        $organisation = $quote->organisation;
         
         if (!$quote->is_quote || $quote->quote_invoice_id) {
             return null;
         }
 
-        if ($account->auto_convert_quote || ! $account->isPro()) {
+        if ($organisation->auto_convert_quote || ! $organisation->isPro()) {
             $invoice = $this->convertQuote($quote, $invitation);
 
             event(new QuoteInvitationWasApproved($quote, $invoice, $invitation));

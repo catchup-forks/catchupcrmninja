@@ -14,9 +14,9 @@ use Crypt;
 use URL;
 use Utils;
 use App\Models\Gateway;
-use App\Models\Account;
+use App\Models\Organisation;
 use App\Models\BankAccount;
-use App\Ninja\Repositories\BankAccountRepository;
+use App\Ninja\Repositories\BankOrganisationRepository;
 use App\Services\BankAccountService;
 use App\Http\Requests\CreateBankAccountRequest;
 
@@ -25,7 +25,7 @@ class BankAccountController extends BaseController
     protected $bankAccountService;
     protected $bankAccountRepo;
 
-    public function __construct(BankAccountService $bankAccountService, BankAccountRepository $bankAccountRepo)
+    public function __construct(BankAccountService $bankAccountService, BankOrganisationRepository $bankAccountRepo)
     {
         //parent::__construct();
 
@@ -35,12 +35,12 @@ class BankAccountController extends BaseController
 
     public function index()
     {
-        return Redirect::to('settings/' . ACCOUNT_BANKS);
+        return Redirect::to('settings/' . ORGANISATION_BANKS);
     }
 
     public function getDatatable()
     {
-        return $this->bankAccountService->getDatatable(Auth::user()->account_id);
+        return $this->bankAccountService->getDatatable(Auth::user()->organisation_id);
     }
 
     public function edit($publicId)
@@ -53,7 +53,7 @@ class BankAccountController extends BaseController
             'bankAccount' => $bankAccount,
         ];
 
-        return View::make('accounts.bank_account', $data);
+        return View::make('organisations.bank_account', $data);
     }
 
     public function update($publicId)
@@ -62,7 +62,7 @@ class BankAccountController extends BaseController
     }
 
     /**
-     * Displays the form for account creation
+     * Displays the form for organisation creation
      *
      */
     public function create()
@@ -72,7 +72,7 @@ class BankAccountController extends BaseController
             'bankAccount' => null,
         ];
 
-        return View::make('accounts.bank_account', $data);
+        return View::make('organisations.bank_account', $data);
     }
 
     public function bulk()
@@ -83,7 +83,7 @@ class BankAccountController extends BaseController
 
         Session::flash('message', trans('texts.archived_bank_account'));
 
-        return Redirect::to('settings/' . ACCOUNT_BANKS);
+        return Redirect::to('settings/' . ORGANISATION_BANKS);
     }
 
     public function validateAccount()

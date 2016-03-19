@@ -1,18 +1,18 @@
 <?php namespace App\Ninja\Repositories;
 
-use App\Models\Account;
+use App\Models\Organisation;
 
 class NinjaRepository
 {
     public function updateProPlanPaid($clientPublicId, $proPlanPaid)
     {
-        $account = Account::whereId($clientPublicId)->first();
+        $organisation = Organisation::whereId($clientPublicId)->first();
 
-        if (!$account) {
+        if (!$organisation) {
             return;
         }
 
-        $account->pro_plan_paid = $proPlanPaid;
-        $account->save();
+        $organisation->pro_plan_paid = $proPlanPaid;
+        $organisation->save();
     }
 }

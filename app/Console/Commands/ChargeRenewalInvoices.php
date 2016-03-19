@@ -4,7 +4,7 @@ use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use App\Ninja\Mailers\ContactMailer as Mailer;
-use App\Ninja\Repositories\AccountRepository;
+use App\Ninja\Repositories\OrganisationRepository;
 use App\Services\PaymentService;
 use App\Models\Invoice;
 
@@ -17,7 +17,7 @@ class ChargeRenewalInvoices extends Command
     protected $accountRepo;
     protected $paymentService;
 
-    public function __construct(Mailer $mailer, AccountRepository $repo, PaymentService $paymentService)
+    public function __construct(Mailer $mailer, OrganisationRepository $repo, PaymentService $paymentService)
     {
         parent::__construct();
 
@@ -30,8 +30,8 @@ class ChargeRenewalInvoices extends Command
     {
         $this->info(date('Y-m-d').' ChargeRenewalInvoices...');
 
-        $account = $this->accountRepo->getNinjaAccount();
-        $invoices = Invoice::whereAccountId($account->id)
+        $organisation = $this->accountRepo->getNinjaAccount();
+        $invoices = Invoice::whereAccountId($organisation->id)
                         ->whereDueDate(date('Y-m-d'))
                         ->with('client')
                         ->orderBy('id')

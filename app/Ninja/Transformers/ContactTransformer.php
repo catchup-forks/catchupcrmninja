@@ -1,6 +1,6 @@
 <?php namespace App\Ninja\Transformers;
 
-use App\Models\Account;
+use App\Models\Organisation;
 use App\Models\Contact;
 use League\Fractal;
 
@@ -18,7 +18,7 @@ class ContactTransformer extends EntityTransformer
             'is_primary' => (bool) $contact->is_primary,
             'phone' => $contact->phone,
             'last_login' => $contact->last_login,
-            'account_key' => $this->account->account_key,
+            'account_key' => $this->organisation->account_key,
             'send_invoice' => (bool) $contact->send_invoice,
         ];
     }

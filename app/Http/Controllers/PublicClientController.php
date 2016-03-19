@@ -39,19 +39,19 @@ class PublicClientController extends BaseController
 
         $invoice = $invitation->invoice;
         $client = $invoice->client;
-        $account = $invoice->account;
+        $organisation = $invoice->organisation;
 
-        if (!$account->checkSubdomain(Request::server('HTTP_HOST'))) {
+        if (!$organisation->checkSubdomain(Request::server('HTTP_HOST'))) {
             return response()->view('error', [
                 'error' => trans('texts.invoice_not_found'),
                 'hideHeader' => true,
-                'clientViewCSS' => $account->clientViewCSS(),
-                'clientFontUrl' => $account->getFontsUrl(),
+                'clientViewCSS' => $organisation->clientViewCSS(),
+                'clientFontUrl' => $organisation->getFontsUrl(),
             ]);
         }
 
         if (!Input::has('phantomjs') && !Input::has('silent') && !Session::has($invitationKey) 
-            && (!Auth::check() || Auth::user()->account_id != $invoice->account_id)) {
+            && (!Auth::check() || Auth::user()->organisation_id != $invoice->organisation_id)) {
             if ($invoice->is_quote) {
                 event(new QuoteInvitationWasViewed($invoice, $invitation));
             } else {
@@ -62,15 +62,15 @@ class PublicClientController extends BaseController
         Session::put($invitationKey, true); // track this invitation has been seen
         Session::put('invitation_key', $invitationKey); // track current invitation
 
-        $account->loadLocalizationSettings($client);
+        $organisation->loadLocalizationSettings($client);
         
         $invoice->invoice_date = Utils::fromSqlDate($invoice->invoice_date);
         $invoice->due_date = Utils::fromSqlDate($invoice->due_date);
-        $invoice->is_pro = $account->isPro();
-        $invoice->invoice_fonts = $account->getFontsData();
+        $invoice->is_pro = $organisation->isPro();
+        $invoice->invoice_fonts = $organisation->getFontsData();
         
         if ($invoice->invoice_design_id == CUSTOM_DESIGN) {
-            $invoice->invoice_design->javascript = $account->custom_design;
+            $invoice->invoice_design->javascript = $organisation->custom_design;
         } else {
             $invoice->invoice_design->javascript = $invoice->invoice_design->pdfmake;
         }
@@ -86,7 +86,7 @@ class PublicClientController extends BaseController
         $paymentURL = '';
         if (count($paymentTypes)) {
             $paymentURL = $paymentTypes[0]['url'];
-            if (!$account->isGatewayConfigured(GATEWAY_PAYPAL_EXPRESS)) {
+            if (!$organisation->isGatewayConfigured(GATEWAY_PAYPAL_EXPRESS)) {
                 $paymentURL = URL::to($paymentURL);
             }
         }
@@ -103,27 +103,27 @@ class PublicClientController extends BaseController
         $checkoutComToken = false;
         $checkoutComKey = false;
         $checkoutComDebug = false;
-        if ($accountGateway = $account->getGatewayConfig(GATEWAY_CHECKOUT_COM)) {
-            $checkoutComDebug = $accountGateway->getConfigField('testMode');
+        if ($OrganisationGateway = $organisation->getGatewayConfig(GATEWAY_CHECKOUT_COM)) {
+            $checkoutComDebug = $OrganisationGateway->getConfigField('testMode');
             if ($checkoutComToken = $this->paymentService->getCheckoutComToken($invitation)) {
-                $checkoutComKey = $accountGateway->getConfigField('publicApiKey');
+                $checkoutComKey = $OrganisationGateway->getConfigField('publicApiKey');
                 $invitation->transaction_reference = $checkoutComToken;
                 $invitation->save();
             }
         }
 
         $data = array(
-            'account' => $account,
+            'organisation' => $organisation,
             'showApprove' => $showApprove,
             'showBreadcrumbs' => false,
-            'hideLogo' => $account->isWhiteLabel(),
-            'hideHeader' => $account->isNinjaAccount(),
-            'hideDashboard' => !$account->enable_client_portal,
-            'clientViewCSS' => $account->clientViewCSS(),
-            'clientFontUrl' => $account->getFontsUrl(),
+            'hideLogo' => $organisation->isWhiteLabel(),
+            'hideHeader' => $organisation->isNinjaAccount(),
+            'hideDashboard' => !$organisation->enable_client_portal,
+            'clientViewCSS' => $organisation->clientViewCSS(),
+            'clientFontUrl' => $organisation->getFontsUrl(),
             'invoice' => $invoice->hidePrivateFields(),
             'invitation' => $invitation,
-            'invoiceLabels' => $account->getInvoiceLabels(),
+            'invoiceLabels' => $organisation->getInvoiceLabels(),
             'contact' => $contact,
             'paymentTypes' => $paymentTypes,
             'paymentURL' => $paymentURL,
@@ -139,7 +139,7 @@ class PublicClientController extends BaseController
     private function getPaymentTypes($client, $invitation)
     {
         $paymentTypes = [];
-        $account = $client->account;
+        $organisation = $client->organisation;
 
         if ($client->getGatewayToken()) {
             $paymentTypes[] = [
@@ -147,12 +147,12 @@ class PublicClientController extends BaseController
             ];
         }
         foreach(Gateway::$paymentTypes as $type) {
-            if ($account->getGatewayByType($type)) {
+            if ($organisation->getGatewayByType($type)) {
                 $typeLink = strtolower(str_replace('PAYMENT_TYPE_', '', $type));
                 $url = URL::to("/payment/{$invitation->invitation_key}/{$typeLink}");
 
                 // PayPal doesn't allow being run in an iframe so we need to open in new tab
-                if ($type === PAYMENT_TYPE_PAYPAL && $account->iframe_url) {
+                if ($type === PAYMENT_TYPE_PAYPAL && $organisation->iframe_url) {
                     $url = 'javascript:window.open("'.$url.'", "_blank")';
                 }
                 $paymentTypes[] = [
@@ -191,22 +191,22 @@ class PublicClientController extends BaseController
             return $this->returnError();
         }
 
-        $account = $invitation->account;
+        $organisation = $invitation->organisation;
         $invoice = $invitation->invoice;
         $client = $invoice->client;
-        $color = $account->primary_color ? $account->primary_color : '#0b4d78';
+        $color = $organisation->primary_color ? $organisation->primary_color : '#0b4d78';
 
-        if (!$account->enable_client_portal) {
+        if (!$organisation->enable_client_portal) {
             return $this->returnError();
         }
 
         $data = [
             'color' => $color,
-            'account' => $account,
+            'organisation' => $organisation,
             'client' => $client,
-            'hideLogo' => $account->isWhiteLabel(),
-            'clientViewCSS' => $account->clientViewCSS(),
-            'clientFontUrl' => $account->getFontsUrl(),
+            'hideLogo' => $organisation->isWhiteLabel(),
+            'clientViewCSS' => $organisation->clientViewCSS(),
+            'clientFontUrl' => $organisation->getFontsUrl(),
         ];
         
         return response()->view('invited.dashboard', $data);
@@ -245,15 +245,15 @@ class PublicClientController extends BaseController
         if (!$invitation = $this->getInvitation()) {
             return $this->returnError();
         }
-        $account = $invitation->account;
-        $color = $account->primary_color ? $account->primary_color : '#0b4d78';
+        $organisation = $invitation->organisation;
+        $color = $organisation->primary_color ? $organisation->primary_color : '#0b4d78';
         
         $data = [
             'color' => $color,
-            'hideLogo' => $account->isWhiteLabel(),
-            'hideDashboard' => !$account->enable_client_portal,
-            'clientViewCSS' => $account->clientViewCSS(),
-            'clientFontUrl' => $account->getFontsUrl(),
+            'hideLogo' => $organisation->isWhiteLabel(),
+            'hideDashboard' => !$organisation->enable_client_portal,
+            'clientViewCSS' => $organisation->clientViewCSS(),
+            'clientFontUrl' => $organisation->getFontsUrl(),
             'title' => trans('texts.invoices'),
             'entityType' => ENTITY_INVOICE,
             'columns' => Utils::trans(['invoice_number', 'invoice_date', 'invoice_total', 'balance_due', 'due_date']),
@@ -277,15 +277,15 @@ class PublicClientController extends BaseController
         if (!$invitation = $this->getInvitation()) {
             return $this->returnError();
         }
-        $account = $invitation->account;
-        $color = $account->primary_color ? $account->primary_color : '#0b4d78';
+        $organisation = $invitation->organisation;
+        $color = $organisation->primary_color ? $organisation->primary_color : '#0b4d78';
         
         $data = [
             'color' => $color,
-            'hideLogo' => $account->isWhiteLabel(),
-            'hideDashboard' => !$account->enable_client_portal,
-            'clientViewCSS' => $account->clientViewCSS(),
-            'clientFontUrl' => $account->getFontsUrl(),
+            'hideLogo' => $organisation->isWhiteLabel(),
+            'hideDashboard' => !$organisation->enable_client_portal,
+            'clientViewCSS' => $organisation->clientViewCSS(),
+            'clientFontUrl' => $organisation->getFontsUrl(),
             'entityType' => ENTITY_PAYMENT,
             'title' => trans('texts.payments'),
             'columns' => Utils::trans(['invoice', 'transaction_reference', 'method', 'payment_amount', 'payment_date'])
@@ -315,15 +315,15 @@ class PublicClientController extends BaseController
         if (!$invitation = $this->getInvitation()) {
             return $this->returnError();
         }
-        $account = $invitation->account;
-        $color = $account->primary_color ? $account->primary_color : '#0b4d78';
+        $organisation = $invitation->organisation;
+        $color = $organisation->primary_color ? $organisation->primary_color : '#0b4d78';
         
         $data = [
           'color' => $color,
-          'hideLogo' => $account->isWhiteLabel(),
-          'hideDashboard' => !$account->enable_client_portal,
-          'clientViewCSS' => $account->clientViewCSS(),
-          'clientFontUrl' => $account->getFontsUrl(),
+          'hideLogo' => $organisation->isWhiteLabel(),
+          'hideDashboard' => !$organisation->enable_client_portal,
+          'clientViewCSS' => $organisation->clientViewCSS(),
+          'clientFontUrl' => $organisation->getFontsUrl(),
           'title' => trans('texts.quotes'),
           'entityType' => ENTITY_QUOTE,
           'columns' => Utils::trans(['quote_number', 'quote_date', 'quote_total', 'due_date']),

@@ -1,6 +1,6 @@
 <?php namespace App\Ninja\Transformers;
 
-use App\Models\Account;
+use App\Models\Organisation;
 use App\Models\Vendor;
 use App\Models\Contact;
 use League\Fractal;
@@ -43,19 +43,19 @@ class VendorTransformer extends EntityTransformer
     
     public function includeVendorContacts(Vendor $vendor)
     {
-        $transformer = new VendorContactTransformer($this->account, $this->serializer);
+        $transformer = new VendorContactTransformer($this->organisation, $this->serializer);
         return $this->includeCollection($vendor->vendorContacts, $transformer, ENTITY_CONTACT);
     }
 
     public function includeInvoices(Vendor $vendor)
     {
-        $transformer = new InvoiceTransformer($this->account, $this->serializer);
+        $transformer = new InvoiceTransformer($this->organisation, $this->serializer);
         return $this->includeCollection($vendor->invoices, $transformer, ENTITY_INVOICE);
     }
 
     public function includeExpenses(Vendor $vendor)
     {
-        $transformer = new ExpenseTransformer($this->account, $this->serializer);
+        $transformer = new ExpenseTransformer($this->organisation, $this->serializer);
         return $this->includeCollection($vendor->expenses, $transformer, ENTITY_EXPENSE);
     }
 
@@ -67,7 +67,7 @@ class VendorTransformer extends EntityTransformer
             'balance' => (float) $vendor->balance,
             'paid_to_date' => (float) $vendor->paid_to_date,
             'user_id' => (int) $vendor->user->public_id + 1,
-            'account_key' => $this->account->account_key,
+            'account_key' => $this->organisation->account_key,
             'updated_at' => $this->getTimestamp($vendor->updated_at),
             'archived_at' => $this->getTimestamp($vendor->deleted_at),
             'address1' => $vendor->address1,

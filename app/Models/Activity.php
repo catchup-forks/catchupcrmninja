@@ -13,12 +13,12 @@ class Activity extends Eloquent
 
     public function scopeScope($query)
     {
-        return $query->whereAccountId(Auth::user()->account_id);
+        return $query->whereAccountId(Auth::user()->organisation_id);
     }
 
-    public function account()
+    public function organisation()
     {
-        return $this->belongsTo('App\Models\Account');
+        return $this->belongsTo('App\Models\Organisation');
     }
 
     public function user()
@@ -54,7 +54,7 @@ class Activity extends Eloquent
     public function getMessage()
     {
         $activityTypeId = $this->activity_type_id;
-        $account = $this->account;
+        $organisation = $this->organisation;
         $client = $this->client;
         $user = $this->user;
         $invoice = $this->invoice;
@@ -70,7 +70,7 @@ class Activity extends Eloquent
             'quote' => $invoice ? link_to($invoice->getRoute(), $invoice->getDisplayName()) : null,
             'contact' => $contactId ? $client->getDisplayName() : $user->getDisplayName(),
             'payment' => $payment ? $payment->transaction_reference : null,
-            'credit' => $credit ? $account->formatMoney($credit->amount, $client) : null,
+            'credit' => $credit ? $organisation->formatMoney($credit->amount, $client) : null,
         ];
 
         return trans("texts.activity_{$activityTypeId}", $data);

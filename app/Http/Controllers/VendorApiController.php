@@ -52,7 +52,7 @@ class VendorApiController extends BaseAPIController
                     ->orderBy('created_at', 'desc')
                     ->paginate();
 
-        $transformer    = new VendorTransformer(Auth::user()->account, Input::get('serializer'));
+        $transformer    = new VendorTransformer(Auth::user()->organisation, Input::get('serializer'));
         $paginator      = Vendor::scope()->paginate();
         $data           = $this->createCollection($vendors, $transformer, ENTITY_VENDOR, $paginator);
 
@@ -88,7 +88,7 @@ class VendorApiController extends BaseAPIController
                     ->with('country', 'vendorcontacts', 'industry', 'size', 'currency')
                     ->first();
 
-        $transformer = new VendorTransformer(Auth::user()->account, Input::get('serializer'));
+        $transformer = new VendorTransformer(Auth::user()->organisation, Input::get('serializer'));
         $data = $this->createItem($vendor, $transformer, ENTITY_VENDOR);
         return $this->response($data);
     }

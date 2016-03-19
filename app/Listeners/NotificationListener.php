@@ -27,7 +27,7 @@ class NotificationListener
 
     private function sendEmails($invoice, $type, $payment = null)
     {
-        foreach ($invoice->account->users as $user)
+        foreach ($invoice->organisation->users as $user)
         {
             if ($user->{"notify_{$type}"})
             {

@@ -1,7 +1,7 @@
 @extends('emails.master')
 
 @section('markup')
-    @if ($account->enable_email_markup)
+    @if ($organisation->enable_email_markup)
         @include('emails.partials.client_view_action')
     @endif
 @stop
@@ -12,17 +12,17 @@
     </tr>
     <tr>
         <td style="border-collapse: collapse;">
-            <table cellpadding="10" cellspacing="0" border="0" bgcolor="{{ $account->primary_color ?: '#2E2B2B' }}" width="580" align="center" class="header" 
-                style="border-bottom-width: 6px; border-bottom-color: {{ $account->primary_color ?: '#2E2B2B' }}; border-bottom-style: solid;">
+            <table cellpadding="10" cellspacing="0" border="0" bgcolor="{{ $organisation->primary_color ?: '#2E2B2B' }}" width="580" align="center" class="header"
+                style="border-bottom-width: 6px; border-bottom-color: {{ $organisation->primary_color ?: '#2E2B2B' }}; border-bottom-style: solid;">
                 <tr>
                     <td class="logo" width="205" style="border-collapse: collapse; vertical-align: middle; line-height: 16px;" valign="middle">
-                        @include('emails.partials.account_logo')
+                        @include('emails.partials.organisation_logo')
                     </td>
                     <td width="183" style="border-collapse: collapse; vertical-align: middle; line-height: 16px;" valign="middle">
                         <p class="left" style="line-height: 22px; margin: 3px 0 0; padding: 0;">
                             @if ($invoice->due_date)
                                 <span style="font-size: 11px; color: #8f8d8e;">
-                                    {{ strtoupper(trans('texts.due_by', ['date' => $account->formatDate($invoice->due_date)])) }}
+                                    {{ strtoupper(trans('texts.due_by', ['date' => $organisation->formatDate($invoice->due_date)])) }}
                                 </span><br />
                             @endif
                             <span style="font-size: 19px; color: #FFFFFF;">
@@ -36,7 +36,7 @@
                                 {{ strtoupper(trans('texts.' . $invoice->present()->balanceDueLabel)) }}:
                             </span><br />
                             <span class="total" style="font-size: 27px; color: #FFFFFF; margin-top: 5px;display: block;">
-                                {{ $account->formatMoney($invoice->getRequestedAmount(), $client) }}
+                                {{ $organisation->formatMoney($invoice->getRequestedAmount(), $client) }}
                             </span>
                         </p>
                     </td>
@@ -53,17 +53,17 @@
 
 @section('footer')
     <p style="color: #A7A6A6; font-size: 13px; line-height: 18px; margin: 0 0 7px; padding: 0;">
-        {{ $account->address1 }}
-        @if ($account->address1 && $account->getCityState())
+        {{ $organisation->address1 }}
+        @if ($organisation->address1 && $organisation->getCityState())
             -
         @endif
-        {{ $account->getCityState() }}
-        @if ($account->address1 || $account->getCityState())
+        {{ $organisation->getCityState() }}
+        @if ($organisation->address1 || $organisation->getCityState())
             <br />
         @endif
 
-        @if ($account->website)
-            <strong><a href="{{ $account->present()->website }}" style="color: #A7A6A6; text-decoration: none; font-weight: bold; font-size: 10px;">{{ $account->website }}</a></strong>
+        @if ($organisation->website)
+            <strong><a href="{{ $organisation->present()->website }}" style="color: #A7A6A6; text-decoration: none; font-weight: bold; font-size: 10px;">{{ $organisation->website }}</a></strong>
         @endif
     </p>
 @stop

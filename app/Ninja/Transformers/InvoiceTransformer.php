@@ -1,6 +1,6 @@
 <?php namespace App\Ninja\Transformers;
 
-use App\Models\Account;
+use App\Models\Organisation;
 use App\Models\Client;
 use App\Models\Invoice;
 use League\Fractal;
@@ -33,31 +33,31 @@ class InvoiceTransformer extends EntityTransformer
 
     public function includeInvoiceItems(Invoice $invoice)
     {
-        $transformer = new InvoiceItemTransformer($this->account, $this->serializer);
+        $transformer = new InvoiceItemTransformer($this->organisation, $this->serializer);
         return $this->includeCollection($invoice->invoice_items, $transformer, ENTITY_INVOICE_ITEMS);
     }
 
     public function includeInvitations(Invoice $invoice)
     {
-        $transformer = new InvitationTransformer($this->account, $this->serializer);
+        $transformer = new InvitationTransformer($this->organisation, $this->serializer);
         return $this->includeCollection($invoice->invitations, $transformer, ENTITY_INVITATION);
     }
 
     public function includePayments(Invoice $invoice)
     {
-        $transformer = new PaymentTransformer($this->account, $this->serializer);
+        $transformer = new PaymentTransformer($this->organisation, $this->serializer);
         return $this->includeCollection($invoice->payments, $transformer, ENTITY_PAYMENT);
     }
 
     public function includeClient(Invoice $invoice)
     {
-        $transformer = new ClientTransformer($this->account, $this->serializer);
+        $transformer = new ClientTransformer($this->organisation, $this->serializer);
         return $this->includeItem($invoice->client, $transformer, ENTITY_CLIENT);
     }
 
     public function includeExpenses(Invoice $invoice)
     {
-        $transformer = new ExpenseTransformer($this->account, $this->serializer);
+        $transformer = new ExpenseTransformer($this->organisation, $this->serializer);
         return $this->includeCollection($invoice->expenses, $transformer, ENTITY_EXPENSE);
     }
 
@@ -96,7 +96,7 @@ class InvoiceTransformer extends EntityTransformer
             'partial' => (float) $invoice->partial,
             'has_tasks' => (bool) $invoice->has_tasks,
             'auto_bill' => (bool) $invoice->auto_bill,
-            'account_key' => $this->account->account_key,
+            'account_key' => $this->organisation->account_key,
             'user_id' => (int) $invoice->user->public_id + 1,
             'custom_value1' => (float) $invoice->custom_value1,
             'custom_value2' => (float) $invoice->custom_value2,

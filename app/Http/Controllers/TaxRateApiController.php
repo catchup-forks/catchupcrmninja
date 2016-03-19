@@ -29,7 +29,7 @@ class TaxRateApiController extends BaseAPIController
 
         $paginator = TaxRate::scope()->withTrashed()->paginate();
 
-        $transformer = new TaxRateTransformer(Auth::user()->account, $this->serializer);
+        $transformer = new TaxRateTransformer(Auth::user()->organisation, $this->serializer);
         $data = $this->createCollection($taxRates, $transformer, 'tax_rates', $paginator);
 
         return $this->response($data);
@@ -47,7 +47,7 @@ class TaxRateApiController extends BaseAPIController
         if ($request->action == ACTION_ARCHIVE) {
             $this->taxRateRepo->archive($taxRate);
 
-            $transformer = new TaxRateTransformer(Auth::user()->account, $request->serializer);
+            $transformer = new TaxRateTransformer(Auth::user()->organisation, $request->serializer);
             $data = $this->createItem($taxRate, $transformer, 'tax_rates');
 
             return $this->response($data);
@@ -60,7 +60,7 @@ class TaxRateApiController extends BaseAPIController
     {
         $taxRate = $this->taxRateRepo->save($request->input(), $taxRate);
 
-        $transformer = new TaxRateTransformer(\Auth::user()->account, $request->serializer);
+        $transformer = new TaxRateTransformer(\Auth::user()->organisation, $request->serializer);
         $data = $this->createItem($taxRate, $transformer, 'tax_rates');
 
         return $this->response($data);

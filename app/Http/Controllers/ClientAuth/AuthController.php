@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Events\UserLoggedIn;
 use App\Http\Controllers\Controller;
-use App\Ninja\Repositories\AccountRepository;
+use App\Ninja\Repositories\OrganisationRepository;
 use App\Services\AuthService;
 use App\Models\Invitation;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -31,11 +31,11 @@ class AuthController extends Controller {
             if ($invitation && !$invitation->is_deleted) {
                 $invoice = $invitation->invoice;
                 $client = $invoice->client;
-                $account = $client->account;
+                $organisation = $client->organisation;
                 
-                $data['hideLogo'] = $account->isWhiteLabel();
-                $data['clientViewCSS'] = $account->clientViewCSS();
-                $data['clientFontUrl'] = $account->getFontsUrl();
+                $data['hideLogo'] = $organisation->isWhiteLabel();
+                $data['clientViewCSS'] = $organisation->clientViewCSS();
+                $data['clientFontUrl'] = $organisation->getFontsUrl();
             }
         }
         

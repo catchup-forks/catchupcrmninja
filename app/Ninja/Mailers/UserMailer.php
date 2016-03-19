@@ -42,22 +42,22 @@ class UserMailer extends Mailer
         
         $entityType = $invoice->getEntityType();
         $view = ($notificationType == 'approved' ? ENTITY_QUOTE : ENTITY_INVOICE) . "_{$notificationType}";
-        $account = $user->account;
+        $organisation = $user->organisation;
         $client = $invoice->client;
 
         $data = [
             'entityType' => $entityType,
             'clientName' => $client->getDisplayName(),
-            'accountName' => $account->getDisplayName(),
+            'accountName' => $organisation->getDisplayName(),
             'userName' => $user->getDisplayName(),
-            'invoiceAmount' => $account->formatMoney($invoice->getRequestedAmount(), $client),
+            'invoiceAmount' => $organisation->formatMoney($invoice->getRequestedAmount(), $client),
             'invoiceNumber' => $invoice->invoice_number,
             'invoiceLink' => SITE_URL."/{$entityType}s/{$invoice->public_id}",
-            'account' => $account,
+            'organisation' => $organisation,
         ];
 
         if ($payment) {
-            $data['paymentAmount'] = $account->formatMoney($payment->amount, $client);
+            $data['paymentAmount'] = $organisation->formatMoney($payment->amount, $client);
         }
 
         $subject = trans("texts.notification_{$entityType}_{$notificationType}_subject", [
@@ -71,7 +71,7 @@ class UserMailer extends Mailer
     public function sendEmailBounced(Invitation $invitation)
     {
         $user = $invitation->user;
-        $account = $user->account;
+        $organisation = $user->organisation;
         $invoice = $invitation->invoice;
         $entityType = $invoice->getEntityType();
 

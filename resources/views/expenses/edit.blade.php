@@ -44,7 +44,7 @@
                     {!! Former::select('expense_currency_id')->addOption('','')
                             ->data_bind('combobox: expense_currency_id')
                             ->label(trans('texts.currency_id'))
-                            ->data_placeholder(Utils::getFromCache($account->getCurrencyId(), 'currencies')->name)
+                            ->data_placeholder(Utils::getFromCache($organisation->getCurrencyId(), 'currencies')->name)
                             ->fromQuery($currencies, 'name', 'id') !!}
 
                     {!! Former::text('amount')
@@ -78,7 +78,7 @@
                         <span style="display:none" data-bind="visible: !client_id()">
                             {!! Former::select('invoice_currency_id')->addOption('','')
                                     ->label(trans('texts.invoice_currency'))
-                                    ->data_placeholder(Utils::getFromCache($account->getCurrencyId(), 'currencies')->name)
+                                    ->data_placeholder(Utils::getFromCache($organisation->getCurrencyId(), 'currencies')->name)
                                     ->data_bind('combobox: invoice_currency_id, disable: true')
                                     ->fromQuery($currencies, 'name', 'id') !!}
                         </span>
@@ -210,7 +210,7 @@
                 ko.mapping.fromJS(data, {}, this);
             }
 
-            self.account_currency_id = ko.observable({{ $account->getCurrencyId() }});
+            self.account_currency_id = ko.observable({{ $organisation->getCurrencyId() }});
             self.client_id = ko.observable({{ $clientPublicId }});
             self.vendor_id = ko.observable({{ $vendorPublicId }});
 

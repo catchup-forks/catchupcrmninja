@@ -1,6 +1,6 @@
 <?php namespace App\Ninja\Transformers;
 
-use App\Models\Account;
+use App\Models\Organisation;
 use App\Models\Credit;
 use League\Fractal;
 
@@ -15,7 +15,7 @@ class CreditTransformer extends EntityTransformer
             'updated_at' => $this->getTimestamp($credit->updated_at),
             'archived_at' => $this->getTimestamp($credit->deleted_at),
             'is_deleted' => (bool) $credit->is_deleted,
-            'account_key' => $this->account->account_key,
+            'account_key' => $this->organisation->account_key,
             'credit_date' => $credit->credit_date,
             'credit_number' => $credit->credit_number,
             'private_notes' => $credit->private_notes,

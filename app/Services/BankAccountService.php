@@ -8,7 +8,7 @@ use App\Models\BankSubaccount;
 use App\Models\Vendor;
 use App\Models\Expense;
 use App\Services\BaseService;
-use App\Ninja\Repositories\BankAccountRepository;
+use App\Ninja\Repositories\BankOrganisationRepository;
 use App\Ninja\Repositories\ExpenseRepository;
 use App\Ninja\Repositories\VendorRepository;
 use App\Libraries\Finance;
@@ -21,7 +21,7 @@ class BankAccountService extends BaseService
     protected $vendorRepo;
     protected $datatableService;
 
-    public function __construct(BankAccountRepository $bankAccountRepo, ExpenseRepository $expenseRepo, VendorRepository $vendorRepo, DatatableService $datatableService)
+    public function __construct(BankOrganisationRepository $bankAccountRepo, ExpenseRepository $expenseRepo, VendorRepository $vendorRepo, DatatableService $datatableService)
     {
         $this->bankAccountRepo = $bankAccountRepo;
         $this->vendorRepo = $vendorRepo;
@@ -68,10 +68,10 @@ class BankAccountService extends BaseService
             foreach ($finance->banks as $bank) {
                 foreach ($bank->logins as $login) {
                     $login->setup();
-                    foreach ($login->accounts as $account) {
-                        $account->setup($includeTransactions);
-                        if ($account = $this->parseBankAccount($account, $bankAccounts, $expenses, $includeTransactions, $vendorMap)) {
-                            $data[] = $account;
+                    foreach ($login->organisations as $organisation) {
+                        $organisation->setup($includeTransactions);
+                        if ($organisation = $this->parseBankAccount($organisation, $bankAccounts, $expenses, $includeTransactions, $vendorMap)) {
+                            $data[] = $organisation;
                         }
                     }
                 }
@@ -83,31 +83,31 @@ class BankAccountService extends BaseService
         }
     }
 
-    private function parseBankAccount($account, $bankAccounts, $expenses, $includeTransactions, $vendorMap)
+    private function parseBankAccount($organisation, $bankAccounts, $expenses, $includeTransactions, $vendorMap)
     {
         $obj = new stdClass();
         $obj->account_name = '';
 
         // look up bank account name
         foreach ($bankAccounts as $bankAccount) {
-            if (Hash::check($account->id, $bankAccount->account_number)) {
+            if (Hash::check($organisation->id, $bankAccount->account_number)) {
                 $obj->account_name = $bankAccount->account_name;
             }
         }
 
-        // if we can't find a match skip the account
+        // if we can't find a match skip the organisation
         if (count($bankAccounts) && ! $obj->account_name) {
             return false;
         }
 
-        $obj->masked_account_number = Utils::maskAccountNumber($account->id);
-        $obj->hashed_account_number = bcrypt($account->id);
-        $obj->type = $account->type;
-        $obj->balance = Utils::formatMoney($account->ledgerBalance, CURRENCY_DOLLAR);
+        $obj->masked_account_number = Utils::maskAccountNumber($organisation->id);
+        $obj->hashed_account_number = bcrypt($organisation->id);
+        $obj->type = $organisation->type;
+        $obj->balance = Utils::formatMoney($organisation->ledgerBalance, CURRENCY_DOLLAR);
 
         if ($includeTransactions) {
             $ofxParser = new \OfxParser\Parser();
-            $ofx = $ofxParser->loadFromString($account->response);
+            $ofx = $ofxParser->loadFromString($organisation->response);
 
             $obj->start_date = $ofx->BankAccount->Statement->startDate;
             $obj->end_date = $ofx->BankAccount->Statement->endDate;
@@ -130,7 +130,7 @@ class BankAccountService extends BaseService
                 $transaction->vendor = $vendor ? $vendor->name : $this->prepareValue($vendorName);
                 $transaction->info = $this->prepareValue(substr($transaction->name, 20));
                 $transaction->memo = $this->prepareValue($transaction->memo);
-                $transaction->date = \Auth::user()->account->formatDate($transaction->date);
+                $transaction->date = \Auth::user()->organisation->formatDate($transaction->date);
                 $transaction->amount *= -1;
                 $obj->transactions[] = $transaction;
             }

@@ -8,7 +8,7 @@ use View;
 use Cache;
 use Event;
 use Session;
-use App\Models\Account;
+use App\Models\Organisation;
 use App\Models\Client;
 use App\Models\Country;
 use App\Models\Currency;
@@ -72,7 +72,7 @@ class QuoteController extends BaseController
 
     public function getDatatable($clientPublicId = null)
     {
-        $accountId = Auth::user()->account_id;
+        $accountId = Auth::user()->organisation_id;
         $search = Input::get('sSearch');
 
         return $this->invoiceService->getDatatable($accountId, $clientPublicId, ENTITY_QUOTE, $search);
@@ -88,12 +88,12 @@ class QuoteController extends BaseController
             return Redirect::to('/invoices/create');
         }
 
-        $account = Auth::user()->account;
+        $organisation = Auth::user()->organisation;
         $clientId = null;
         if ($clientPublicId) {
             $clientId = Client::getPrivateId($clientPublicId);
         }
-        $invoice = $account->createInvoice(ENTITY_QUOTE, $clientId);
+        $invoice = $organisation->createInvoice(ENTITY_QUOTE, $clientId);
         $invoice->public_id = 0;
 
         $data = [
@@ -113,7 +113,7 @@ class QuoteController extends BaseController
     {
         return [
           'entityType' => ENTITY_QUOTE,
-          'account' => Auth::user()->account,
+          'organisation' => Auth::user()->organisation,
           'products' => Product::scope()->orderBy('id')->get(array('product_key', 'notes', 'cost', 'qty')),
           'countries' => Cache::get('countries'),
           'clients' => Client::scope()->with('contacts', 'country')->orderBy('name')->get(),
@@ -125,7 +125,7 @@ class QuoteController extends BaseController
           'industries' => Cache::get('industries'),
           'invoiceDesigns' => InvoiceDesign::getDesigns(),
           'invoiceFonts' => Cache::get('fonts'),
-          'invoiceLabels' => Auth::user()->account->getInvoiceLabels(),
+          'invoiceLabels' => Auth::user()->organisation->getInvoiceLabels(),
           'isRecurring' => false,
         ];
     }

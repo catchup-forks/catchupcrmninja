@@ -9,13 +9,13 @@ use Omnipay;
 use Session;
 use CreditCard;
 use App\Models\Payment;
-use App\Models\Account;
+use App\Models\Organisation;
 use App\Models\Country;
 use App\Models\Client;
 use App\Models\Invoice;
-use App\Models\AccountGatewayToken;
+use App\Models\OrganisationGatewayToken;
 use App\Ninja\Repositories\PaymentRepository;
-use App\Ninja\Repositories\AccountRepository;
+use App\Ninja\Repositories\OrganisationRepository;
 use App\Services\BaseService;
 use App\Events\PaymentWasCreated;
 
@@ -24,7 +24,7 @@ class PaymentService extends BaseService
     public $lastError;
     protected $datatableService;
 
-    public function __construct(PaymentRepository $paymentRepo, AccountRepository $accountRepo, DatatableService $datatableService)
+    public function __construct(PaymentRepository $paymentRepo, OrganisationRepository $accountRepo, DatatableService $datatableService)
     {
         $this->datatableService = $datatableService;
         $this->paymentRepo = $paymentRepo;
@@ -36,10 +36,10 @@ class PaymentService extends BaseService
         return $this->paymentRepo;
     }
 
-    public function createGateway($accountGateway)
+    public function createGateway($OrganisationGateway)
     {
-        $gateway = Omnipay::create($accountGateway->gateway->provider);
-        $config = $accountGateway->getConfig();
+        $gateway = Omnipay::create($OrganisationGateway->gateway->provider);
+        $config = $OrganisationGateway->getConfig();
 
         foreach ($config as $key => $val) {
             if (!$val) {
@@ -52,7 +52,7 @@ class PaymentService extends BaseService
             }
         }
 
-        if ($accountGateway->isGateway(GATEWAY_DWOLLA)) {
+        if ($OrganisationGateway->isGateway(GATEWAY_DWOLLA)) {
             if ($gateway->getSandbox() && isset($_ENV['DWOLLA_SANDBOX_KEY']) && isset($_ENV['DWOLLA_SANSBOX_SECRET'])) {
                 $gateway->setKey($_ENV['DWOLLA_SANDBOX_KEY']);
                 $gateway->setSecret($_ENV['DWOLLA_SANSBOX_SECRET']);
@@ -65,12 +65,12 @@ class PaymentService extends BaseService
         return $gateway;
     }
 
-    public function getPaymentDetails($invitation, $accountGateway, $input = null)
+    public function getPaymentDetails($invitation, $OrganisationGateway, $input = null)
     {
         $invoice = $invitation->invoice;
-        $account = $invoice->account;
-        $key = $invoice->account_id.'-'.$invoice->invoice_number;
-        $currencyCode = $invoice->client->currency ? $invoice->client->currency->code : ($invoice->account->currency ? $invoice->account->currency->code : 'USD');
+        $organisation = $invoice->organisation;
+        $key = $invoice->organisation_id.'-'.$invoice->invoice_number;
+        $currencyCode = $invoice->client->currency ? $invoice->client->currency->code : ($invoice->organisation->currency ? $invoice->organisation->currency->code : 'USD');
 
         if ($input) {
             $data = self::convertInputForOmnipay($input);
@@ -93,7 +93,7 @@ class PaymentService extends BaseService
             'transactionType' => 'Purchase',
         ];
 
-        if ($accountGateway->isGateway(GATEWAY_PAYPAL_EXPRESS) || $accountGateway->isGateway(GATEWAY_PAYPAL_PRO)) {
+        if ($OrganisationGateway->isGateway(GATEWAY_PAYPAL_EXPRESS) || $OrganisationGateway->isGateway(GATEWAY_PAYPAL_PRO)) {
             $data['ButtonSource'] = 'InvoiceNinja_SP';
         };
 
@@ -161,20 +161,20 @@ class PaymentService extends BaseService
         ];
     }
 
-    public function createToken($gateway, $details, $accountGateway, $client, $contactId)
+    public function createToken($gateway, $details, $OrganisationGateway, $client, $contactId)
     {
         $tokenResponse = $gateway->createCard($details)->send();
         $cardReference = $tokenResponse->getCustomerReference();
 
         if ($cardReference) {
-            $token = AccountGatewayToken::where('client_id', '=', $client->id)
-            ->where('account_gateway_id', '=', $accountGateway->id)->first();
+            $token = OrganisationGatewayToken::where('client_id', '=', $client->id)
+            ->where('account_gateway_id', '=', $OrganisationGateway->id)->first();
 
             if (!$token) {
-                $token = new AccountGatewayToken();
-                $token->account_id = $client->account->id;
+                $token = new OrganisationGatewayToken();
+                $token->organisation_id = $client->organisation->id;
                 $token->contact_id = $contactId;
-                $token->account_gateway_id = $accountGateway->id;
+                $token->account_gateway_id = $OrganisationGateway->id;
                 $token->client_id = $client->id;
             }
 
@@ -192,14 +192,14 @@ class PaymentService extends BaseService
         $token = false;
         $invoice = $invitation->invoice;
         $client = $invoice->client;
-        $account = $invoice->account;
+        $organisation = $invoice->organisation;
 
-        $accountGateway = $account->getGatewayConfig(GATEWAY_CHECKOUT_COM);
-        $gateway = $this->createGateway($accountGateway);
+        $OrganisationGateway = $organisation->getGatewayConfig(GATEWAY_CHECKOUT_COM);
+        $gateway = $this->createGateway($OrganisationGateway);
 
         $response = $gateway->purchase([
             'amount' => $invoice->getRequestedAmount(),
-            'currency' => $client->currency ? $client->currency->code : ($account->currency ? $account->currency->code : 'USD')
+            'currency' => $client->currency ? $client->currency->code : ($organisation->currency ? $organisation->currency->code : 'USD')
         ])->send();
 
         if ($response->isRedirect()) {
@@ -211,24 +211,24 @@ class PaymentService extends BaseService
         return $token;
     }
 
-    public function createPayment($invitation, $accountGateway, $ref, $payerId = null)
+    public function createPayment($invitation, $OrganisationGateway, $ref, $payerId = null)
     {
         $invoice = $invitation->invoice;
 
         // enable pro plan for hosted users
-        if ($invoice->account->account_key == NINJA_ACCOUNT_KEY && $invoice->amount == PRO_PLAN_PRICE) {
-            $account = Account::with('users')->find($invoice->client->public_id);
-            $account->pro_plan_paid = $account->getRenewalDate();
-            $account->save();
+        if ($invoice->organisation->account_key == NINJA_ORGANISATION_KEY && $invoice->amount == PRO_PLAN_PRICE) {
+            $organisation = Organisation::with('users')->find($invoice->client->public_id);
+            $organisation->pro_plan_paid = $organisation->getRenewalDate();
+            $organisation->save();
 
-            // sync pro accounts
-            $user = $account->users()->first();
-            $this->accountRepo->syncAccounts($user->id, $account->pro_plan_paid);
+            // sync pro organisations
+            $user = $organisation->users()->first();
+            $this->accountRepo->syncAccounts($user->id, $organisation->pro_plan_paid);
         }
 
         $payment = Payment::createNew($invitation);
         $payment->invitation_id = $invitation->id;
-        $payment->account_gateway_id = $accountGateway->id;
+        $payment->account_gateway_id = $OrganisationGateway->id;
         $payment->invoice_id = $invoice->id;
         $payment->amount = $invoice->getRequestedAmount();
         $payment->client_id = $invoice->client_id;
@@ -245,9 +245,9 @@ class PaymentService extends BaseService
         return $payment;
     }
 
-    public function completePurchase($gateway, $accountGateway, $details, $token)
+    public function completePurchase($gateway, $OrganisationGateway, $details, $token)
     {
-        if ($accountGateway->isGateway(GATEWAY_MOLLIE)) {
+        if ($OrganisationGateway->isGateway(GATEWAY_MOLLIE)) {
             $details['transactionReference'] = $token;
             $response = $gateway->fetchTransaction($details)->send();
             return $gateway->fetchTransaction($details)->send();
@@ -260,18 +260,18 @@ class PaymentService extends BaseService
     public function autoBillInvoice($invoice)
     {
         $client = $invoice->client;
-        $account = $invoice->account;
+        $organisation = $invoice->organisation;
         $invitation = $invoice->invitations->first();
-        $accountGateway = $account->getGatewayConfig(GATEWAY_STRIPE);
+        $OrganisationGateway = $organisation->getGatewayConfig(GATEWAY_STRIPE);
         $token = $client->getGatewayToken();
 
-        if (!$invitation || !$accountGateway || !$token) {
+        if (!$invitation || !$OrganisationGateway || !$token) {
             return false;
         }
 
         // setup the gateway/payment info
-        $gateway = $this->createGateway($accountGateway);
-        $details = $this->getPaymentDetails($invitation, $accountGateway);
+        $gateway = $this->createGateway($OrganisationGateway);
+        $details = $this->getPaymentDetails($invitation, $OrganisationGateway);
         $details['customerReference'] = $token;
 
         // submit purchase/get response
@@ -279,7 +279,7 @@ class PaymentService extends BaseService
 
         if ($response->isSuccessful()) {
             $ref = $response->getTransactionReference();
-            return $this->createPayment($invitation, $accountGateway, $ref);
+            return $this->createPayment($invitation, $OrganisationGateway, $ref);
         } else {
             return false;
         }

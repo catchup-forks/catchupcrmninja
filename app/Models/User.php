@@ -52,9 +52,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     use SoftDeletes;
     protected $dates = ['deleted_at'];
 
-    public function account()
+    public function organisation()
     {
-        return $this->belongsTo('App\Models\Account');
+        return $this->belongsTo('App\Models\Organisation');
     }
 
     public function theme()
@@ -109,7 +109,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
     public function isPro()
     {
-        return $this->account->isPro();
+        return $this->organisation->isPro();
     }
 
     public function isPaidPro()
@@ -119,12 +119,12 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
     public function isTrial()
     {
-        return $this->account->isTrial();
+        return $this->organisation->isTrial();
     }
 
     public function isEligibleForTrial()
     {
-        return $this->account->isEligibleForTrial();
+        return $this->organisation->isEligibleForTrial();
     }
 
     public function maxInvoiceDesignId()
@@ -213,7 +213,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     {
         $keys = [
             RECENTLY_VIEWED,
-            SESSION_USER_ACCOUNTS,
+            SESSION_USER_ORGANISATIONS,
             SESSION_TIMEZONE,
             SESSION_DATE_FORMAT,
             SESSION_DATE_PICKER_FORMAT,

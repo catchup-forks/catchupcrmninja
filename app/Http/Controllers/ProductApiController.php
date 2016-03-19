@@ -39,7 +39,7 @@ class ProductApiController extends BaseAPIController
 
         $paginator = Product::scope()->withTrashed()->paginate();
 
-        $transformer = new ProductTransformer(\Auth::user()->account, $this->serializer);
+        $transformer = new ProductTransformer(\Auth::user()->organisation, $this->serializer);
         $data = $this->createCollection($products, $transformer, 'products', $paginator);
 
         return $this->response($data);
@@ -48,7 +48,7 @@ class ProductApiController extends BaseAPIController
 
     public function getDatatable()
     {
-        return $this->productService->getDatatable(Auth::user()->account_id);
+        return $this->productService->getDatatable(Auth::user()->organisation_id);
     }
 
     public function store()
@@ -63,7 +63,7 @@ class ProductApiController extends BaseAPIController
             $product = Product::scope($publicId)->withTrashed()->firstOrFail();
             $this->productRepo->archive($product);
 
-            $transformer = new ProductTransformer(\Auth::user()->account, Input::get('serializer'));
+            $transformer = new ProductTransformer(\Auth::user()->organisation, Input::get('serializer'));
             $data = $this->createItem($product, $transformer, 'products');
 
             return $this->response($data);
@@ -92,7 +92,7 @@ class ProductApiController extends BaseAPIController
 
         $product->save();
 
-        $transformer = new ProductTransformer(\Auth::user()->account, Input::get('serializer'));
+        $transformer = new ProductTransformer(\Auth::user()->organisation, Input::get('serializer'));
         $data = $this->createItem($product, $transformer, 'products');
 
         return $this->response($data);

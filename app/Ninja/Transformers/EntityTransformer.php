@@ -1,17 +1,17 @@
 <?php namespace App\Ninja\Transformers;
 
-use App\Models\Account;
+use App\Models\Organisation;
 use App\Models\Client;
 use League\Fractal\TransformerAbstract;
 
 class EntityTransformer extends TransformerAbstract
 {
-    protected $account;
+    protected $organisation;
     protected $serializer;
 
-    public function __construct(Account $account = null, $serializer = null)
+    public function __construct(Organisation $organisation = null, $serializer = null)
     {
-        $this->account = $account;
+        $this->organisation = $organisation;
         $this->serializer = $serializer;
     }
 

@@ -94,35 +94,35 @@
 
         <div class="row">
             <div class="col-md-3 logo">
-                @if ($account->hasLogo())
-                    {!! HTML::image($account->getLogoPath()) !!}
+                @if ($organisation->hasLogo())
+                    {!! HTML::image($organisation->getLogoPath()) !!}
                 @else
-                    <h2>{{ $account->name}}</h2>
+                    <h2>{{ $organisation->name}}</h2>
                 @endif
             </div>
             <div class="col-md-3 col-md-offset-3 address-details">
-                @if ($account->address1)
-                    {{ $account->address1 }}<br/>
+                @if ($organisation->address1)
+                    {{ $organisation->address1 }}<br/>
                 @endif
-                @if ($account->housenumber)
-                    {{ $account->housenumber }}<br/>
+                @if ($organisation->housenumber)
+                    {{ $organisation->housenumber }}<br/>
                 @endif
-                @if ($account->getCityState())
-                    {{ $account->getCityState() }}<br/>
+                @if ($organisation->getCityState())
+                    {{ $organisation->getCityState() }}<br/>
                 @endif
-                @if ($account->country)
-                    {{ $account->country->name }}
+                @if ($organisation->country)
+                    {{ $organisation->country->name }}
                 @endif
             </div>
             <div class="col-md-3 address-details">
-                @if ($account->website)
-                    <i class="fa fa-globe" style="width: 20px"></i><a href="{{ $account->website }}" target="_blank">{{ $account->website }}</a><br/>
+                @if ($organisation->website)
+                    <i class="fa fa-globe" style="width: 20px"></i><a href="{{ $organisation->website }}" target="_blank">{{ $organisation->website }}</a><br/>
                 @endif
-                @if ($account->work_phone)
-                    <i class="fa fa-phone" style="width: 20px"></i>{{ $account->work_phone }}<br/>
+                @if ($organisation->work_phone)
+                    <i class="fa fa-phone" style="width: 20px"></i>{{ $organisation->work_phone }}<br/>
                 @endif
-                @if ($account->work_email)
-                    <i class="fa fa-envelope" style="width: 20px"></i>{!! HTML::mailto($account->work_email, $account->work_email) !!}<br/>
+                @if ($organisation->work_email)
+                    <i class="fa fa-envelope" style="width: 20px"></i>{!! HTML::mailto($organisation->work_email, $organisation->work_email) !!}<br/>
                 @endif
             </div>
         </div>
@@ -135,7 +135,7 @@
                         {{ trans('texts.total_invoiced') }}
                     </div>
                     <div class="amount">
-                        {{ Utils::formatMoney($client->paid_to_date + $client->balance, $client->currency_id ?: $account->currency_id) }}
+                        {{ Utils::formatMoney($client->paid_to_date + $client->balance, $client->currency_id ?: $organisation->currency_id) }}
                     </div>
                 </div>
             </div>
@@ -146,7 +146,7 @@
                         {{ trans('texts.paid_to_date') }}
                     </div>
                     <div class="amount">
-                        {{ Utils::formatMoney($client->paid_to_date, $client->currency_id ?: $account->currency_id) }}
+                        {{ Utils::formatMoney($client->paid_to_date, $client->currency_id ?: $organisation->currency_id) }}
                     </div>
                 </div>
             </div>
@@ -157,7 +157,7 @@
                         {{ trans('texts.open_balance') }}
                     </div>
                     <div class="amount">
-                        {{ Utils::formatMoney($client->balance, $client->currency_id ?: $account->currency_id) }}
+                        {{ Utils::formatMoney($client->balance, $client->currency_id ?: $organisation->currency_id) }}
                     </div>
                 </div>
             </div>

@@ -28,20 +28,20 @@ class AddSupportForInvoiceDesigns extends Migration {
 			$table->unsignedInteger('invoice_design_id')->default(1);
 		});
 
-		Schema::table('accounts', function($table)
+		Schema::table('organisations', function($table)
 		{
 			$table->unsignedInteger('invoice_design_id')->default(1);
 		});
 
 		DB::table('invoices')->update(['invoice_design_id' => 1]);
-		DB::table('accounts')->update(['invoice_design_id' => 1]);
+		DB::table('organisations')->update(['invoice_design_id' => 1]);
 
 		Schema::table('invoices', function($table)
 		{
 			$table->foreign('invoice_design_id')->references('id')->on('invoice_designs');
 		});
 	
-		Schema::table('accounts', function($table)
+		Schema::table('organisations', function($table)
 		{
 			$table->foreign('invoice_design_id')->references('id')->on('invoice_designs');
 		});
@@ -60,7 +60,7 @@ class AddSupportForInvoiceDesigns extends Migration {
 			$table->dropColumn('invoice_design_id');
 		});
 
-		Schema::table('accounts', function($table)
+		Schema::table('organisations', function($table)
 		{
 			$table->dropForeign('accounts_invoice_design_id_foreign');
 			$table->dropColumn('invoice_design_id');

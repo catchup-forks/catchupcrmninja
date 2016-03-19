@@ -175,7 +175,7 @@
                                         <td>{{ trim($payment->client_name) ?: (trim($payment->first_name . ' ' . $payment->last_name) ?: $payment->email) }}</td>
                                     @endif
                                     <td>{{ Utils::fromSqlDate($invoice->due_date) }}</td>
-                                    <td>{{ Utils::formatMoney($invoice->balance, $invoice->currency_id ?: ($account->currency_id ?: DEFAULT_CURRENCY)) }}</td>
+                                    <td>{{ Utils::formatMoney($invoice->balance, $invoice->currency_id ?: ($organisation->currency_id ?: DEFAULT_CURRENCY)) }}</td>
                                 </tr>
                             @endif
                         @endforeach
@@ -210,7 +210,7 @@
                                         <td>{!! \App\Models\Invoice::calcLink($invoice) !!}</td>
                                         <td>{!! link_to('/clients/'.$invoice->client_public_id, trim($invoice->client_name) ?: (trim($invoice->first_name . ' ' . $invoice->last_name) ?: $invoice->email)) !!}</td>
                                         <td>{{ Utils::fromSqlDate($invoice->due_date) }}</td>
-                                        <td>{{ Utils::formatMoney($invoice->balance, $invoice->currency_id ?: ($account->currency_id ?: DEFAULT_CURRENCY)) }}</td>
+                                        <td>{{ Utils::formatMoney($invoice->balance, $invoice->currency_id ?: ($organisation->currency_id ?: DEFAULT_CURRENCY)) }}</td>
                                     </tr>
                                 @endif
                             @endforeach
@@ -241,7 +241,7 @@
                                         <td>{!! \App\Models\Invoice::calcLink($invoice) !!}</td>
                                         <td>{!! link_to('/clients/'.$invoice->client_public_id, trim($invoice->client_name) ?: (trim($invoice->first_name . ' ' . $invoice->last_name) ?: $invoice->email)) !!}</td>
                                         <td>{{ Utils::fromSqlDate($invoice->due_date) }}</td>
-                                        <td>{{ Utils::formatMoney($invoice->balance, $invoice->currency_id ?: ($account->currency_id ?: DEFAULT_CURRENCY)) }}</td>
+                                        <td>{{ Utils::formatMoney($invoice->balance, $invoice->currency_id ?: ($organisation->currency_id ?: DEFAULT_CURRENCY)) }}</td>
                                     </tr>
                                 @endif
                             @endforeach

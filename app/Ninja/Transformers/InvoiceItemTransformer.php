@@ -1,6 +1,6 @@
 <?php namespace App\Ninja\Transformers;
 
-use App\Models\Account;
+use App\Models\Organisation;
 use App\Models\InvoiceItem;
 use League\Fractal;
 
@@ -11,7 +11,7 @@ class InvoiceItemTransformer extends EntityTransformer
         return [
             'id' => (int) $item->public_id,
             'product_key' => $item->product_key,
-            'account_key' => $this->account->account_key,
+            'account_key' => $this->organisation->account_key,
             'user_id' => (int) $item->user_id,
             'updated_at' => $this->getTimestamp($item->updated_at),
             'archived_at' => $this->getTimestamp($item->deleted_at),

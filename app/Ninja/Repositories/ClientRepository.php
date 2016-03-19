@@ -28,14 +28,14 @@ class ClientRepository extends BaseRepository
     public function find($filter = null)
     {
         $query = DB::table('clients')
-                    ->join('accounts', 'accounts.id', '=', 'clients.account_id')
+                    ->join('organisations', 'organisations.id', '=', 'clients.organisation_id')
                     ->join('contacts', 'contacts.client_id', '=', 'clients.id')
-                    ->where('clients.account_id', '=', \Auth::user()->account_id)
+                    ->where('clients.organisation_id', '=', \Auth::user()->organisation_id)
                     ->where('contacts.is_primary', '=', true)
                     ->where('contacts.deleted_at', '=', null)
                     ->select(
-                        DB::raw('COALESCE(clients.currency_id, accounts.currency_id) currency_id'),
-                        DB::raw('COALESCE(clients.country_id, accounts.country_id) country_id'),
+                        DB::raw('COALESCE(clients.currency_id, organisations.currency_id) currency_id'),
+                        DB::raw('COALESCE(clients.country_id, organisations.country_id) country_id'),
                         'clients.public_id',
                         'clients.name',
                         'contacts.first_name',

@@ -5,7 +5,7 @@
 
     @include('money_script')
 
-    @foreach ($account->getFontFolders() as $font)
+    @foreach ($organisation->getFontFolders() as $font)
         <script src="{{ asset('js/vfs_fonts/'.$font.'.js') }}" type="text/javascript"></script>
     @endforeach
 	<script src="{{ asset('pdf.built.js') }}" type="text/javascript"></script>
@@ -135,8 +135,8 @@
 			</div>
             @endif
 
-            @if ($account->showCustomField('custom_invoice_text_label1', $invoice))
-                {!! Former::text('custom_text_value1')->label($account->custom_invoice_text_label1)->data_bind("value: custom_text_value1, valueUpdate: 'afterkeydown'") !!}
+            @if ($organisation->showCustomField('custom_invoice_text_label1', $invoice))
+                {!! Former::text('custom_text_value1')->label($organisation->custom_invoice_text_label1)->data_bind("value: custom_text_value1, valueUpdate: 'afterkeydown'") !!}
             @endif
 		</div>
 
@@ -159,8 +159,8 @@
 						->addOption(trans('texts.discount_amount'), '1')->data_bind("value: is_amount_discount")->raw()
 			) !!}
 
-            @if ($account->showCustomField('custom_invoice_text_label2', $invoice))
-                {!! Former::text('custom_text_value2')->label($account->custom_invoice_text_label2)->data_bind("value: custom_text_value2, valueUpdate: 'afterkeydown'") !!}
+            @if ($organisation->showCustomField('custom_invoice_text_label2', $invoice))
+                {!! Former::text('custom_text_value2')->label($organisation->custom_invoice_text_label2)->data_bind("value: custom_text_value2, valueUpdate: 'afterkeydown'") !!}
             @endif
 
             @if ($entityType == ENTITY_INVOICE)
@@ -174,11 +174,11 @@
                             {!! trans('texts.last_sent_on', ['date' => link_to('/invoices/'.$lastSent->public_id, $invoice->last_sent_date, ['id' => 'lastSent'])]) !!} <br/>
                         @endif
                         @if ($invoice->is_recurring && $invoice->getNextSendDate())
-                           {!! trans('texts.next_send_on', ['date' => '<span data-bind="tooltip: {title: \''.$invoice->getPrettySchedule().'\', html: true}">'.$account->formatDate($invoice->getNextSendDate()).
+                           {!! trans('texts.next_send_on', ['date' => '<span data-bind="tooltip: {title: \''.$invoice->getPrettySchedule().'\', html: true}">'.$organisation->formatDate($invoice->getNextSendDate()).
                                 '<span class="glyphicon glyphicon-info-sign" style="padding-left:10px;color:#B1B5BA"></span></span>']) !!}
                             @if ($invoice->getDueDate())
                                 <br>
-                                {!! trans('texts.next_due_on', ['date' => '<span>'.$account->formatDate($invoice->getDueDate($invoice->getNextSendDate())).'</span>']) !!}
+                                {!! trans('texts.next_due_on', ['date' => '<span>'.$organisation->formatDate($invoice->getDueDate($invoice->getNextSendDate())).'</span>']) !!}
                             @endif
                         @endif
                         </span>
@@ -196,14 +196,14 @@
 				<th style="min-width:32px;" class="hide-border"></th>
 				<th style="min-width:160px">{{ $invoiceLabels['item'] }}</th>
 				<th style="width:100%">{{ $invoiceLabels['description'] }}</th>
-                @if ($account->showCustomField('custom_invoice_item_label1'))
-                    <th style="min-width:120px">{{ $account->custom_invoice_item_label1 }}</th>
+                @if ($organisation->showCustomField('custom_invoice_item_label1'))
+                    <th style="min-width:120px">{{ $organisation->custom_invoice_item_label1 }}</th>
                 @endif
-                @if ($account->showCustomField('custom_invoice_item_label2'))
-                    <th style="min-width:120px">{{ $account->custom_invoice_item_label2 }}</th>
+                @if ($organisation->showCustomField('custom_invoice_item_label2'))
+                    <th style="min-width:120px">{{ $organisation->custom_invoice_item_label2 }}</th>
                 @endif
 				<th style="min-width:120px" data-bind="text: costLabel">{{ $invoiceLabels['unit_cost'] }}</th>
-				<th style="{{ $account->hide_quantity ? 'display:none' : 'min-width:120px' }}" data-bind="text: qtyLabel">{{ $invoiceLabels['quantity'] }}</th>
+				<th style="{{ $organisation->hide_quantity ? 'display:none' : 'min-width:120px' }}" data-bind="text: qtyLabel">{{ $invoiceLabels['quantity'] }}</th>
 				<th style="min-width:120px;display:none;" data-bind="visible: $root.invoice_item_taxes.show">{{ trans('texts.tax') }}</th>
 				<th style="min-width:120px;">{{ trans('texts.line_total') }}</th>
 				<th style="min-width:32px;" class="hide-border"></th>
@@ -224,12 +224,12 @@
                         <input type="text" data-bind="value: task_public_id, attr: {name: 'invoice_items[' + $index() + '][task_public_id]'}" style="display: none"/>
 						<input type="text" data-bind="value: expense_public_id, attr: {name: 'invoice_items[' + $index() + '][expense_public_id]'}" style="display: none"/>
 				</td>
-                @if ($account->showCustomField('custom_invoice_item_label1'))
+                @if ($organisation->showCustomField('custom_invoice_item_label1'))
                     <td>
                         <input data-bind="value: custom_value1, valueUpdate: 'afterkeydown', attr: {name: 'invoice_items[' + $index() + '][custom_value1]'}" class="form-control invoice-item"/>
                     </td>
                 @endif
-                @if ($account->showCustomField('custom_invoice_item_label2'))
+                @if ($organisation->showCustomField('custom_invoice_item_label2'))
                     <td>
                         <input data-bind="value: custom_value2, valueUpdate: 'afterkeydown', attr: {name: 'invoice_items[' + $index() + '][custom_value2]'}" class="form-control invoice-item"/>
                     </td>
@@ -238,7 +238,7 @@
 					<input data-bind="value: prettyCost, valueUpdate: 'afterkeydown', attr: {name: 'invoice_items[' + $index() + '][cost]'}"
                         style="text-align: right" class="form-control invoice-item"/>
 				</td>
-				<td style="{{ $account->hide_quantity ? 'display:none' : '' }}">
+				<td style="{{ $organisation->hide_quantity ? 'display:none' : '' }}">
 					<input data-bind="value: prettyQty, valueUpdate: 'afterkeydown', attr: {name: 'invoice_items[' + $index() + '][qty]'}"
                         style="text-align: right" class="form-control invoice-item" name="quantity"/>
 				</td>
@@ -262,7 +262,7 @@
 		<tfoot>
 			<tr>
 				<td class="hide-border"/>
-				<td class="hide-border" colspan="{{ 2 + ($account->showCustomField('custom_invoice_item_label1') ? 1 : 0) + ($account->showCustomField('custom_invoice_item_label2') ? 1 : 0) }}" rowspan="6" style="vertical-align:top">
+				<td class="hide-border" colspan="{{ 2 + ($organisation->showCustomField('custom_invoice_item_label1') ? 1 : 0) + ($organisation->showCustomField('custom_invoice_item_label2') ? 1 : 0) }}" rowspan="6" style="vertical-align:top">
 					<br/>
                     <div role="tabpanel">
 
@@ -306,38 +306,38 @@
 
 				</td>
 				<td class="hide-border" style="display:none" data-bind="visible: $root.invoice_item_taxes.show"/>
-				<td colspan="{{ $account->hide_quantity ? 1 : 2 }}">{{ trans('texts.subtotal') }}</td>
+				<td colspan="{{ $organisation->hide_quantity ? 1 : 2 }}">{{ trans('texts.subtotal') }}</td>
 				<td style="text-align: right"><span data-bind="text: totals.subtotal"/></td>
 			</tr>
 
 			<tr style="display:none" data-bind="visible: discount() != 0">
 				<td class="hide-border" colspan="3"/>
 				<td style="display:none" class="hide-border" data-bind="visible: $root.invoice_item_taxes.show"/>
-				<td colspan="{{ $account->hide_quantity ? 1 : 2 }}">{{ trans('texts.discount') }}</td>
+				<td colspan="{{ $organisation->hide_quantity ? 1 : 2 }}">{{ trans('texts.discount') }}</td>
 				<td style="text-align: right"><span data-bind="text: totals.discounted"/></td>
 			</tr>
 
-            @if ($account->showCustomField('custom_invoice_label1', $invoice) && $account->custom_invoice_taxes1)
+            @if ($organisation->showCustomField('custom_invoice_label1', $invoice) && $organisation->custom_invoice_taxes1)
 				<tr>
 					<td class="hide-border" colspan="3"/>
 					<td style="display:none" class="hide-border" data-bind="visible: $root.invoice_item_taxes.show"/>
-					<td colspan="{{ $account->hide_quantity ? 1 : 2 }}">{{ $account->custom_invoice_label1 }}</td>
+					<td colspan="{{ $organisation->hide_quantity ? 1 : 2 }}">{{ $organisation->custom_invoice_label1 }}</td>
 					<td style="text-align: right;padding-right: 28px" colspan="2"><input name="custom_value1" class="form-control" data-bind="value: custom_value1, valueUpdate: 'afterkeydown'"/></td>
 				</tr>
 			@endif
 
-            @if ($account->showCustomField('custom_invoice_label2', $invoice) && $account->custom_invoice_taxes2)
+            @if ($organisation->showCustomField('custom_invoice_label2', $invoice) && $organisation->custom_invoice_taxes2)
 				<tr>
 					<td class="hide-border" colspan="3"/>
 					<td style="display:none" class="hide-border" data-bind="visible: $root.invoice_item_taxes.show"/>
-					<td colspan="{{ $account->hide_quantity ? 1 : 2 }}">{{ $account->custom_invoice_label2 }}</td>
+					<td colspan="{{ $organisation->hide_quantity ? 1 : 2 }}">{{ $organisation->custom_invoice_label2 }}</td>
 					<td style="text-align: right;padding-right: 28px" colspan="2"><input name="custom_value2" class="form-control" data-bind="value: custom_value2, valueUpdate: 'afterkeydown'"/></td>
 				</tr>
 			@endif
 
             <tr style="display:none" data-bind="visible: $root.invoice_item_taxes.show &amp;&amp; totals.hasItemTaxes">
                 <td class="hide-border" colspan="4"/>
-                @if (!$account->hide_quantity)
+                @if (!$organisation->hide_quantity)
                     <td>{{ trans('texts.tax') }}</td>
                 @endif
                 <td style="min-width:120px"><span data-bind="html: totals.itemTaxRates"/></td>
@@ -347,7 +347,7 @@
 			<tr style="display:none" data-bind="visible: $root.invoice_taxes.show">
 				<td class="hide-border" colspan="3"/>
 				<td style="display:none" class="hide-border" data-bind="visible: $root.invoice_item_taxes.show"/>
-				@if (!$account->hide_quantity)
+				@if (!$organisation->hide_quantity)
 					<td>{{ trans('texts.tax') }}</td>
 				@endif
 				<td style="min-width:120px">
@@ -358,29 +358,29 @@
 				<td style="text-align: right"><span data-bind="text: totals.taxAmount"/></td>
 			</tr>
 
-            @if ($account->showCustomField('custom_invoice_label1', $invoice) && !$account->custom_invoice_taxes1)
+            @if ($organisation->showCustomField('custom_invoice_label1', $invoice) && !$organisation->custom_invoice_taxes1)
 				<tr>
 					<td class="hide-border" colspan="3"/>
 					<td style="display:none" class="hide-border" data-bind="visible: $root.invoice_item_taxes.show"/>
-					<td colspan="{{ $account->hide_quantity ? 1 : 2 }}">{{ $account->custom_invoice_label1 }}</td>
+					<td colspan="{{ $organisation->hide_quantity ? 1 : 2 }}">{{ $organisation->custom_invoice_label1 }}</td>
 					<td style="text-align: right;padding-right: 28px" colspan="2"><input name="custom_value1" class="form-control" data-bind="value: custom_value1, valueUpdate: 'afterkeydown'"/></td>
 				</tr>
 			@endif
 
-            @if ($account->showCustomField('custom_invoice_label2', $invoice) && !$account->custom_invoice_taxes2)
+            @if ($organisation->showCustomField('custom_invoice_label2', $invoice) && !$organisation->custom_invoice_taxes2)
 				<tr>
 					<td class="hide-border" colspan="3"/>
 					<td style="display:none" class="hide-border" data-bind="visible: $root.invoice_item_taxes.show"/>
-					<td colspan="{{ $account->hide_quantity ? 1 : 2 }}">{{ $account->custom_invoice_label2 }}</td>
+					<td colspan="{{ $organisation->hide_quantity ? 1 : 2 }}">{{ $organisation->custom_invoice_label2 }}</td>
 					<td style="text-align: right;padding-right: 28px" colspan="2"><input name="custom_value2" class="form-control" data-bind="value: custom_value2, valueUpdate: 'afterkeydown'"/></td>
 				</tr>
 			@endif
 
-			@if (!$account->hide_paid_to_date)
+			@if (!$organisation->hide_paid_to_date)
 				<tr>
 					<td class="hide-border" colspan="3"/>
 					<td style="display:none" class="hide-border" data-bind="visible: $root.invoice_item_taxes.show"/>
-					<td colspan="{{ $account->hide_quantity ? 1 : 2 }}">{{ trans('texts.paid_to_date') }}</td>
+					<td colspan="{{ $organisation->hide_quantity ? 1 : 2 }}">{{ trans('texts.paid_to_date') }}</td>
 					<td style="text-align: right" data-bind="text: totals.paidToDate"></td>
 				</tr>
 			@endif
@@ -388,14 +388,14 @@
 			<tr data-bind="style: { 'font-weight': partial() ? 'normal' : 'bold', 'font-size': partial() ? '1em' : '1.05em' }">
 				<td class="hide-border" colspan="3"/>
 				<td class="hide-border" style="display:none" data-bind="visible: $root.invoice_item_taxes.show"/>
-				<td class="hide-border" data-bind="css: {'hide-border': !partial()}" colspan="{{ $account->hide_quantity ? 1 : 2 }}">{{ $entityType == ENTITY_INVOICE ? $invoiceLabels['balance_due'] : trans('texts.total') }}</td>
+				<td class="hide-border" data-bind="css: {'hide-border': !partial()}" colspan="{{ $organisation->hide_quantity ? 1 : 2 }}">{{ $entityType == ENTITY_INVOICE ? $invoiceLabels['balance_due'] : trans('texts.total') }}</td>
 				<td class="hide-border" data-bind="css: {'hide-border': !partial()}" style="text-align: right"><span data-bind="text: totals.total"></span></td>
 			</tr>
 
 			<tr style="font-size:1.05em; display:none; font-weight:bold" data-bind="visible: partial">
 				<td class="hide-border" colspan="3"/>
 				<td class="hide-border" style="display:none" data-bind="visible: $root.invoice_item_taxes.show"/>
-				<td class="hide-border" colspan="{{ $account->hide_quantity ? 1 : 2 }}">{{ $invoiceLabels['partial_due'] }}</td>
+				<td class="hide-border" colspan="{{ $organisation->hide_quantity ? 1 : 2 }}">{{ $invoiceLabels['partial_due'] }}</td>
 				<td class="hide-border" style="text-align: right"><span data-bind="text: totals.partial"></span></td>
 			</tr>
 
@@ -424,7 +424,7 @@
             {!! Former::text('pdfupload') !!}
 		</div>
 
-        @if ($account->hasLargeFont())
+        @if ($organisation->hasLargeFont())
             <label for="livePreview" class="control-label" style="padding-right:10px">
                 <input id="livePreview" type="checkbox"/> {{ trans('texts.live_preview') }}
             </label>
@@ -455,9 +455,9 @@
 	</div>
 	<p>&nbsp;</p>
 
-	@include('invoices.pdf', ['account' => Auth::user()->account])
+	@include('invoices.pdf', ['organisation' => Auth::user()->organisation])
 
-	@if (!Auth::user()->account->isPro())
+	@if (!Auth::user()->organisation->isPro())
 		<div style="font-size:larger">
 			{!! trans('texts.pro_plan.remove_logo', ['link'=>'<a href="#" onclick="showProPlan(\'remove_logo\')">'.trans('texts.pro_plan.remove_logo_link').'</a>']) !!}
 		</div>
@@ -503,14 +503,14 @@
                 </span>
 
                 @if (Auth::user()->isPro())
-                    @if ($account->custom_client_label1)
+                    @if ($organisation->custom_client_label1)
                         {!! Former::text('client[custom_value1]')
-                            ->label($account->custom_client_label1)
+                            ->label($organisation->custom_client_label1)
                             ->data_bind("value: custom_value1, valueUpdate: 'afterkeydown'") !!}
                     @endif
-                    @if ($account->custom_client_label2)
+                    @if ($organisation->custom_client_label2)
                         {!! Former::text('client[custom_value2]')
-                            ->label($account->custom_client_label2)
+                            ->label($organisation->custom_client_label2)
                             ->data_bind("value: custom_value2, valueUpdate: 'afterkeydown'") !!}
                     @endif
                 @endif
@@ -557,7 +557,7 @@
                             ->addClass('client-email') !!}
                     {!! Former::text('phone')->data_bind("value: phone, valueUpdate: 'afterkeydown',
                             attr: {name: 'client[contacts][' + \$index() + '][phone]'}") !!}
-                    @if ($account->isPro() && $account->enable_portal_password)
+                    @if ($organisation->isPro() && $organisation->enable_portal_password)
                         {!! Former::password('password')->data_bind("value: (typeof password=='function'?password():null)?'-%unchanged%-':'', valueUpdate: 'afterkeydown',
                             attr: {name: 'client[contacts][' + \$index() + '][password]'}") !!}
                     @endif
@@ -578,14 +578,14 @@
                 </span>
 
                 {!! Former::select('client[currency_id]')->addOption('','')
-                        ->placeholder($account->currency ? $account->currency->name : '')
+                        ->placeholder($organisation->currency ? $organisation->currency->name : '')
                         ->label(trans('texts.currency_id'))
                         ->data_bind('value: currency_id')
                         ->fromQuery($currencies, 'name', 'id') !!}
 
                 <span data-bind="visible: $root.showMore">
                 {!! Former::select('client[language_id]')->addOption('','')
-                        ->placeholder($account->language ? $account->language->name : '')
+                        ->placeholder($organisation->language ? $organisation->language->name : '')
                         ->label(trans('texts.language_id'))
                         ->data_bind('value: language_id')
                         ->fromQuery($languages, 'name', 'id') !!}
@@ -678,7 +678,7 @@
 
     var products = {!! $products !!};
     var clients = {!! $clients !!};
-    var account = {!! Auth::user()->account !!};
+    var organisation = {!! Auth::user()->organisation !!};
 
     var clientMap = {};
     var $clientSelect = $('select#client');
@@ -732,11 +732,11 @@
                 }
                 model.invoice().addItem(); // add blank item
             @else
-                model.invoice().custom_taxes1({{ $account->custom_invoice_taxes1 ? 'true' : 'false' }});
-                model.invoice().custom_taxes2({{ $account->custom_invoice_taxes2 ? 'true' : 'false' }});
-                // set the default account tax rate
-                @if ($account->invoice_taxes && $account->default_tax_rate_id)
-                    model.invoice().tax(model.getTaxRateById({{ $account->default_tax_rate ?  $account->default_tax_rate->public_id : '' }}));
+                model.invoice().custom_taxes1({{ $organisation->custom_invoice_taxes1 ? 'true' : 'false' }});
+                model.invoice().custom_taxes2({{ $organisation->custom_invoice_taxes2 ? 'true' : 'false' }});
+                // set the default organisation tax rate
+                @if ($organisation->invoice_taxes && $organisation->default_tax_rate_id)
+                    model.invoice().tax(model.getTaxRateById({{ $organisation->default_tax_rate ?  $organisation->default_tax_rate->public_id : '' }}));
                 @endif
             @endif
 
@@ -963,17 +963,17 @@
 
         @if (!$invoice->id)
             if (!invoice.terms) {
-                invoice.terms = account['{{ $entityType }}_terms'];
+                invoice.terms = organisation['{{ $entityType }}_terms'];
             }
             if (!invoice.invoice_footer) {
-                invoice.invoice_footer = account['invoice_footer'];
+                invoice.invoice_footer = organisation['invoice_footer'];
             }
         @endif
 
-		@if ($account->hasLogo())
-			invoice.image = "{{ Form::image_data($account->getLogoPath()) }}";
-			invoice.imageWidth = {{ $account->getLogoWidth() }};
-			invoice.imageHeight = {{ $account->getLogoHeight() }};
+		@if ($organisation->hasLogo())
+			invoice.image = "{{ Form::image_data($organisation->getLogoPath()) }}";
+			invoice.imageWidth = {{ $organisation->getLogoWidth() }};
+			invoice.imageHeight = {{ $organisation->getLogoHeight() }};
 		@endif
 
         //invoiceLabels.item = invoice.has_tasks ? invoiceLabels.date : invoiceLabels.item_orig;
@@ -985,7 +985,7 @@
 
     window.generatedPDF = false;
 	function getPDFString(cb, force) {
-        @if ($account->hasLargeFont())
+        @if ($organisation->hasLargeFont())
             if (!$('#livePreview').is(':checked') && window.generatedPDF) {
                 return;
             }
@@ -1100,7 +1100,7 @@
 
         // check currency matches for expenses
         var expenseCurrencyId = model.expense_currency_id();
-        var clientCurrencyId = model.invoice().client().currency_id() || {{ $account->getCurrencyId() }};
+        var clientCurrencyId = model.invoice().client().currency_id() || {{ $organisation->getCurrencyId() }};
         if (expenseCurrencyId && expenseCurrencyId != clientCurrencyId) {
             alert("{!! trans('texts.expense_error_mismatch_currencies') !!}");
             return false;
@@ -1254,10 +1254,10 @@
     }
 
     function setInvoiceNumber(client) {
-        @if ($invoice->id || !$account->hasClientNumberPattern($invoice))
+        @if ($invoice->id || !$organisation->hasClientNumberPattern($invoice))
             return;
         @endif
-        var number = '{{ $account->getNumberPattern($invoice) }}';
+        var number = '{{ $organisation->getNumberPattern($invoice) }}';
         number = number.replace('{$custom1}', client.custom_value1 ? client.custom_value1 : '');
         number = number.replace('{$custom2}', client.custom_value2 ? client.custom_value1 : '');
         model.invoice().invoice_number(number);

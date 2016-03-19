@@ -35,7 +35,7 @@ class ImportController extends BaseController
         try {
             if ($source === IMPORT_CSV) {
                 $data = $this->importService->mapCSV($files);
-                return View::make('accounts.import_map', ['data' => $data]);
+                return View::make('organisations.import_map', ['data' => $data]);
             } else {
                 $results = $this->importService->import($source, $files);
                 return $this->showResult($results);
@@ -43,7 +43,7 @@ class ImportController extends BaseController
         } catch (Exception $exception) {
             Utils::logError($exception);
             Session::flash('error', $exception->getMessage());
-            return Redirect::to('/settings/' . ACCOUNT_IMPORT_EXPORT);
+            return Redirect::to('/settings/' . ORGANISATION_IMPORT_EXPORT);
         }
     }
 
@@ -58,7 +58,7 @@ class ImportController extends BaseController
         } catch (Exception $exception) {
             Utils::logError($exception);
             Session::flash('error', $exception->getMessage());
-            return Redirect::to('/settings/' . ACCOUNT_IMPORT_EXPORT);
+            return Redirect::to('/settings/' . ORGANISATION_IMPORT_EXPORT);
         }
     }
 
@@ -87,6 +87,6 @@ class ImportController extends BaseController
             Session::flash('warning', $message);
         }
 
-        return Redirect::to('/settings/' . ACCOUNT_IMPORT_EXPORT);
+        return Redirect::to('/settings/' . ORGANISATION_IMPORT_EXPORT);
     }
 }

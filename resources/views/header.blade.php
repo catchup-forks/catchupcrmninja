@@ -136,7 +136,7 @@
       localStorage.setItem('guest_key', '');
       fbq('track', 'CompleteRegistration');
       window._fbq.push(['track', '{{ env('FACEBOOK_PIXEL_SIGN_UP') }}', {'value':'0.00','currency':'USD'}]);
-      trackEvent('/account', '/signed_up');
+      trackEvent('/organisation', '/signed_up');
   }
 
   function checkForEnter(event)
@@ -173,7 +173,7 @@
   function showProPlan(feature) {
     $('#proPlanModal').modal('show');
     fbq('track', 'InitiateCheckout');
-    trackEvent('/account', '/show_pro_plan/' + feature);
+    trackEvent('/organisation', '/show_pro_plan/' + feature);
     NINJA.proPlanFeature = feature;
   }
 
@@ -188,11 +188,11 @@
   @if (Auth::check() && (!Auth::user()->isPro() || Auth::user()->isTrial()))
   function submitProPlan() {
     fbq('track', 'AddPaymentInfo');
-    trackEvent('/account', '/submit_pro_plan/' + NINJA.proPlanFeature);
+    trackEvent('/organisation', '/submit_pro_plan/' + NINJA.proPlanFeature);
     if (NINJA.isRegistered) {      
       $.ajax({
         type: 'POST',
-        url: '{{ URL::to('account/go_pro') }}',
+        url: '{{ URL::to('organisation/go_pro') }}',
         success: function(result) { 
           NINJA.formIsChanged = false;
           window.location = '/payment/' + result;
@@ -215,7 +215,7 @@
 
   function wordWrapText(value, width)
   {
-    @if (Auth::user()->account->auto_wrap)
+    @if (Auth::user()->organisation->auto_wrap)
     var doc = new jsPDF('p', 'pt');
     doc.setFont('Helvetica','');
     doc.setFontSize(10);
@@ -272,23 +272,23 @@
             hint: true,
             highlight: true,
           }
-          @if (Auth::check() && Auth::user()->account->custom_client_label1)
+          @if (Auth::check() && Auth::user()->organisation->custom_client_label1)
           ,{
             name: 'data',
             display: 'value',
-            source: searchData(data['{{ Auth::user()->account->custom_client_label1 }}'], 'tokens'),
+            source: searchData(data['{{ Auth::user()->organisation->custom_client_label1 }}'], 'tokens'),
             templates: {
-              header: '&nbsp;<span style="font-weight:600;font-size:16px">{{ Auth::user()->account->custom_client_label1 }}</span>'
+              header: '&nbsp;<span style="font-weight:600;font-size:16px">{{ Auth::user()->organisation->custom_client_label1 }}</span>'
             }
           }          
           @endif
-          @if (Auth::check() && Auth::user()->account->custom_client_label2)
+          @if (Auth::check() && Auth::user()->organisation->custom_client_label2)
           ,{
             name: 'data',
             display: 'value',
-            source: searchData(data['{{ Auth::user()->account->custom_client_label2 }}'], 'tokens'),
+            source: searchData(data['{{ Auth::user()->organisation->custom_client_label2 }}'], 'tokens'),
             templates: {
-              header: '&nbsp;<span style="font-weight:600;font-size:16px">{{ Auth::user()->account->custom_client_label2 }}</span>'
+              header: '&nbsp;<span style="font-weight:600;font-size:16px">{{ Auth::user()->organisation->custom_client_label2 }}</span>'
             }
           }          
           @endif
@@ -336,7 +336,7 @@
     validateSignUp();
 
     $('#signUpModal').on('shown.bs.modal', function () {
-      trackEvent('/account', '/view_sign_up');
+      trackEvent('/organisation', '/view_sign_up');
       $(['first_name','last_name','email','password']).each(function(i, field) {
         var $input = $('form.signUpForm #new_'+field);
         if (!$input.val()) {
@@ -355,8 +355,8 @@
     @endif
 
     $('ul.navbar-settings, ul.navbar-search').hover(function () {
-        if ($('.user-accounts').css('display') == 'block') {
-            $('.user-accounts').dropdown('toggle');
+        if ($('.user-organisations').css('display') == 'block') {
+            $('.user-organisations').dropdown('toggle');
         }
     });
 
@@ -428,23 +428,23 @@
 
         <div class="btn-group user-dropdown">
           <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
-            <div id="myAccountButton" class="ellipsis nav-account-name" style="max-width:{{ Utils::isPro() && ! Utils::isTrial() ? '130' : '100' }}px;">
-                @if (session(SESSION_USER_ACCOUNTS) && count(session(SESSION_USER_ACCOUNTS)))
-                    {{ Auth::user()->account->getDisplayName() }}
+            <div id="myAccountButton" class="ellipsis nav-organisation-name" style="max-width:{{ Utils::isPro() && ! Utils::isTrial() ? '130' : '100' }}px;">
+                @if (session(SESSION_USER_ORGANISATIONS) && count(session(SESSION_USER_ORGANISATIONS)))
+                    {{ Auth::user()->organisation->getDisplayName() }}
                 @else
                     {{ Auth::user()->getDisplayName() }}
                 @endif
               <span class="caret"></span>
             </div>
-            <span class="glyphicon glyphicon-user nav-account-icon" style="padding-left:0px" 
-                title="{{ Auth::user()->account->getDisplayName() }}"/>            
+            <span class="glyphicon glyphicon-user nav-organisation-icon" style="padding-left:0px"
+                title="{{ Auth::user()->organisation->getDisplayName() }}"/>
           </button>			
-          <ul class="dropdown-menu user-accounts">
-            @if (session(SESSION_USER_ACCOUNTS))
-                @foreach (session(SESSION_USER_ACCOUNTS) as $item)
+          <ul class="dropdown-menu user-organisations">
+            @if (session(SESSION_USER_ORGANISATIONS))
+                @foreach (session(SESSION_USER_ORGANISATIONS) as $item)
                     @if ($item->user_id == Auth::user()->id)
                         @include('user_account', [
-                            'user_account_id' => $item->id,
+                            'user_organisation_id' => $item->id,
                             'user_id' => $item->user_id,
                             'account_name' => $item->account_name,
                             'user_name' => $item->user_name,
@@ -453,10 +453,10 @@
                         ])
                     @endif
                 @endforeach
-                @foreach (session(SESSION_USER_ACCOUNTS) as $item)
+                @foreach (session(SESSION_USER_ORGANISATIONS) as $item)
                     @if ($item->user_id != Auth::user()->id)
                         @include('user_account', [
-                            'user_account_id' => $item->id,
+                            'user_organisation_id' => $item->id,
                             'user_id' => $item->user_id,
                             'account_name' => $item->account_name,
                             'user_name' => $item->user_name,
@@ -467,17 +467,17 @@
                 @endforeach
             @else
                 @include('user_account', [
-                    'account_name' => Auth::user()->account->name ?: trans('texts.untitled'), 
+                    'account_name' => Auth::user()->organisation->name ?: trans('texts.untitled'),
                     'user_name' => Auth::user()->getDisplayName(),
-                    'logo_path' => Auth::user()->account->getLogoPath(),
+                    'logo_path' => Auth::user()->organisation->getLogoPath(),
                     'selected' => true,
                 ])
             @endif            
             <li class="divider"></li>
             @if (Utils::isAdmin())
-              @if (count(session(SESSION_USER_ACCOUNTS)) > 1)
+              @if (count(session(SESSION_USER_ORGANISATIONS)) > 1)
                   <li>{!! link_to('/manage_companies', trans('texts.manage_companies')) !!}</li>
-              @elseif (!session(SESSION_USER_ACCOUNTS) || count(session(SESSION_USER_ACCOUNTS)) < 5)
+              @elseif (!session(SESSION_USER_ORGANISATIONS) || count(session(SESSION_USER_ORGANISATIONS)) < 5)
                   <li>{!! link_to('/login?new_company=true', trans('texts.add_company')) !!}</li>
               @endif
             @endif
@@ -494,10 +494,10 @@
               <span class="glyphicon glyphicon-cog" title="{{ trans('texts.settings') }}"/>
             </a>
             <ul class="dropdown-menu">
-              @foreach (\App\Models\Account::$basicSettings as $setting)
+              @foreach (\App\Models\Organisation::$basicSettings as $setting)
                   <li>{!! link_to('settings/' . $setting, uctrans("texts.{$setting}")) !!}</li>
               @endforeach
-              <li><a href="{{ url('settings/' . ACCOUNT_INVOICE_SETTINGS) }}">{!! uctrans('texts.advanced_settings') . Utils::getProLabel(ACCOUNT_ADVANCED_SETTINGS) !!}</a></li>
+              <li><a href="{{ url('settings/' . ORGANISATION_INVOICE_SETTINGS) }}">{!! uctrans('texts.advanced_settings') . Utils::getProLabel(ORGANISATION_ADVANCED_SETTINGS) !!}</a></li>
             </ul>
           @else
             <a href="{{ URL::to('/settings/user_details') }}" class="dropdown-toggle">
@@ -518,7 +518,7 @@
                 <li><a href="#">{{ trans('texts.no_items') }}</a></li>
             @else
                 @foreach (Session::get(RECENTLY_VIEWED) as $link)
-                    @if (property_exists($link, 'accountId') && $link->accountId == Auth::user()->account_id)
+                    @if (property_exists($link, 'accountId') && $link->accountId == Auth::user()->organisation_id)
                         <li><a href="{{ $link->url }}">{{ $link->name }}</a></li>	
                     @endif
                 @endforeach
@@ -756,8 +756,8 @@
 <div class="container">
 @if (Utils::isNinjaProd())
   @if (Auth::check() && Auth::user()->isTrial())
-    {!! trans(Auth::user()->account->getCountTrialDaysLeft() == 0 ? 'texts.trial_footer_last_day' : 'texts.trial_footer', [
-            'count' => Auth::user()->account->getCountTrialDaysLeft(), 
+    {!! trans(Auth::user()->organisation->getCountTrialDaysLeft() == 0 ? 'texts.trial_footer_last_day' : 'texts.trial_footer', [
+            'count' => Auth::user()->organisation->getCountTrialDaysLeft(),
             'link' => '<a href="javascript:submitProPlan()">' . trans('texts.click_here') . '</a>'
         ]) !!}
   @endif
@@ -766,7 +766,7 @@
   {{-- Per our license, please do not remove or modify this section. --}}
   {!! link_to('https://www.invoiceninja.com/?utm_source=powered_by', 'InvoiceNinja.com', ['target' => '_blank', 'title' => 'invoiceninja.com']) !!} -
   {!! link_to(RELEASES_URL, 'v' . NINJA_VERSION, ['target' => '_blank', 'title' => trans('texts.trello_roadmap')]) !!} | 
-  @if (Auth::user()->account->isWhiteLabel())  
+  @if (Auth::user()->organisation->isWhiteLabel())
     {{ trans('texts.white_labeled') }}
   @else
     <a href="#" onclick="loadImages('#whiteLabelModal');$('#whiteLabelModal').modal('show');">{{ trans('texts.white_label_link') }}</a>

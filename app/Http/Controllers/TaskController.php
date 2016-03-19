@@ -96,8 +96,8 @@ class TaskController extends BaseController
             'method' => 'POST',
             'url' => 'tasks',
             'title' => trans('texts.new_task'),
-            'timezone' => Auth::user()->account->timezone ? Auth::user()->account->timezone->name : DEFAULT_TIMEZONE,
-            'datetimeFormat' => Auth::user()->account->getMomentDateTimeFormat(),
+            'timezone' => Auth::user()->organisation->timezone ? Auth::user()->organisation->timezone->name : DEFAULT_TIMEZONE,
+            'datetimeFormat' => Auth::user()->organisation->getMomentDateTimeFormat(),
         ];
 
         $data = array_merge($data, self::getViewModel());
@@ -151,8 +151,8 @@ class TaskController extends BaseController
             'title' => trans('texts.edit_task'),
             'duration' => $task->is_running ? $task->getCurrentDuration() : $task->getDuration(),
             'actions' => $actions,
-            'timezone' => Auth::user()->account->timezone ? Auth::user()->account->timezone->name : DEFAULT_TIMEZONE,
-            'datetimeFormat' => Auth::user()->account->getMomentDateTimeFormat(),
+            'timezone' => Auth::user()->organisation->timezone ? Auth::user()->organisation->timezone->name : DEFAULT_TIMEZONE,
+            'datetimeFormat' => Auth::user()->organisation->getMomentDateTimeFormat(),
             //'entityStatus' => $task->present()->status,
         ];
 
@@ -176,7 +176,7 @@ class TaskController extends BaseController
     {
         return [
             'clients' => Client::scope()->with('contacts')->orderBy('name')->get(),
-            'account' => Auth::user()->account,
+            'organisation' => Auth::user()->organisation,
         ];
     }
 
@@ -242,10 +242,10 @@ class TaskController extends BaseController
                     return Redirect::to('tasks');
                 }
                 
-                $account = Auth::user()->account;
+                $organisation = Auth::user()->organisation;
                 $data[] = [
                     'publicId' => $task->public_id,
-                    'description' => $task->description . "\n\n" . $task->present()->times($account),
+                    'description' => $task->description . "\n\n" . $task->present()->times($organisation),
                     'duration' => $task->getHours(),
                 ];
             }
@@ -272,7 +272,7 @@ class TaskController extends BaseController
 
     private function checkTimezone()
     {
-        if (!Auth::user()->account->timezone) {
+        if (!Auth::user()->organisation->timezone) {
             $link = link_to('/settings/localization?focus=timezone_id', trans('texts.click_here'), ['target' => '_blank']);
             Session::flash('warning', trans('texts.timezone_unset', ['link' => $link]));
         }

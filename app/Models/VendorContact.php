@@ -23,9 +23,9 @@ class VendorContact extends EntityModel
     public static $fieldEmail = 'email';
     public static $fieldPhone = 'phone';
 
-    public function account()
+    public function organisation()
     {
-        return $this->belongsTo('App\Models\Account');
+        return $this->belongsTo('App\Models\Organisation');
     }
 
     public function user()

@@ -33,12 +33,12 @@ class TaxRateController extends BaseController
 
     public function index()
     {
-        return Redirect::to('settings/' . ACCOUNT_TAX_RATES);
+        return Redirect::to('settings/' . ORGANISATION_TAX_RATES);
     }
 
     public function getDatatable()
     {
-        return $this->taxRateService->getDatatable(Auth::user()->account_id);
+        return $this->taxRateService->getDatatable(Auth::user()->organisation_id);
     }
 
     public function edit($publicId)
@@ -50,7 +50,7 @@ class TaxRateController extends BaseController
           'title' => trans('texts.edit_tax_rate'),
         ];
 
-        return View::make('accounts.tax_rate', $data);
+        return View::make('organisations.tax_rate', $data);
     }
 
     public function create()
@@ -62,7 +62,7 @@ class TaxRateController extends BaseController
           'title' => trans('texts.create_tax_rate'),
         ];
 
-        return View::make('accounts.tax_rate', $data);
+        return View::make('organisations.tax_rate', $data);
     }
 
     public function store(CreateTaxRateRequest $request)
@@ -70,7 +70,7 @@ class TaxRateController extends BaseController
         $this->taxRateRepo->save($request->input());
 
         Session::flash('message', trans('texts.created_tax_rate'));
-        return Redirect::to('settings/' . ACCOUNT_TAX_RATES);
+        return Redirect::to('settings/' . ORGANISATION_TAX_RATES);
     }
 
     public function update(UpdateTaxRateRequest $request, $publicId)
@@ -80,7 +80,7 @@ class TaxRateController extends BaseController
         $this->taxRateRepo->save($request->input(), $taxRate);
 
         Session::flash('message', trans('texts.updated_tax_rate'));
-        return Redirect::to('settings/' . ACCOUNT_TAX_RATES);
+        return Redirect::to('settings/' . ORGANISATION_TAX_RATES);
     }
 
 
@@ -92,6 +92,6 @@ class TaxRateController extends BaseController
 
         Session::flash('message', trans('texts.archived_tax_rate'));
 
-        return Redirect::to('settings/' . ACCOUNT_TAX_RATES);
+        return Redirect::to('settings/' . ORGANISATION_TAX_RATES);
     }
 }

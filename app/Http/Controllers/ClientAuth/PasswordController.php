@@ -48,11 +48,11 @@ class PasswordController extends Controller {
             if ($invitation && !$invitation->is_deleted) {
                 $invoice = $invitation->invoice;
                 $client = $invoice->client;
-                $account = $client->account;
+                $organisation = $client->organisation;
                 
-                $data['hideLogo'] = $account->isWhiteLabel();
-                $data['clientViewCSS'] = $account->clientViewCSS();
-                $data['clientFontUrl'] = $account->getFontsUrl();
+                $data['hideLogo'] = $organisation->isWhiteLabel();
+                $data['clientViewCSS'] = $organisation->clientViewCSS();
+                $data['clientFontUrl'] = $organisation->getFontsUrl();
             }
         }
         
@@ -115,11 +115,11 @@ class PasswordController extends Controller {
             if ($invitation && !$invitation->is_deleted) {
                 $invoice = $invitation->invoice;
                 $client = $invoice->client;
-                $account = $client->account;
+                $organisation = $client->organisation;
                 
-                $data['hideLogo'] = $account->isWhiteLabel();
-                $data['clientViewCSS'] = $account->clientViewCSS();
-                $data['clientFontUrl'] = $account->getFontsUrl();
+                $data['hideLogo'] = $organisation->isWhiteLabel();
+                $data['clientViewCSS'] = $organisation->clientViewCSS();
+                $data['clientFontUrl'] = $organisation->getFontsUrl();
             }
         }
 

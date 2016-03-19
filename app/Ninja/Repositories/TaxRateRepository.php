@@ -15,7 +15,7 @@ class TaxRateRepository extends BaseRepository
     public function find($accountId)
     {
         return DB::table('tax_rates')
-                ->where('tax_rates.account_id', '=', $accountId)
+                ->where('tax_rates.organisation_id', '=', $accountId)
                 ->where('tax_rates.deleted_at', '=', null)
                 ->select('tax_rates.public_id', 'tax_rates.name', 'tax_rates.rate', 'tax_rates.deleted_at');
     }

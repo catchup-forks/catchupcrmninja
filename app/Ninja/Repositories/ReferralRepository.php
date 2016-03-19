@@ -7,7 +7,7 @@ class ReferralRepository
 {
     public function getCounts($userId)
     {
-        $accounts = DB::table('accounts')
+        $accounts = DB::table('organisations')
                         ->where('referral_user_id', $userId)
                         ->get(['id', 'pro_plan_paid']);
 
@@ -16,9 +16,9 @@ class ReferralRepository
             'pro' => 0
         ];
 
-        foreach ($accounts as $account) {
+        foreach ($accounts as $organisation) {
             $counts['free']++;
-            if (Utils::withinPastYear($account->pro_plan_paid)) {
+            if (Utils::withinPastYear($organisation->pro_plan_paid)) {
                 $counts['pro']++;
             }
         }

@@ -3,7 +3,7 @@
 use Auth;
 use Session;
 use App\Events\UserSettingsChanged;
-use App\Ninja\Repositories\AccountRepository;
+use App\Ninja\Repositories\OrganisationRepository;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldBeQueued;
 use App\Ninja\Mailers\UserMailer;
@@ -15,7 +15,7 @@ class HandleUserSettingsChanged {
 	 *
 	 * @return void
 	 */
-	public function __construct(AccountRepository $accountRepo, UserMailer $userMailer)
+	public function __construct(OrganisationRepository $accountRepo, UserMailer $userMailer)
 	{
         $this->accountRepo = $accountRepo;
         $this->userMailer = $userMailer;
@@ -33,11 +33,11 @@ class HandleUserSettingsChanged {
             return;
         }
 
-        $account = Auth::user()->account;
-        $account->loadLocalizationSettings();
+        $organisation = Auth::user()->organisation;
+        $organisation->loadLocalizationSettings();
 
         $users = $this->accountRepo->loadAccounts(Auth::user()->id);
-        Session::put(SESSION_USER_ACCOUNTS, $users);
+        Session::put(SESSION_USER_ORGANISATIONS, $users);
 
         if ($event->user && $event->user->isEmailBeingChanged()) {
             $this->userMailer->sendConfirmation($event->user);

@@ -1355,7 +1355,7 @@
 	        return binaryWrite(this, string, offset, length)
 
 	      case 'base64':
-	        // Warning: maxLength not taken into account in base64Write
+	        // Warning: maxLength not taken into organisation in base64Write
 	        return base64Write(this, string, offset, length)
 
 	      case 'ucs2':
@@ -22488,7 +22488,7 @@
 	  // with Object.prototype.hasOwnProperty.call), the same set of keys
 	  // (although not necessarily the same order), equivalent values for every
 	  // corresponding key, and an identical 'prototype' property. Note: this
-	  // accounts for both named and indexed properties on Arrays.
+	  // organisations for both named and indexed properties on Arrays.
 	  } else {
 	    return objEquiv(actual, expected);
 	  }

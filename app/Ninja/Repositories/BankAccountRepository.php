@@ -8,7 +8,7 @@ use App\Models\BankAccount;
 use App\Models\BankSubaccount;
 use App\Ninja\Repositories\BaseRepository;
 
-class BankAccountRepository extends BaseRepository
+class BankOrganisationRepository extends BaseRepository
 {
     public function getClassName()
     {
@@ -20,7 +20,7 @@ class BankAccountRepository extends BaseRepository
         return DB::table('bank_accounts')
                     ->join('banks', 'banks.id', '=', 'bank_accounts.bank_id')
                     ->where('bank_accounts.deleted_at', '=', null)
-                    ->where('bank_accounts.account_id', '=', $accountId)
+                    ->where('bank_accounts.organisation_id', '=', $accountId)
                     ->select(
                         'bank_accounts.public_id',
                         'banks.name as bank_name',
@@ -35,8 +35,8 @@ class BankAccountRepository extends BaseRepository
         $bankAccount->bank_id = $input['bank_id'];
         $bankAccount->username = Crypt::encrypt(trim($input['bank_username']));
 
-        $account = \Auth::user()->account;
-        $account->bank_accounts()->save($bankAccount);
+        $organisation = \Auth::user()->organisation;
+        $organisation->bank_accounts()->save($bankAccount);
 
         foreach ($input['bank_accounts'] as $data) {
             if ( ! isset($data['include']) || ! filter_var($data['include'], FILTER_VALIDATE_BOOLEAN)) {

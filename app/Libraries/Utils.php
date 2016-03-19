@@ -33,7 +33,7 @@ class Utils
     public static function isDatabaseSetup()
     {
         try {
-            if (Schema::hasTable('accounts')) {
+            if (Schema::hasTable('organisations')) {
                 return true;
             }
         } catch (Exception $e) {
@@ -161,7 +161,7 @@ class Utils
 
     public static function getDemoAccountId()
     {
-        return isset($_ENV[DEMO_ACCOUNT_ID]) ? $_ENV[DEMO_ACCOUNT_ID] : false;
+        return isset($_ENV[DEMO_ORGANISATION_ID]) ? $_ENV[DEMO_ORGANISATION_ID] : false;
     }
 
     public static function getNewsFeedResponse($userType = false)
@@ -195,7 +195,7 @@ class Utils
     {
         if (Auth::check()
                 && !Auth::user()->isPro()
-                && $feature == ACCOUNT_ADVANCED_SETTINGS) {
+                && $feature == ORGANISATION_ADVANCED_SETTINGS) {
             return '&nbsp;<sup class="pro-label">PRO</sup>';
         } else {
             return '';
@@ -262,7 +262,7 @@ class Utils
         $data = [
             'context' => $context,
             'user_id' => Auth::check() ? Auth::user()->id : 0,
-            'account_id' => Auth::check() ? Auth::user()->account_id : 0,
+            'organisation_id' => Auth::check() ? Auth::user()->organisation_id : 0,
             'user_name' => Auth::check() ? Auth::user()->getDisplayName() : '',
             'method' => Request::method(),
             'url' => Input::get('url', Request::url()),
@@ -321,7 +321,7 @@ class Utils
         }
 
         if (!$countryId && Auth::check()) {
-            $countryId = Auth::user()->account->country_id;
+            $countryId = Auth::user()->organisation->country_id;
         }
 
         $currency = self::getFromCache($currencyId, 'currencies');
@@ -538,7 +538,7 @@ class Utils
         }
 
         $object = new stdClass();
-        $object->accountId = Auth::user()->account_id;
+        $object->accountId = Auth::user()->organisation_id;
         $object->url = $url;
         $object->name = ucwords($type).': '.$name;
 
@@ -563,7 +563,7 @@ class Utils
 
         array_unshift($data, $object);
 
-        if (isset($counts[Auth::user()->account_id]) && $counts[Auth::user()->account_id] > RECENTLY_VIEWED_LIMIT) {
+        if (isset($counts[Auth::user()->organisation_id]) && $counts[Auth::user()->organisation_id] > RECENTLY_VIEWED_LIMIT) {
             array_pop($data);
         }
 

@@ -93,7 +93,7 @@
                         attr: {name: 'contacts[' + \$index() + '][email]', id:'email'+\$index()}") !!}
 				{!! Former::text('phone')->data_bind("value: phone, valueUpdate: 'afterkeydown',
                         attr: {name: 'contacts[' + \$index() + '][phone]'}") !!}
-				@if ($account->isPro() && $account->enable_portal_password)
+				@if ($organisation->isPro() && $organisation->enable_portal_password)
 					{!! Former::password('password')->data_bind("value: password()?'-%unchanged%-':'', valueUpdate: 'afterkeydown',
 						attr: {name: 'contacts[' + \$index() + '][password]'}") !!}
 			    @endif
@@ -119,10 +119,10 @@
             <div class="panel-body">
 			
             {!! Former::select('currency_id')->addOption('','')
-                ->placeholder($account->currency ? $account->currency->name : '')
+                ->placeholder($organisation->currency ? $organisation->currency->name : '')
                 ->fromQuery($currencies, 'name', 'id') !!}
             {!! Former::select('language_id')->addOption('','')
-                ->placeholder($account->language ? $account->language->name : '')
+                ->placeholder($organisation->language ? $organisation->language->name : '')
                 ->fromQuery($languages, 'name', 'id') !!}
 			{!! Former::select('payment_terms')->addOption('','')
 				->fromQuery($paymentTerms, 'name', 'num_days')

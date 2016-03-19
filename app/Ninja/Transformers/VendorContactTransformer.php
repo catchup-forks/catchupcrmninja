@@ -1,6 +1,6 @@
 <?php namespace App\Ninja\Transformers;
 
-use App\Models\Account;
+use App\Models\Organisation;
 use App\Models\VendorContact;
 use League\Fractal;
 // vendor
@@ -17,7 +17,7 @@ class VendorContactTransformer extends EntityTransformer
             'archived_at' => $this->getTimestamp($contact->deleted_at),
             'is_primary' => (bool) $contact->is_primary,
             'phone' => $contact->phone,
-            'account_key' => $this->account->account_key,
+            'account_key' => $this->organisation->account_key,
         ];
     }
 }

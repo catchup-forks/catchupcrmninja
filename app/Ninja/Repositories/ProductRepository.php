@@ -17,7 +17,7 @@ class ProductRepository extends BaseRepository
                     $join->on('tax_rates.id', '=', 'products.default_tax_rate_id')
                          ->whereNull('tax_rates.deleted_at');
                 })
-                ->where('products.account_id', '=', $accountId)
+                ->where('products.organisation_id', '=', $accountId)
                 ->where('products.deleted_at', '=', null)
                 ->select(
                     'products.public_id',

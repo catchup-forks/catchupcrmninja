@@ -12,7 +12,7 @@ class AddEmailTemplates extends Migration {
 	 */
 	public function up()
 	{
-        Schema::table('accounts', function($table)
+        Schema::table('organisations', function($table)
         {
             $table->text('email_template_invoice')->nullable();
             $table->text('email_template_quote')->nullable();
@@ -27,7 +27,7 @@ class AddEmailTemplates extends Migration {
 	 */
 	public function down()
 	{
-        Schema::table('accounts', function($table)
+        Schema::table('organisations', function($table)
         {
             $table->dropColumn('email_template_invoice');
             $table->dropColumn('email_template_quote');

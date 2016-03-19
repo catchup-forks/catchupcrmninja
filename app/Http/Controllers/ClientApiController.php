@@ -67,7 +67,7 @@ class ClientApiController extends BaseAPIController
 
         $clients = $clients->paginate();
 
-        $transformer = new ClientTransformer(Auth::user()->account, Input::get('serializer'));
+        $transformer = new ClientTransformer(Auth::user()->organisation, Input::get('serializer'));
         $paginator = Client::scope()->withTrashed()->paginate();
 
         $data = $this->createCollection($clients, $transformer, ENTITY_CLIENT, $paginator);
@@ -104,7 +104,7 @@ class ClientApiController extends BaseAPIController
             ->with('country', 'contacts', 'industry', 'size', 'currency')
             ->first();
 
-        $transformer = new ClientTransformer(Auth::user()->account, Input::get('serializer'));
+        $transformer = new ClientTransformer(Auth::user()->organisation, Input::get('serializer'));
         $data = $this->createItem($client, $transformer, ENTITY_CLIENT);
 
         return $this->response($data);
@@ -144,7 +144,7 @@ class ClientApiController extends BaseAPIController
 
             $this->clientRepo->archive($client);
 
-            $transformer = new ClientTransformer(Auth::user()->account, Input::get('serializer'));
+            $transformer = new ClientTransformer(Auth::user()->organisation, Input::get('serializer'));
             $data = $this->createItem($client, $transformer, ENTITY_CLIENT);
 
             return $this->response($data);
@@ -158,7 +158,7 @@ class ClientApiController extends BaseAPIController
 
             $this->clientRepo->restore($client);
 
-            $transformer = new ClientTransformer(Auth::user()->account, Input::get('serializer'));
+            $transformer = new ClientTransformer(Auth::user()->organisation, Input::get('serializer'));
             $data = $this->createItem($client, $transformer, ENTITY_CLIENT);
 
             return $this->response($data);
@@ -175,7 +175,7 @@ class ClientApiController extends BaseAPIController
         if(!$client)
             return $this->errorResponse(['message'=>'Client not found.'],400);
 
-        $transformer = new ClientTransformer(Auth::user()->account, Input::get('serializer'));
+        $transformer = new ClientTransformer(Auth::user()->organisation, Input::get('serializer'));
         $data = $this->createItem($client, $transformer, ENTITY_CLIENT);
 
         return $this->response($data);
@@ -215,7 +215,7 @@ class ClientApiController extends BaseAPIController
             ->withTrashed()
             ->first();
 
-        $transformer = new ClientTransformer(Auth::user()->account, Input::get('serializer'));
+        $transformer = new ClientTransformer(Auth::user()->organisation, Input::get('serializer'));
         $data = $this->createItem($client, $transformer, ENTITY_CLIENT);
 
         return $this->response($data);

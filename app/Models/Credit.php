@@ -12,9 +12,9 @@ class Credit extends EntityModel
     protected $dates = ['deleted_at'];
     protected $presenter = 'App\Ninja\Presenters\CreditPresenter';
 
-    public function account()
+    public function organisation()
     {
-        return $this->belongsTo('App\Models\Account');
+        return $this->belongsTo('App\Models\Organisation');
     }
 
     public function user()

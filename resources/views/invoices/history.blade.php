@@ -4,7 +4,7 @@
     @parent
 
     @include('money_script')
-@foreach (Auth::user()->account->getFontFolders() as $font)
+@foreach (Auth::user()->organisation->getFontFolders() as $font)
   <script src="{{ asset('js/vfs_fonts/'.$font.'.js') }}" type="text/javascript"></script>
 @endforeach
   <script src="{{ asset('pdf.built.js') }}" type="text/javascript"></script>
@@ -55,6 +55,6 @@
 
     <br/>&nbsp;<br/>
 
-    @include('invoices.pdf', ['account' => Auth::user()->account, 'pdfHeight' => 800])
+    @include('invoices.pdf', ['organisation' => Auth::user()->organisation, 'pdfHeight' => 800])
 
 @stop

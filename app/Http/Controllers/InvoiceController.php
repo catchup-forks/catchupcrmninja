@@ -15,7 +15,7 @@ use Request;
 use DropdownButton;
 use App\Models\Invoice;
 use App\Models\Client;
-use App\Models\Account;
+use App\Models\Organisation;
 use App\Models\Product;
 use App\Models\TaxRate;
 use App\Models\InvoiceDesign;
@@ -71,7 +71,7 @@ class InvoiceController extends BaseController
 
     public function getDatatable($clientPublicId = null)
     {
-        $accountId = Auth::user()->account_id;
+        $accountId = Auth::user()->organisation_id;
         $search = Input::get('sSearch');
 
         return $this->invoiceService->getDatatable($accountId, $clientPublicId, ENTITY_INVOICE, $search);
@@ -79,7 +79,7 @@ class InvoiceController extends BaseController
 
     public function getRecurringDatatable($clientPublicId = null)
     {
-        $accountId = Auth::user()->account_id;
+        $accountId = Auth::user()->organisation_id;
         $search = Input::get('sSearch');
 
         return $this->recurringInvoiceService->getDatatable($accountId, $clientPublicId, ENTITY_RECURRING_INVOICE, $search);
@@ -87,9 +87,9 @@ class InvoiceController extends BaseController
 
     public function edit($publicId, $clone = false)
     {
-        $account = Auth::user()->account;
+        $organisation = Auth::user()->organisation;
         $invoice = Invoice::scope($publicId)
-                        ->with('invitations', 'account.country', 'client.contacts', 'client.country', 'invoice_items')
+                        ->with('invitations', 'organisation.country', 'client.contacts', 'client.country', 'invoice_items')
                         ->withTrashed()
                         ->firstOrFail();
         
@@ -102,7 +102,7 @@ class InvoiceController extends BaseController
         $contactIds = DB::table('invitations')
             ->join('contacts', 'contacts.id', '=', 'invitations.contact_id')
             ->where('invitations.invoice_id', '=', $invoice->id)
-            ->where('invitations.account_id', '=', Auth::user()->account_id)
+            ->where('invitations.organisation_id', '=', Auth::user()->organisation_id)
             ->where('invitations.deleted_at', '=', null)
             ->select('contacts.public_id')->lists('public_id');
 
@@ -110,7 +110,7 @@ class InvoiceController extends BaseController
 
         if ($clone) {
             $invoice->id = $invoice->public_id = null;
-            $invoice->invoice_number = $account->getNextInvoiceNumber($invoice);
+            $invoice->invoice_number = $organisation->getNextInvoiceNumber($invoice);
             $invoice->balance = $invoice->amount;
             $invoice->invoice_status_id = 0;
             $invoice->invoice_date = date_create()->format('Y-m-d');
@@ -221,7 +221,7 @@ class InvoiceController extends BaseController
             return $response;
         }
         
-       $account = Auth::user()->account;
+       $organisation = Auth::user()->organisation;
         $entityType = $isRecurring ? ENTITY_RECURRING_INVOICE : ENTITY_INVOICE;
         $clientId = null;
 
@@ -229,7 +229,7 @@ class InvoiceController extends BaseController
             $clientId = Client::getPrivateId($clientPublicId);
         }
 
-        $invoice = $account->createInvoice($entityType, $clientId);
+        $invoice = $organisation->createInvoice($entityType, $clientId);
         $invoice->public_id = 0;
 
         $clients = Client::scope()->with('contacts', 'country')->orderBy('name');
@@ -318,7 +318,7 @@ class InvoiceController extends BaseController
 
         return [
             'data' => Input::old('data'),
-            'account' => Auth::user()->account->load('country'),
+            'organisation' => Auth::user()->organisation->load('country'),
             'products' => Product::scope()->with('default_tax_rate')->orderBy('product_key')->get(),
             'taxRates' => TaxRate::scope()->orderBy('name')->get(),
             'currencies' => Cache::get('currencies'),
@@ -340,7 +340,7 @@ class InvoiceController extends BaseController
             'recurringDueDates' => $recurringDueDates,
             'recurringHelp' => $recurringHelp,
             'recurringDueDateHelp' => $recurringDueDateHelp,
-            'invoiceLabels' => Auth::user()->account->getInvoiceLabels(),
+            'invoiceLabels' => Auth::user()->organisation->getInvoiceLabels(),
             'tasks' => Session::get('tasks') ? json_encode(Session::get('tasks')) : null,
             'expenses' => Session::get('expenses') ? json_encode(Session::get('expenses')) : null,
             'expenseCurrencyId' => Session::get('expenseCurrencyId') ?: null,
@@ -452,8 +452,8 @@ class InvoiceController extends BaseController
     {
         if (!$invoice->shouldSendToday()) {
             if ($date = $invoice->getNextSendDate()) {
-                $date = $invoice->account->formatDate($date);
-                $date .= ' ' . DEFAULT_SEND_RECURRING_HOUR . ':00 am ' . $invoice->account->getTimezone();
+                $date = $invoice->organisation->formatDate($date);
+                $date .= ' ' . DEFAULT_SEND_RECURRING_HOUR . ':00 am ' . $invoice->organisation->getTimezone();
                 return trans('texts.recurring_too_soon', ['date' => $date]);
             } else {
                 return trans('texts.no_longer_running');
@@ -526,14 +526,14 @@ class InvoiceController extends BaseController
     public function invoiceHistory($publicId)
     {
         $invoice = Invoice::withTrashed()->scope($publicId)->firstOrFail();
-        $invoice->load('user', 'invoice_items', 'account.country', 'client.contacts', 'client.country');
+        $invoice->load('user', 'invoice_items', 'organisation.country', 'client.contacts', 'client.country');
         $invoice->invoice_date = Utils::fromSqlDate($invoice->invoice_date);
         $invoice->due_date = Utils::fromSqlDate($invoice->due_date);
         $invoice->is_pro = Auth::user()->isPro();
         $invoice->is_quote = intval($invoice->is_quote);
 
         $activityTypeId = $invoice->is_quote ? ACTIVITY_TYPE_UPDATE_QUOTE : ACTIVITY_TYPE_UPDATE_INVOICE;
-        $activities = Activity::scope(false, $invoice->account_id)
+        $activities = Activity::scope(false, $invoice->organisation_id)
                         ->where('activity_type_id', '=', $activityTypeId)
                         ->where('invoice_id', '=', $invoice->id)
                         ->orderBy('id', 'desc')
@@ -549,7 +549,7 @@ class InvoiceController extends BaseController
             $backup->due_date = Utils::fromSqlDate($backup->due_date);
             $backup->is_pro = Auth::user()->isPro();
             $backup->is_quote = isset($backup->is_quote) && intval($backup->is_quote);
-            $backup->account = $invoice->account->toArray();
+            $backup->organisation = $invoice->organisation->toArray();
 
             $versionsJson[$activity->id] = $backup;
             $key = Utils::timestampToDateTimeString(strtotime($activity->created_at)) . ' - ' . $activity->user->getDisplayName();

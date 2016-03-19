@@ -18,21 +18,21 @@ class PaymentRepository extends BaseRepository
     public function find($clientPublicId = null, $filter = null)
     {
         $query = DB::table('payments')
-                    ->join('accounts', 'accounts.id', '=', 'payments.account_id')
+                    ->join('organisations', 'organisations.id', '=', 'payments.organisation_id')
                     ->join('clients', 'clients.id', '=', 'payments.client_id')
                     ->join('invoices', 'invoices.id', '=', 'payments.invoice_id')
                     ->join('contacts', 'contacts.client_id', '=', 'clients.id')
                     ->leftJoin('payment_types', 'payment_types.id', '=', 'payments.payment_type_id')
                     ->leftJoin('account_gateways', 'account_gateways.id', '=', 'payments.account_gateway_id')
                     ->leftJoin('gateways', 'gateways.id', '=', 'account_gateways.gateway_id')
-                    ->where('payments.account_id', '=', \Auth::user()->account_id)
+                    ->where('payments.organisation_id', '=', \Auth::user()->organisation_id)
                     ->where('clients.deleted_at', '=', null)
                     ->where('contacts.is_primary', '=', true)
                     ->where('contacts.deleted_at', '=', null)
                     ->where('invoices.is_deleted', '=', false)
                     ->select('payments.public_id',
-                        DB::raw('COALESCE(clients.currency_id, accounts.currency_id) currency_id'),
-                        DB::raw('COALESCE(clients.country_id, accounts.country_id) country_id'),
+                        DB::raw('COALESCE(clients.currency_id, organisations.currency_id) currency_id'),
+                        DB::raw('COALESCE(clients.country_id, organisations.country_id) country_id'),
                         'payments.transaction_reference',
                         'clients.name as client_name',
                         'clients.public_id as client_public_id',
@@ -74,7 +74,7 @@ class PaymentRepository extends BaseRepository
     public function findForContact($contactId = null, $filter = null)
     {
         $query = DB::table('payments')
-                    ->join('accounts', 'accounts.id', '=', 'payments.account_id')
+                    ->join('organisations', 'organisations.id', '=', 'payments.organisation_id')
                     ->join('clients', 'clients.id', '=', 'payments.client_id')
                     ->join('invoices', 'invoices.id', '=', 'payments.invoice_id')
                     ->join('contacts', 'contacts.client_id', '=', 'clients.id')
@@ -89,8 +89,8 @@ class PaymentRepository extends BaseRepository
                     ->where('invoices.deleted_at', '=', null)
                     ->where('invitations.contact_id', '=', $contactId)
                     ->select(
-                        DB::raw('COALESCE(clients.currency_id, accounts.currency_id) currency_id'),
-                        DB::raw('COALESCE(clients.country_id, accounts.country_id) country_id'),
+                        DB::raw('COALESCE(clients.currency_id, organisations.currency_id) currency_id'),
+                        DB::raw('COALESCE(clients.country_id, organisations.country_id) country_id'),
                         'invitations.invitation_key',
                         'payments.public_id',
                         'payments.transaction_reference',

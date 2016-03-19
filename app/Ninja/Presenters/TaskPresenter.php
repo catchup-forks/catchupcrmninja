@@ -15,7 +15,7 @@ class TaskPresenter extends Presenter {
         return $this->entity->user->getDisplayName();
     }
 
-    public function times($account)
+    public function times($organisation)
     {
         $parts = json_decode($this->entity->time_log) ?: [];
         $times = [];
@@ -28,8 +28,8 @@ class TaskPresenter extends Presenter {
                 $end = $part[1];
             }
 
-            $start = $account->formatDateTime("@{$start}");
-            $end = $account->formatTime("@{$end}");
+            $start = $organisation->formatDateTime("@{$start}");
+            $end = $organisation->formatTime("@{$end}");
 
             $times[] = "### {$start} - {$end}";
         }

@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Events\UserLoggedIn;
 use App\Http\Controllers\Controller;
-use App\Ninja\Repositories\AccountRepository;
+use App\Ninja\Repositories\OrganisationRepository;
 use App\Services\AuthService;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 
@@ -38,7 +38,7 @@ class AuthController extends Controller {
 	 * @param  \Illuminate\Contracts\Auth\Registrar  $registrar
 	 * @return void
 	 */
-	public function __construct(AccountRepository $repo, AuthService $authService)
+	public function __construct(OrganisationRepository $repo, AuthService $authService)
 	{
         $this->accountRepo = $repo;
         $this->authService = $authService;
@@ -80,7 +80,7 @@ class AuthController extends Controller {
         $this->accountRepo->unlinkUserFromOauth(Auth::user());
 
         Session::flash('message', trans('texts.updated_settings'));
-        return redirect()->to('/settings/' . ACCOUNT_USER_DETAILS);
+        return redirect()->to('/settings/' . ORGANISATION_USER_DETAILS);
     }
 
     public function getLoginWrapper()
@@ -103,21 +103,22 @@ class AuthController extends Controller {
             return redirect()->to('login');
         }
 
+
         $response = self::postLogin($request);
 
         if (Auth::check()) {
             Event::fire(new UserLoggedIn());
 
             $users = false;
-            // we're linking a new account
+            // we're linking a new organisation
             if ($request->link_accounts && $userId && Auth::user()->id != $userId) {
                 $users = $this->accountRepo->associateAccounts($userId, Auth::user()->id);
                 Session::flash('message', trans('texts.associated_accounts'));
-            // check if other accounts are linked
+            // check if other organisations are linked
             } else {
                 $users = $this->accountRepo->loadAccounts(Auth::user()->id);
             }
-            Session::put(SESSION_USER_ACCOUNTS, $users);
+            Session::put(SESSION_USER_ORGANISATIONS, $users);
 
         } elseif ($user) {
             $user->failed_logins = $user->failed_logins + 1;
@@ -131,9 +132,9 @@ class AuthController extends Controller {
     public function getLogoutWrapper()
     {
         if (Auth::check() && !Auth::user()->registered) {
-            $account = Auth::user()->account;
-            $this->accountRepo->unlinkAccount($account);
-            $account->forceDelete();
+            $organisation = Auth::user()->organisation;
+            $this->accountRepo->unlinkAccount($organisation);
+            $organisation->forceDelete();
         }
 
         $response = self::getLogout();

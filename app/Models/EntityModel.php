@@ -16,16 +16,16 @@ class EntityModel extends Eloquent
 
         if ($context) {
             $entity->user_id = $context instanceof User ? $context->id : $context->user_id;
-            $entity->account_id = $context->account_id;
+            $entity->organisation_id = $context->organisation_id;
         } elseif (Auth::check()) {
             $entity->user_id = Auth::user()->id;
-            $entity->account_id = Auth::user()->account_id;
+            $entity->organisation_id = Auth::user()->organisation_id;
         } else {
             Utils::fatalError();
         }
 
         $lastEntity = $className::withTrashed()
-                        ->scope(false, $entity->account_id)
+                        ->scope(false, $entity->organisation_id)
                         ->orderBy('public_id', 'DESC')
                         ->first();
 
@@ -65,10 +65,10 @@ class EntityModel extends Eloquent
     public function scopeScope($query, $publicId = false, $accountId = false)
     {
         if (!$accountId) {
-            $accountId = Auth::user()->account_id;
+            $accountId = Auth::user()->organisation_id;
         }
 
-        $query->where($this->getTable() .'.account_id', '=', $accountId);
+        $query->where($this->getTable() .'.organisation_id', '=', $accountId);
 
         if ($publicId) {
             if (is_array($publicId)) {

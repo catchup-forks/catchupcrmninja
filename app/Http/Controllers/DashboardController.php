@@ -18,11 +18,11 @@ class DashboardController extends BaseController
         $select = DB::raw('COUNT(DISTINCT CASE WHEN invoices.id IS NOT NULL THEN clients.id ELSE null END) billed_clients,
                         SUM(CASE WHEN invoices.invoice_status_id >= '.INVOICE_STATUS_SENT.' THEN 1 ELSE 0 END) invoices_sent,
                         COUNT(DISTINCT clients.id) active_clients');
-        $metrics = DB::table('accounts')
+        $metrics = DB::table('organisations')
             ->select($select)
-            ->leftJoin('clients', 'accounts.id', '=', 'clients.account_id')
+            ->leftJoin('clients', 'organisations.id', '=', 'clients.organisation_id')
             ->leftJoin('invoices', 'clients.id', '=', 'invoices.client_id')
-            ->where('accounts.id', '=', Auth::user()->account_id)
+            ->where('organisations.id', '=', Auth::user()->organisation_id)
             ->where('clients.is_deleted', '=', false)
             ->where('invoices.is_deleted', '=', false)
             ->where('invoices.is_recurring', '=', false)
@@ -38,30 +38,30 @@ class DashboardController extends BaseController
             });
         }
             
-        $metrics = $metrics->groupBy('accounts.id')
+        $metrics = $metrics->groupBy('organisations.id')
             ->first();
 
         $select = DB::raw('SUM(clients.paid_to_date) as value, clients.currency_id as currency_id');
-        $paidToDate = DB::table('accounts')
+        $paidToDate = DB::table('organisations')
             ->select($select)
-            ->leftJoin('clients', 'accounts.id', '=', 'clients.account_id')
-            ->where('accounts.id', '=', Auth::user()->account_id)
+            ->leftJoin('clients', 'organisations.id', '=', 'clients.organisation_id')
+            ->where('organisations.id', '=', Auth::user()->organisation_id)
             ->where('clients.is_deleted', '=', false);
             
         if(!$view_all){
             $paidToDate = $paidToDate->where('clients.user_id', '=', $user_id);
         }
         
-        $paidToDate = $paidToDate->groupBy('accounts.id')
-            ->groupBy(DB::raw('CASE WHEN clients.currency_id IS NULL THEN CASE WHEN accounts.currency_id IS NULL THEN 1 ELSE accounts.currency_id END ELSE clients.currency_id END'))
+        $paidToDate = $paidToDate->groupBy('organisations.id')
+            ->groupBy(DB::raw('CASE WHEN clients.currency_id IS NULL THEN CASE WHEN organisations.currency_id IS NULL THEN 1 ELSE organisations.currency_id END ELSE clients.currency_id END'))
             ->get();
 
         $select = DB::raw('AVG(invoices.amount) as invoice_avg, clients.currency_id as currency_id');
-        $averageInvoice = DB::table('accounts')
+        $averageInvoice = DB::table('organisations')
             ->select($select)
-            ->leftJoin('clients', 'accounts.id', '=', 'clients.account_id')
+            ->leftJoin('clients', 'organisations.id', '=', 'clients.organisation_id')
             ->leftJoin('invoices', 'clients.id', '=', 'invoices.client_id')
-            ->where('accounts.id', '=', Auth::user()->account_id)
+            ->where('organisations.id', '=', Auth::user()->organisation_id)
             ->where('clients.is_deleted', '=', false)
             ->where('invoices.is_deleted', '=', false)
             ->where('invoices.is_quote', '=', false)
@@ -71,21 +71,21 @@ class DashboardController extends BaseController
             $averageInvoice = $averageInvoice->where('invoices.user_id', '=', $user_id);
         }
         
-        $averageInvoice = $averageInvoice->groupBy('accounts.id')
-            ->groupBy(DB::raw('CASE WHEN clients.currency_id IS NULL THEN CASE WHEN accounts.currency_id IS NULL THEN 1 ELSE accounts.currency_id END ELSE clients.currency_id END'))
+        $averageInvoice = $averageInvoice->groupBy('organisations.id')
+            ->groupBy(DB::raw('CASE WHEN clients.currency_id IS NULL THEN CASE WHEN organisations.currency_id IS NULL THEN 1 ELSE organisations.currency_id END ELSE clients.currency_id END'))
             ->get();
 
         $select = DB::raw('SUM(clients.balance) as value, clients.currency_id as currency_id');
-        $balances = DB::table('accounts')
+        $balances = DB::table('organisations')
             ->select($select)
-            ->leftJoin('clients', 'accounts.id', '=', 'clients.account_id')
-            ->where('accounts.id', '=', Auth::user()->account_id)
+            ->leftJoin('clients', 'organisations.id', '=', 'clients.organisation_id')
+            ->where('organisations.id', '=', Auth::user()->organisation_id)
             ->where('clients.is_deleted', '=', false)
-            ->groupBy('accounts.id')
-            ->groupBy(DB::raw('CASE WHEN clients.currency_id IS NULL THEN CASE WHEN accounts.currency_id IS NULL THEN 1 ELSE accounts.currency_id END ELSE clients.currency_id END'))
+            ->groupBy('organisations.id')
+            ->groupBy(DB::raw('CASE WHEN clients.currency_id IS NULL THEN CASE WHEN organisations.currency_id IS NULL THEN 1 ELSE organisations.currency_id END ELSE clients.currency_id END'))
             ->get();
 
-        $activities = Activity::where('activities.account_id', '=', Auth::user()->account_id)
+        $activities = Activity::where('activities.organisation_id', '=', Auth::user()->organisation_id)
                 ->where('activities.activity_type_id', '>', 0);
         
         if(!$view_all){
@@ -93,14 +93,14 @@ class DashboardController extends BaseController
         }
                 
         $activities = $activities->orderBy('activities.created_at', 'desc')
-                ->with('client.contacts', 'user', 'invoice', 'payment', 'credit', 'account')
+                ->with('client.contacts', 'user', 'invoice', 'payment', 'credit', 'organisation')
                 ->take(50)
                 ->get();
 
         $pastDue = DB::table('invoices')
                     ->leftJoin('clients', 'clients.id', '=', 'invoices.client_id')
                     ->leftJoin('contacts', 'contacts.client_id', '=', 'clients.id')
-                    ->where('invoices.account_id', '=', Auth::user()->account_id)
+                    ->where('invoices.organisation_id', '=', Auth::user()->organisation_id)
                     ->where('clients.deleted_at', '=', null)
                     ->where('contacts.deleted_at', '=', null)
                     ->where('invoices.is_recurring', '=', false)
@@ -123,7 +123,7 @@ class DashboardController extends BaseController
         $upcoming = DB::table('invoices')
                     ->leftJoin('clients', 'clients.id', '=', 'invoices.client_id')
                     ->leftJoin('contacts', 'contacts.client_id', '=', 'clients.id')
-                    ->where('invoices.account_id', '=', Auth::user()->account_id)
+                    ->where('invoices.organisation_id', '=', Auth::user()->organisation_id)
                     ->where('clients.deleted_at', '=', null)
                     ->where('contacts.deleted_at', '=', null)
                     ->where('invoices.deleted_at', '=', null)
@@ -147,7 +147,7 @@ class DashboardController extends BaseController
                     ->leftJoin('clients', 'clients.id', '=', 'payments.client_id')
                     ->leftJoin('contacts', 'contacts.client_id', '=', 'clients.id')
                     ->leftJoin('invoices', 'invoices.id', '=', 'payments.invoice_id')
-                    ->where('payments.account_id', '=', Auth::user()->account_id)
+                    ->where('payments.organisation_id', '=', Auth::user()->organisation_id)
                     ->where('payments.is_deleted', '=', false)
                     ->where('invoices.is_deleted', '=', false)
                     ->where('clients.is_deleted', '=', false)
@@ -173,7 +173,7 @@ class DashboardController extends BaseController
         }
 
         $data = [
-            'account' => Auth::user()->account,
+            'organisation' => Auth::user()->organisation,
             'paidToDate' => $paidToDate,
             'balances' => $balances,
             'averageInvoice' => $averageInvoice,

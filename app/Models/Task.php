@@ -12,9 +12,9 @@ class Task extends EntityModel
 
     protected $presenter = 'App\Ninja\Presenters\TaskPresenter';
 
-    public function account()
+    public function organisation()
     {
-        return $this->belongsTo('App\Models\Account');
+        return $this->belongsTo('App\Models\Organisation');
     }
 
     public function invoice()

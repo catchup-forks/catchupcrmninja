@@ -5,7 +5,7 @@ use Auth;
 use Session;
 use App\Models\Invitation;
 use App\Models\Contact;
-use App\Models\Account;
+use App\Models\Organisation;
 
 class Authenticate {
 	/**
@@ -33,16 +33,16 @@ class Authenticate {
 		
 		if($guard=='client'){
 			$invitation_key = session('invitation_key');
-			$account_id = $this->getInvitationAccountId($invitation_key);
+			$organisation_id = $this->getInvitationAccountId($invitation_key);
 			
-			if(Auth::guard('user')->check() && Auth::user('user')->account_id === $account_id){
+			if(Auth::guard('user')->check() && Auth::user('user')->organisation_id === $organisation_id){
 				// This is an admin; let them pretend to be a client
 				$authenticated = true;
 			}
 			
-			// Does this account require portal passwords?
-			$account = Account::whereId($account_id)->first();
-			if(!$account->enable_portal_password || !$account->isPro()){
+			// Does this organisation require portal passwords?
+			$organisation = Organisation::whereId($organisation_id)->first();
+			if(!$organisation->enable_portal_password || !$organisation->isPro()){
 				$authenticated = true;
 			}
 			
@@ -86,6 +86,6 @@ class Authenticate {
 	protected function getInvitationAccountId($key){
 		$invitation = $this->getInvitation($key);
 		
-		return $invitation?$invitation->account_id:null;
+		return $invitation?$invitation->organisation_id:null;
 	}
 }

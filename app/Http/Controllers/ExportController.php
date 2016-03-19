@@ -42,10 +42,10 @@ class ExportController extends BaseController
         $manager = new Manager();
         $manager->setSerializer(new ArraySerializer());
 
-        $account = Auth::user()->account;
-        $account->loadAllData();
+        $organisation = Auth::user()->organisation;
+        $organisation->loadAllData();
 
-        $resource = new Item($account, new AccountTransformer);
+        $resource = new Item($organisation, new AccountTransformer);
         $data = $manager->createData($resource)->toArray();
 
         return response()->json($data);
@@ -78,10 +78,10 @@ class ExportController extends BaseController
                   ->setKeywords('')
                   ->setCategory('')
                   ->setManager('')
-                  ->setCompany($user->account->getDisplayName());
+                  ->setCompany($user->organisation->getDisplayName());
 
             foreach ($data as $key => $val) {
-                if ($key === 'account' || $key === 'title' || $key === 'multiUser') {
+                if ($key === 'organisation' || $key === 'title' || $key === 'multiUser') {
                     continue;
                 }
                 $label = trans("texts.{$key}");
@@ -100,12 +100,12 @@ class ExportController extends BaseController
 
     private function getData($request)
     {
-        $account = Auth::user()->account;
+        $organisation = Auth::user()->organisation;
 
         $data = [
-            'account' => $account,
-            'title' => 'Invoice Ninja v' . NINJA_VERSION . ' - ' . $account->formatDateTime($account->getDateTime()),
-            'multiUser' => $account->users->count() > 1
+            'organisation' => $organisation,
+            'title' => 'Invoice Ninja v' . NINJA_VERSION . ' - ' . $organisation->formatDateTime($organisation->getDateTime()),
+            'multiUser' => $organisation->users->count() > 1
         ];
         
         if ($request->input(ENTITY_CLIENT)) {

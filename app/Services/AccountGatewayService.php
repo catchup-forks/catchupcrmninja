@@ -3,22 +3,22 @@
 use URL;
 use App\Models\Gateway;
 use App\Services\BaseService;
-use App\Ninja\Repositories\AccountGatewayRepository;
+use App\Ninja\Repositories\OrganisationGatewayRepository;
 
-class AccountGatewayService extends BaseService
+class OrganisationGatewayService extends BaseService
 {
-    protected $accountGatewayRepo;
+    protected $OrganisationGatewayRepo;
     protected $datatableService;
 
-    public function __construct(AccountGatewayRepository $accountGatewayRepo, DatatableService $datatableService)
+    public function __construct(OrganisationGatewayRepository $OrganisationGatewayRepo, DatatableService $datatableService)
     {
-        $this->accountGatewayRepo = $accountGatewayRepo;
+        $this->OrganisationGatewayRepo = $OrganisationGatewayRepo;
         $this->datatableService = $datatableService;
     }
 
     protected function getRepo()
     {
-        return $this->accountGatewayRepo;
+        return $this->OrganisationGatewayRepo;
     }
 
     /*
@@ -30,9 +30,9 @@ class AccountGatewayService extends BaseService
 
     public function getDatatable($accountId)
     {
-        $query = $this->accountGatewayRepo->find($accountId);
+        $query = $this->OrganisationGatewayRepo->find($accountId);
 
-        return $this->createDatatable(ENTITY_ACCOUNT_GATEWAY, $query, false);
+        return $this->createDatatable(ENTITY_ORGANISATION_GATEWAY, $query, false);
     }
 
     protected function getDatatableColumns($entityType, $hideClient)

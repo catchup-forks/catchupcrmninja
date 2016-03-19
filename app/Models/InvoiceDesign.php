@@ -11,7 +11,7 @@ class InvoiceDesign extends Eloquent
 
     public static function getDesigns()
     {
-        $account = Auth::user()->account;
+        $organisation = Auth::user()->organisation;
         $designs = Cache::get('invoiceDesigns');
 
         foreach ($designs as $design) {
@@ -23,8 +23,8 @@ class InvoiceDesign extends Eloquent
             $design->pdfmake = null;
 
             if ($design->id == CUSTOM_DESIGN) {
-                if ($account->custom_design) {
-                    $design->javascript = $account->custom_design;
+                if ($organisation->custom_design) {
+                    $design->javascript = $organisation->custom_design;
                 } else {
                     $designs->pop();
                 }

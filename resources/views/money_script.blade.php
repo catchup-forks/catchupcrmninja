@@ -16,11 +16,11 @@
 
     var NINJA = NINJA || {};
     @if (Auth::check())
-    NINJA.primaryColor = "{{ Auth::user()->account->primary_color }}";
-    NINJA.secondaryColor = "{{ Auth::user()->account->secondary_color }}";
-    NINJA.fontSize = {{ Auth::user()->account->font_size ?: DEFAULT_FONT_SIZE }};
-    NINJA.headerFont = {!! json_encode(Auth::user()->account->getHeaderFontName()) !!};
-    NINJA.bodyFont = {!! json_encode(Auth::user()->account->getBodyFontName()) !!};
+    NINJA.primaryColor = "{{ Auth::user()->organisation->primary_color }}";
+    NINJA.secondaryColor = "{{ Auth::user()->organisation->secondary_color }}";
+    NINJA.fontSize = {{ Auth::user()->organisation->font_size ?: DEFAULT_FONT_SIZE }};
+    NINJA.headerFont = {!! json_encode(Auth::user()->organisation->getHeaderFontName()) !!};
+    NINJA.bodyFont = {!! json_encode(Auth::user()->organisation->getBodyFontName()) !!};
     @else
     NINJA.fontSize = {{ DEFAULT_FONT_SIZE }};
     @endif
@@ -33,26 +33,26 @@
     }
 
     function formatMoneyInvoice(value, invoice, hideSymbol) {
-        var account = invoice.account;
+        var organisation = invoice.organisation;
         var client = invoice.client;
 
-        return formatMoneyAccount(value, account, client, hideSymbol);
+        return formatMoneyAccount(value, organisation, client, hideSymbol);
     }
 
-    function formatMoneyAccount(value, account, client, hideSymbol) {
+    function formatMoneyAccount(value, organisation, client, hideSymbol) {
         var currencyId = false;
         var countryId = false;
 
         if (client && client.currency_id) {
             currencyId = client.currency_id;
-        } else if (account && account.currency_id) {
-            currencyId = account.currency_id;
+        } else if (organisation && organisation.currency_id) {
+            currencyId = organisation.currency_id;
         }
 
         if (client && client.country_id) {
             countryId = client.country_id;
-        } else if (account && account.country_id) {
-            countryId = account.country_id;
+        } else if (organisation && organisation.country_id) {
+            countryId = organisation.country_id;
         }
 
         return formatMoney(value, currencyId, countryId, hideSymbol)

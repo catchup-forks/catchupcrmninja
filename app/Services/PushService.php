@@ -11,7 +11,7 @@ use App\Ninja\Notifications\PushFactory;
 
 
 /**
- * $account->devices Definition
+ * $organisation->devices Definition
  *
  * @param string token (push notification device token)
  * @param string email (user email address - required for use as key)
@@ -42,11 +42,11 @@ class PushService
     public function sendNotification($invoice, $type)
     {
         //check user has registered for push notifications
-        if(!$this->checkDeviceExists($invoice->account))
+        if(!$this->checkDeviceExists($invoice->organisation))
             return;
 
         //Harvest an array of devices that are registered for this notification type
-        $devices = json_decode($invoice->account->devices, TRUE);
+        $devices = json_decode($invoice->organisation->devices, TRUE);
 
         foreach($devices as $device)
         {
@@ -76,14 +76,14 @@ class PushService
     /**
      * checkDeviceExists function
      *
-     * Returns a boolean if this account has devices registered for PUSH notifications
+     * Returns a boolean if this organisation has devices registered for PUSH notifications
      *
-     * @param $account
+     * @param $organisation
      * @return bool
      */
-    private function checkDeviceExists($account)
+    private function checkDeviceExists($organisation)
     {
-        $devices = json_decode($account->devices, TRUE);
+        $devices = json_decode($organisation->devices, TRUE);
 
         if(count($devices) >= 1)
             return TRUE;

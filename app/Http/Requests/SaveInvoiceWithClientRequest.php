@@ -30,7 +30,7 @@ class SaveInvoiceWithClientRequest extends Request
         $rules = [
             'client.contacts' => 'valid_contacts',
             'invoice_items' => 'valid_invoice_items',
-            'invoice_number' => 'required|unique:invoices,invoice_number,'.$invoiceId.',id,account_id,'.Auth::user()->account_id,
+            'invoice_number' => 'required|unique:invoices,invoice_number,'.$invoiceId.',id,organisation_id,'.Auth::user()->organisation_id,
             'discount' => 'positive',
         ];
 

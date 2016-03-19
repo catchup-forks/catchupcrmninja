@@ -25,7 +25,7 @@ class ConfideSetupUsersTable extends Migration {
         Schema::dropIfExists('password_reminders');
         Schema::dropIfExists('clients');
         Schema::dropIfExists('users');
-        Schema::dropIfExists('accounts');
+        Schema::dropIfExists('organisations');
         Schema::dropIfExists('currencies');        
         Schema::dropIfExists('invoice_statuses');
         Schema::dropIfExists('countries');
@@ -121,7 +121,7 @@ class ConfideSetupUsersTable extends Migration {
             $t->string('name');
         });        
         
-        Schema::create('accounts', function($t)
+        Schema::create('organisations', function($t)
         {
             $t->increments('id');
             $t->unsignedInteger('timezone_id')->nullable();
@@ -173,7 +173,7 @@ class ConfideSetupUsersTable extends Migration {
         Schema::create('users', function($t)
         {
             $t->increments('id');
-            $t->unsignedInteger('account_id')->index();
+            $t->unsignedInteger('organisation_id')->index();
             $t->timestamps();
             $t->softDeletes();
 
@@ -192,16 +192,16 @@ class ConfideSetupUsersTable extends Migration {
             $t->boolean('notify_viewed')->default(false);
             $t->boolean('notify_paid')->default(true);
 
-            $t->foreign('account_id')->references('id')->on('accounts')->onDelete('cascade');
+            $t->foreign('organisation_id')->references('id')->on('organisations')->onDelete('cascade');
 
             $t->unsignedInteger('public_id')->nullable();
-            $t->unique( array('account_id','public_id') );
+            $t->unique( array('organisation_id','public_id') );
         });
 
         Schema::create('account_gateways', function($t)
         {
             $t->increments('id');
-            $t->unsignedInteger('account_id');
+            $t->unsignedInteger('organisation_id');
             $t->unsignedInteger('user_id');
             $t->unsignedInteger('gateway_id');
             $t->timestamps();
@@ -209,12 +209,12 @@ class ConfideSetupUsersTable extends Migration {
             
             $t->text('config');
 
-            $t->foreign('account_id')->references('id')->on('accounts')->onDelete('cascade');
+            $t->foreign('organisation_id')->references('id')->on('organisations')->onDelete('cascade');
             $t->foreign('gateway_id')->references('id')->on('gateways');
             $t->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             
             $t->unsignedInteger('public_id')->index();
-            $t->unique( array('account_id','public_id') );
+            $t->unique( array('organisation_id','public_id') );
         }); 
 
 
@@ -230,7 +230,7 @@ class ConfideSetupUsersTable extends Migration {
         {
             $t->increments('id');
             $t->unsignedInteger('user_id');
-            $t->unsignedInteger('account_id')->index();            
+            $t->unsignedInteger('organisation_id')->index();
             $t->unsignedInteger('currency_id')->nullable();
             $t->timestamps();
             $t->softDeletes();
@@ -253,7 +253,7 @@ class ConfideSetupUsersTable extends Migration {
             $t->boolean('is_deleted')->default(false);
             $t->integer('payment_terms')->nullable();
 
-            $t->foreign('account_id')->references('id')->on('accounts')->onDelete('cascade');
+            $t->foreign('organisation_id')->references('id')->on('organisations')->onDelete('cascade');
             $t->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $t->foreign('country_id')->references('id')->on('countries');       
             $t->foreign('industry_id')->references('id')->on('industries');       
@@ -261,13 +261,13 @@ class ConfideSetupUsersTable extends Migration {
             $t->foreign('currency_id')->references('id')->on('currencies');
             
             $t->unsignedInteger('public_id')->index();
-            $t->unique( array('account_id','public_id') );
+            $t->unique( array('organisation_id','public_id') );
         });     
 
         Schema::create('contacts', function($t)
         {
             $t->increments('id');
-            $t->unsignedInteger('account_id');
+            $t->unsignedInteger('organisation_id');
             $t->unsignedInteger('user_id');
             $t->unsignedInteger('client_id')->index();
             $t->timestamps();
@@ -285,7 +285,7 @@ class ConfideSetupUsersTable extends Migration {
             $t->foreign('user_id')->references('id')->on('users')->onDelete('cascade');;
 
             $t->unsignedInteger('public_id')->nullable();
-            $t->unique( array('account_id','public_id') );
+            $t->unique( array('organisation_id','public_id') );
         });     
 
         Schema::create('invoice_statuses', function($t)
@@ -305,7 +305,7 @@ class ConfideSetupUsersTable extends Migration {
             $t->increments('id');
             $t->unsignedInteger('client_id')->index();
             $t->unsignedInteger('user_id');
-            $t->unsignedInteger('account_id')->index();
+            $t->unsignedInteger('organisation_id')->index();
             $t->unsignedInteger('invoice_status_id')->default(1);
             $t->timestamps();
             $t->softDeletes();
@@ -332,21 +332,21 @@ class ConfideSetupUsersTable extends Migration {
             $t->decimal('balance', 13, 2);
         
             $t->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
-            $t->foreign('account_id')->references('id')->on('accounts')->onDelete('cascade'); 
+            $t->foreign('organisation_id')->references('id')->on('organisations')->onDelete('cascade');
             $t->foreign('user_id')->references('id')->on('users')->onDelete('cascade'); 
             $t->foreign('invoice_status_id')->references('id')->on('invoice_statuses');
             $t->foreign('recurring_invoice_id')->references('id')->on('invoices')->onDelete('cascade');
 
             $t->unsignedInteger('public_id')->index();
-            $t->unique( array('account_id','public_id') );
-            $t->unique( array('account_id','invoice_number') );
+            $t->unique( array('organisation_id','public_id') );
+            $t->unique( array('organisation_id','invoice_number') );
         });
 
 
         Schema::create('invitations', function($t)
         {
             $t->increments('id');
-            $t->unsignedInteger('account_id');
+            $t->unsignedInteger('organisation_id');
             $t->unsignedInteger('user_id');
             $t->unsignedInteger('contact_id');
             $t->unsignedInteger('invoice_id')->index();
@@ -363,13 +363,13 @@ class ConfideSetupUsersTable extends Migration {
             $t->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
 
             $t->unsignedInteger('public_id')->index();
-            $t->unique( array('account_id','public_id') );
+            $t->unique( array('organisation_id','public_id') );
         });
 
         Schema::create('tax_rates', function($t)
         {
             $t->increments('id');
-            $t->unsignedInteger('account_id')->index();
+            $t->unsignedInteger('organisation_id')->index();
             $t->unsignedInteger('user_id');
             $t->timestamps();
             $t->softDeletes();
@@ -377,17 +377,17 @@ class ConfideSetupUsersTable extends Migration {
             $t->string('name');
             $t->decimal('rate', 13, 2);
             
-            $t->foreign('account_id')->references('id')->on('accounts')->onDelete('cascade'); 
+            $t->foreign('organisation_id')->references('id')->on('organisations')->onDelete('cascade');
             $t->foreign('user_id')->references('id')->on('users')->onDelete('cascade');;
             
             $t->unsignedInteger('public_id');
-            $t->unique( array('account_id','public_id') );
+            $t->unique( array('organisation_id','public_id') );
         });
 
         Schema::create('products', function($t)
         {
             $t->increments('id');
-            $t->unsignedInteger('account_id')->index();
+            $t->unsignedInteger('organisation_id')->index();
             $t->unsignedInteger('user_id');
             $t->timestamps();
             $t->softDeletes();
@@ -397,18 +397,18 @@ class ConfideSetupUsersTable extends Migration {
             $t->decimal('cost', 13, 2);
             $t->decimal('qty', 13, 2)->nullable();
             
-            $t->foreign('account_id')->references('id')->on('accounts')->onDelete('cascade'); 
+            $t->foreign('organisation_id')->references('id')->on('organisations')->onDelete('cascade');
             $t->foreign('user_id')->references('id')->on('users')->onDelete('cascade');;
             
             $t->unsignedInteger('public_id');
-            $t->unique( array('account_id','public_id') );
+            $t->unique( array('organisation_id','public_id') );
         });
 
 
         Schema::create('invoice_items', function($t)
         {
             $t->increments('id');
-            $t->unsignedInteger('account_id');
+            $t->unsignedInteger('organisation_id');
             $t->unsignedInteger('user_id');
             $t->unsignedInteger('invoice_id')->index();
             $t->unsignedInteger('product_id')->nullable();
@@ -428,14 +428,14 @@ class ConfideSetupUsersTable extends Migration {
             $t->foreign('user_id')->references('id')->on('users')->onDelete('cascade');;
 
             $t->unsignedInteger('public_id');
-            $t->unique( array('account_id','public_id') );
+            $t->unique( array('organisation_id','public_id') );
         });
 
         Schema::create('payments', function($t)
         {
             $t->increments('id');
             $t->unsignedInteger('invoice_id')->index();
-            $t->unsignedInteger('account_id')->index();
+            $t->unsignedInteger('organisation_id')->index();
             $t->unsignedInteger('client_id')->index();
             $t->unsignedInteger('contact_id')->nullable();
             $t->unsignedInteger('invitation_id')->nullable();
@@ -452,7 +452,7 @@ class ConfideSetupUsersTable extends Migration {
             $t->string('payer_id')->nullable();
 
             $t->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
-            $t->foreign('account_id')->references('id')->on('accounts')->onDelete('cascade');
+            $t->foreign('organisation_id')->references('id')->on('organisations')->onDelete('cascade');
             $t->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
             $t->foreign('contact_id')->references('id')->on('contacts')->onDelete('cascade');
             $t->foreign('account_gateway_id')->references('id')->on('account_gateways')->onDelete('cascade');
@@ -460,13 +460,13 @@ class ConfideSetupUsersTable extends Migration {
             $t->foreign('payment_type_id')->references('id')->on('payment_types');
             
             $t->unsignedInteger('public_id')->index();
-            $t->unique( array('account_id','public_id') );
+            $t->unique( array('organisation_id','public_id') );
         });     
 
         Schema::create('credits', function($t)
         {
             $t->increments('id');
-            $t->unsignedInteger('account_id')->index();
+            $t->unsignedInteger('organisation_id')->index();
             $t->unsignedInteger('client_id')->index();
             $t->unsignedInteger('user_id');
             $t->timestamps();
@@ -479,12 +479,12 @@ class ConfideSetupUsersTable extends Migration {
             $t->string('credit_number')->nullable();
             $t->text('private_notes');
             
-            $t->foreign('account_id')->references('id')->on('accounts')->onDelete('cascade');
+            $t->foreign('organisation_id')->references('id')->on('organisations')->onDelete('cascade');
             $t->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
             $t->foreign('user_id')->references('id')->on('users')->onDelete('cascade');;
             
             $t->unsignedInteger('public_id')->index();
-            $t->unique( array('account_id','public_id') );
+            $t->unique( array('organisation_id','public_id') );
         });     
 
         Schema::create('activities', function($t)
@@ -492,7 +492,7 @@ class ConfideSetupUsersTable extends Migration {
             $t->increments('id');
             $t->timestamps();
 
-            $t->unsignedInteger('account_id');
+            $t->unsignedInteger('organisation_id');
             $t->unsignedInteger('client_id');
             $t->unsignedInteger('user_id');
             $t->unsignedInteger('contact_id')->nullable();
@@ -507,7 +507,7 @@ class ConfideSetupUsersTable extends Migration {
             $t->decimal('adjustment', 13, 2)->nullable();
             $t->decimal('balance', 13, 2)->nullable();
             
-            $t->foreign('account_id')->references('id')->on('accounts')->onDelete('cascade');
+            $t->foreign('organisation_id')->references('id')->on('organisations')->onDelete('cascade');
             $t->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
         });
     }
@@ -534,7 +534,7 @@ class ConfideSetupUsersTable extends Migration {
         Schema::dropIfExists('password_reminders');
         Schema::dropIfExists('clients');
         Schema::dropIfExists('users');
-        Schema::dropIfExists('accounts');
+        Schema::dropIfExists('organisations');
         Schema::dropIfExists('currencies');        
         Schema::dropIfExists('invoice_statuses');
         Schema::dropIfExists('countries');

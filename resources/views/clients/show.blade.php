@@ -101,11 +101,11 @@
                 {{ $client->country->name }}<br/>
             @endif
 
-            @if ($client->account->custom_client_label1 && $client->custom_value1)
-                {{ $client->account->custom_client_label1 . ': ' . $client->custom_value1 }}<br/>
+            @if ($client->organisation->custom_client_label1 && $client->custom_value1)
+                {{ $client->organisation->custom_client_label1 . ': ' . $client->custom_value1 }}<br/>
             @endif
-            @if ($client->account->custom_client_label2 && $client->custom_value2)
-                {{ $client->account->custom_client_label2 . ': ' . $client->custom_value2 }}<br/>
+            @if ($client->organisation->custom_client_label2 && $client->custom_value2)
+                {{ $client->organisation->custom_client_label2 . ': ' . $client->custom_value2 }}<br/>
             @endif
 
             @if ($client->work_phone)

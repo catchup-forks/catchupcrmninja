@@ -37,9 +37,9 @@ function ViewModel(data) {
         @endif
     }
 
-    self.invoice_taxes = ko.observable({{ Auth::user()->account->invoice_taxes ? 'true' : 'false' }});
-    self.invoice_item_taxes = ko.observable({{ Auth::user()->account->invoice_item_taxes ? 'true' : 'false' }});
-    self.show_item_taxes = ko.observable({{ Auth::user()->account->show_item_taxes ? 'true' : 'false' }});
+    self.invoice_taxes = ko.observable({{ Auth::user()->organisation->invoice_taxes ? 'true' : 'false' }});
+    self.invoice_item_taxes = ko.observable({{ Auth::user()->organisation->invoice_item_taxes ? 'true' : 'false' }});
+    self.show_item_taxes = ko.observable({{ Auth::user()->organisation->show_item_taxes ? 'true' : 'false' }});
 
     self.mapping = {
         'invoice': {
@@ -197,18 +197,18 @@ function ViewModel(data) {
 function InvoiceModel(data) {
     var self = this;
     this.client = ko.observable(data ? false : new ClientModel());
-    self.account = {!! $account !!};
+    self.organisation = {!! $organisation !!};
     self.id = ko.observable('');
     self.discount = ko.observable('');
     self.is_amount_discount = ko.observable(0);
     self.frequency_id = ko.observable(4); // default to monthly
     self.terms = ko.observable('');
-    self.default_terms = ko.observable(account.{{ $entityType }}_terms);
-    self.terms_placeholder = ko.observable({{ !$invoice->id && $account->{"{$entityType}_terms"} ? "account.{$entityType}_terms" : false}});
+    self.default_terms = ko.observable(organisation.{{ $entityType }}_terms);
+    self.terms_placeholder = ko.observable({{ !$invoice->id && $organisation->{"{$entityType}_terms"} ? "organisation.{$entityType}_terms" : false}});
     self.set_default_terms = ko.observable(false);
     self.invoice_footer = ko.observable('');
-    self.default_footer = ko.observable(account.invoice_footer);
-    self.footer_placeholder = ko.observable({{ !$invoice->id && $account->invoice_footer ? 'account.invoice_footer' : false}});
+    self.default_footer = ko.observable(organisation.invoice_footer);
+    self.footer_placeholder = ko.observable({{ !$invoice->id && $organisation->invoice_footer ? 'organisation.invoice_footer' : false}});
     self.set_default_footer = ko.observable(false);
     self.public_notes = ko.observable('');
     self.po_number = ko.observable('');
@@ -260,7 +260,7 @@ function InvoiceModel(data) {
 
     self.addItem = function() {
         var itemModel = new ItemModel();
-        @if ($account->hide_quantity)
+        @if ($organisation->hide_quantity)
             itemModel.qty(1);
         @endif
         self.invoice_items.push(itemModel);
@@ -341,7 +341,7 @@ function InvoiceModel(data) {
 
     self.formatMoney = function(amount) {
         var client = $.parseJSON(ko.toJSON(self.client()));
-        return formatMoneyAccount(amount, self.account, client);
+        return formatMoneyAccount(amount, self.organisation, client);
     }
 
     self.totals = ko.observable();
@@ -805,7 +805,7 @@ function ItemModel(data) {
     }
 
     this.isEmpty = function() {
-        return !self.product_key() && !self.notes() && !self.cost() && (!self.qty() || {{ $account->hide_quantity ? 'true' : 'false' }});
+        return !self.product_key() && !self.notes() && !self.cost() && (!self.qty() || {{ $organisation->hide_quantity ? 'true' : 'false' }});
     }
 
     this.onSelect = function() {}
@@ -826,7 +826,7 @@ ko.bindingHandlers.typeahead = {
             display: allBindings.key,
             source: searchData(allBindings.items, allBindings.key)
         }).on('typeahead:select', function(element, datum, name) {
-            @if (Auth::user()->account->fill_products)
+            @if (Auth::user()->organisation->fill_products)
                 var model = ko.dataFor(this);
                 if (model.expense_public_id()) {
                     return;
@@ -840,7 +840,7 @@ ko.bindingHandlers.typeahead = {
                 if (!model.qty()) {
                     model.qty(1);
                 }
-                @if ($account->invoice_item_taxes)
+                @if ($organisation->invoice_item_taxes)
                     if (datum.default_tax_rate) {
                         model.tax(self.model.getTaxRateById(datum.default_tax_rate.public_id));
                     }

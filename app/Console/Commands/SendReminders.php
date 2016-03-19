@@ -5,9 +5,9 @@ use DateTime;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
-use App\Models\Account;
+use App\Models\Organisation;
 use App\Ninja\Mailers\ContactMailer as Mailer;
-use App\Ninja\Repositories\accountRepository;
+use App\Ninja\Repositories\OrganisationRepository;
 use App\Ninja\Repositories\InvoiceRepository;
 
 class SendReminders extends Command
@@ -18,7 +18,7 @@ class SendReminders extends Command
     protected $invoiceRepo;
     protected $accountRepo;
 
-    public function __construct(Mailer $mailer, InvoiceRepository $invoiceRepo, AccountRepository $accountRepo)
+    public function __construct(Mailer $mailer, InvoiceRepository $invoiceRepo, OrganisationRepository $accountRepo)
     {
         parent::__construct();
 
@@ -33,18 +33,18 @@ class SendReminders extends Command
         $today = new DateTime();
 
         $accounts = $this->accountRepo->findWithReminders();
-        $this->info(count($accounts).' accounts found');
+        $this->info(count($accounts).' organisations found');
 
-        foreach ($accounts as $account) {
-            if (!$account->isPro()) {
+        foreach ($accounts as $organisation) {
+            if (!$organisation->isPro()) {
                 continue;
             }
 
-            $invoices = $this->invoiceRepo->findNeedingReminding($account);
-            $this->info($account->name . ': ' . count($invoices).' invoices found');
+            $invoices = $this->invoiceRepo->findNeedingReminding($organisation);
+            $this->info($organisation->name . ': ' . count($invoices).' invoices found');
 
             foreach ($invoices as $invoice) {
-                if ($reminder = $account->getInvoiceReminder($invoice)) {
+                if ($reminder = $organisation->getInvoiceReminder($invoice)) {
                     $this->info('Send to ' . $invoice->id);
                     $this->mailer->sendInvoice($invoice, $reminder);
                 }

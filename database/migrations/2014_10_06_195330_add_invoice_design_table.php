@@ -17,7 +17,7 @@ class AddInvoiceDesignTable extends Migration {
 			$table->mediumText('javascript')->nullable();
 		});
 
-		Schema::table('accounts', function($table)
+		Schema::table('organisations', function($table)
 		{
 			$table->text('invoice_design')->nullable();
 		});		
@@ -26,7 +26,7 @@ class AddInvoiceDesignTable extends Migration {
 			'javascript' => "var GlobalY=0;//Y position of line at current page
 
 	    var client = invoice.client;
-	    var account = invoice.account;
+	    var organisation = invoice.organisation;
 	    var currencyId = client.currency_id;
 
 	    layout.headerRight = 550;
@@ -120,7 +120,7 @@ class AddInvoiceDesignTable extends Migration {
 			'javascript' => "  var GlobalY=0;//Y position of line at current page
 
 			  var client = invoice.client;
-			  var account = invoice.account;
+			  var organisation = invoice.organisation;
 			  var currencyId = client.currency_id;
 
 			  layout.headerRight = 150;
@@ -268,7 +268,7 @@ class AddInvoiceDesignTable extends Migration {
 
 			DB::table('invoice_designs')->where('id', 3)->update([
 				'javascript' => "    var client = invoice.client;
-	    var account = invoice.account;
+	    var organisation = invoice.organisation;
 	    var currencyId = client.currency_id;
 
 	    layout.headerRight = 400;
@@ -298,7 +298,7 @@ class AddInvoiceDesignTable extends Migration {
 
 	    //second column
 	    doc.setFontType('bold');
-	    var name = invoice.account.name;    
+	    var name = invoice.organisation.name;
 	    if (name) {
 	        doc.setFontSize('30');
 	        doc.setFontType('bold');
@@ -419,7 +419,7 @@ class AddInvoiceDesignTable extends Migration {
 
 		DB::table('invoice_designs')->where('id', 4)->update([
 			'javascript' => "  var client = invoice.client;
-		  var account = invoice.account;
+		  var organisation = invoice.organisation;
 		  var currencyId = client.currency_id;  
 		  
       layout.accountTop += 25;
@@ -510,7 +510,7 @@ class AddInvoiceDesignTable extends Migration {
 			$table->dropColumn('javascript');
 		});
 
-		Schema::table('accounts', function($table)
+		Schema::table('organisations', function($table)
 		{
 			$table->dropColumn('invoice_design');
 		});

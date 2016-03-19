@@ -100,18 +100,18 @@ class CheckData extends Command {
                     $records = $records->join('clients', 'clients.id', '=', "{$table}.client_id");
                 }
                 
-                $records = $records->where("{$table}.account_id", '!=', DB::raw("{$entityType}s.account_id"))
-                                ->get(["{$table}.id", "clients.account_id", "clients.user_id"]);
+                $records = $records->where("{$table}.organisation_id", '!=', DB::raw("{$entityType}s.organisation_id"))
+                                ->get(["{$table}.id", "clients.organisation_id", "clients.user_id"]);
 
                 if (count($records)) {
-                    $this->info(count($records) . " {$table} records with incorrect {$entityType} account id");
+                    $this->info(count($records) . " {$table} records with incorrect {$entityType} organisation id");
 
                     if ($this->option('fix') == 'true') {
                         foreach ($records as $record) {
                             DB::table($table)
                                 ->where('id', $record->id)
                                 ->update([
-                                    'account_id' => $record->account_id,
+                                    'organisation_id' => $record->organisation_id,
                                     'user_id' => $record->user_id,
                                 ]);
                         }
@@ -148,7 +148,7 @@ class CheckData extends Command {
         // find all clients where the balance doesn't equal the sum of the outstanding invoices
         $clients = DB::table('clients')
                     ->join('invoices', 'invoices.client_id', '=', 'clients.id')
-                    ->join('accounts', 'accounts.id', '=', 'clients.account_id');
+                    ->join('organisations', 'organisations.id', '=', 'clients.organisation_id');
 
         if ($this->option('client_id')) {
             $clients->where('clients.id', '=', $this->option('client_id'));
@@ -161,7 +161,7 @@ class CheckData extends Command {
                     
         $clients = $clients->groupBy('clients.id', 'clients.balance', 'clients.created_at')
                 ->orderBy('clients.id', 'DESC')
-                ->get(['clients.account_id', 'clients.id', 'clients.balance', 'clients.paid_to_date', DB::raw('sum(invoices.balance) actual_balance')]);
+                ->get(['clients.organisation_id', 'clients.id', 'clients.balance', 'clients.paid_to_date', DB::raw('sum(invoices.balance) actual_balance')]);
         $this->info(count($clients) . ' clients with incorrect balance/activities');
 
         foreach ($clients as $client) {
@@ -309,7 +309,7 @@ class CheckData extends Command {
                     DB::table('activities')->insert([
                             'created_at' => new Carbon,
                             'updated_at' => new Carbon,
-                            'account_id' => $client->account_id,
+                            'organisation_id' => $client->organisation_id,
                             'client_id' => $client->id,
                             'adjustment' => $client->actual_balance - $activity->balance,
                             'balance' => $client->actual_balance,

@@ -1,6 +1,6 @@
 <?php namespace App\Ninja\Transformers;
 
-use App\Models\Account;
+use App\Models\Organisation;
 use App\Models\Payment;
 use App\Models\Invoice;
 use App\Models\Client;
@@ -26,21 +26,21 @@ class PaymentTransformer extends EntityTransformer
     ];
 
 
-    public function __construct(Account $account)
+    public function __construct(Organisation $organisation)
     {
-        parent::__construct($account);
+        parent::__construct($organisation);
 
     }
 
     public function includeInvoice(Payment $payment)
     {
-        $transformer = new InvoiceTransformer($this->account, $this->serializer);
+        $transformer = new InvoiceTransformer($this->organisation, $this->serializer);
         return $this->includeItem($payment->invoice, $transformer, 'invoice');
     }
 
     public function includeClient(Payment $payment)
     {
-        $transformer = new ClientTransformer($this->account, $this->serializer);
+        $transformer = new ClientTransformer($this->organisation, $this->serializer);
         return $this->includeItem($payment->client, $transformer, 'client');
     }
 
@@ -49,7 +49,7 @@ class PaymentTransformer extends EntityTransformer
         return [
             'id' => (int) $payment->public_id,
             'amount' => (float) $payment->amount,
-            'account_key' => $this->account->account_key,
+            'account_key' => $this->organisation->account_key,
             'user_id' => (int) $payment->user->public_id + 1,
             'transaction_reference' => $payment->transaction_reference,
             'payment_date' => $payment->payment_date,

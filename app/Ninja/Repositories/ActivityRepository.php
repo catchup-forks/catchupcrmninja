@@ -44,12 +44,12 @@ class ActivityRepository
     {
         $activity = new Activity();
 
-        if (Auth::check() && Auth::user()->account_id == $entity->account_id) {
+        if (Auth::check() && Auth::user()->organisation_id == $entity->organisation_id) {
             $activity->user_id = Auth::user()->id;
-            $activity->account_id = Auth::user()->account_id;
+            $activity->organisation_id = Auth::user()->organisation_id;
         } else {
             $activity->user_id = $entity->user_id;
-            $activity->account_id = $entity->account_id;
+            $activity->organisation_id = $entity->organisation_id;
 
             if ( ! $entity instanceof Invitation) {
                 $activity->is_system = true;
@@ -64,7 +64,7 @@ class ActivityRepository
     public function findByClientId($clientId)
     {
         return DB::table('activities')
-                    ->join('accounts', 'accounts.id', '=', 'activities.account_id')
+                    ->join('organisations', 'organisations.id', '=', 'activities.organisation_id')
                     ->join('users', 'users.id', '=', 'activities.user_id')
                     ->join('clients', 'clients.id', '=', 'activities.client_id')
                     ->leftJoin('contacts', 'contacts.client_id', '=', 'clients.id')
@@ -75,8 +75,8 @@ class ActivityRepository
                     ->where('contacts.is_primary', '=', 1)
                     ->whereNull('contacts.deleted_at')
                     ->select(
-                        DB::raw('COALESCE(clients.currency_id, accounts.currency_id) currency_id'),
-                        DB::raw('COALESCE(clients.country_id, accounts.country_id) country_id'),
+                        DB::raw('COALESCE(clients.currency_id, organisations.currency_id) currency_id'),
+                        DB::raw('COALESCE(clients.country_id, organisations.country_id) country_id'),
                         'activities.id',
                         'activities.created_at',
                         'activities.contact_id',

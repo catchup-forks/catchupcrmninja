@@ -4,7 +4,7 @@ use Utils;
 use Auth;
 use App\Events\UserSignedUp;
 use App\Models\Activity;
-use App\Ninja\Repositories\AccountRepository;
+use App\Ninja\Repositories\OrganisationRepository;
 use App\Ninja\Mailers\UserMailer;
 
 class HandleUserSignedUp
@@ -17,7 +17,7 @@ class HandleUserSignedUp
      *
      * @return void
      */
-    public function __construct(AccountRepository $accountRepo, UserMailer $userMailer)
+    public function __construct(OrganisationRepository $accountRepo, UserMailer $userMailer)
     {
         $this->accountRepo = $accountRepo;
         $this->userMailer = $userMailer;

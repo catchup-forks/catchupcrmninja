@@ -24,25 +24,25 @@ class Invitation extends EntityModel
         return $this->belongsTo('App\Models\User')->withTrashed();
     }
 
-    public function account()
+    public function organisation()
     {
-        return $this->belongsTo('App\Models\Account');
+        return $this->belongsTo('App\Models\Organisation');
     }
 
     public function getLink($type = 'view')
     {
-        if (!$this->account) {
-            $this->load('account');
+        if (!$this->organisation) {
+            $this->load('organisation');
         }
 
         $url = SITE_URL;
-        $iframe_url = $this->account->iframe_url;
+        $iframe_url = $this->organisation->iframe_url;
         
-        if ($this->account->isPro()) {
+        if ($this->organisation->isPro()) {
             if ($iframe_url) {
                 return "{$iframe_url}/?{$this->invitation_key}";
-            } elseif ($this->account->subdomain) {
-                $url = Utils::replaceSubdomain($url, $this->account->subdomain);
+            } elseif ($this->organisation->subdomain) {
+                $url = Utils::replaceSubdomain($url, $this->organisation->subdomain);
             }
         }
         

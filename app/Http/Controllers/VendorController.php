@@ -13,7 +13,7 @@ use Cache;
 
 use App\Models\Activity;
 use App\Models\Vendor;
-use App\Models\Account;
+use App\Models\Organisation;
 use App\Models\VendorContact;
 use App\Models\Size;
 use App\Models\PaymentTerm;
@@ -174,9 +174,9 @@ class VendorController extends BaseController
 
         $data = array_merge($data, self::getViewModel());
 
-        if (Auth::user()->account->isNinjaAccount()) {
-            if ($account = Account::whereId($vendor->public_id)->first()) {
-                $data['proPlanPaid'] = $account['pro_plan_paid'];
+        if (Auth::user()->organisation->isNinjaAccount()) {
+            if ($organisation = Organisation::whereId($vendor->public_id)->first()) {
+                $data['proPlanPaid'] = $organisation['pro_plan_paid'];
             }
         }
 
@@ -187,7 +187,7 @@ class VendorController extends BaseController
     {
         return [
             'data' => Input::old('data'),
-            'account' => Auth::user()->account,
+            'organisation' => Auth::user()->organisation,
             'currencies' => Cache::get('currencies'),
             'countries' => Cache::get('countries'),
         ];
