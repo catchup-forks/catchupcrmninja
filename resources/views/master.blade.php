@@ -2,7 +2,7 @@
 <html lang="{{App::getLocale()}}">
 <head>
     @if (isset($hideLogo) && $hideLogo)
-        <title>{{ trans('texts.relation_portal') }}</title>
+        <title>{{ trans('texts.CUSTOMER_PORTAL') }}</title>
     @else
         <title>{{ isset($title) ? ($title . ' | Invoice Ninja') : ('Invoice Ninja | ' . trans('texts.app_title')) }}</title> 
         <meta name="description" content="{{ isset($description) ? $description : trans('texts.app_description') }}" />

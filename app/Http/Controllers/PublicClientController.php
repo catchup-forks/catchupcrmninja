@@ -118,7 +118,7 @@ class PublicRelationController extends BaseController
             'showBreadcrumbs' => false,
             'hideLogo' => $organisation->isWhiteLabel(),
             'hideHeader' => $organisation->isNinjaOrganisation(),
-            'hideDashboard' => !$organisation->enable_relation_portal,
+            'hideDashboard' => !$organisation->enable_customer_portal,
             'relationViewCSS' => $organisation->relationViewCSS(),
             'relationFontUrl' => $organisation->getFontsUrl(),
             'invoice' => $invoice->hidePrivateFields(),
@@ -196,7 +196,7 @@ class PublicRelationController extends BaseController
         $relation = $invoice->relation;
         $color = $organisation->primary_color ? $organisation->primary_color : '#0b4d78';
 
-        if (!$organisation->enable_relation_portal) {
+        if (!$organisation->enable_customer_portal) {
             return $this->returnError();
         }
 
@@ -251,7 +251,7 @@ class PublicRelationController extends BaseController
         $data = [
             'color' => $color,
             'hideLogo' => $organisation->isWhiteLabel(),
-            'hideDashboard' => !$organisation->enable_relation_portal,
+            'hideDashboard' => !$organisation->enable_customer_portal,
             'relationViewCSS' => $organisation->relationViewCSS(),
             'relationFontUrl' => $organisation->getFontsUrl(),
             'title' => trans('texts.invoices'),
@@ -283,7 +283,7 @@ class PublicRelationController extends BaseController
         $data = [
             'color' => $color,
             'hideLogo' => $organisation->isWhiteLabel(),
-            'hideDashboard' => !$organisation->enable_relation_portal,
+            'hideDashboard' => !$organisation->enable_customer_portal,
             'relationViewCSS' => $organisation->relationViewCSS(),
             'relationFontUrl' => $organisation->getFontsUrl(),
             'entityType' => ENTITY_PAYMENT,
@@ -321,7 +321,7 @@ class PublicRelationController extends BaseController
         $data = [
           'color' => $color,
           'hideLogo' => $organisation->isWhiteLabel(),
-          'hideDashboard' => !$organisation->enable_relation_portal,
+          'hideDashboard' => !$organisation->enable_customer_portal,
           'relationViewCSS' => $organisation->relationViewCSS(),
           'relationFontUrl' => $organisation->getFontsUrl(),
           'title' => trans('texts.quotes'),

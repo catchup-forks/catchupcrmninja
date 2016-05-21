@@ -930,7 +930,7 @@ return array(
     'invalid_contact_email' => 'Invalid contact email',
     ],
 
-    'relation_portal' => 'Klantportaal',
+    'CUSTOMER_PORTAL' => 'Klantportaal',
     'admin' => 'Admin',
     'disabled' => 'Uitgeschakeld',
     'show_archived_users' => 'Toon gearchiveerde gebruikers',

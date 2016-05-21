@@ -819,7 +819,7 @@ $LANG = array(
     'task_file' => 'Task File',
     'no_mapper' => 'No valid mapping for file',
     'invalid_csv_header' => 'Invalid CSV Header',
-    'relation_portal' => 'Relation Portal',
+    'CUSTOMER_PORTAL' => 'Customer Portal',
     'admin' => 'Admin',
     'disabled' => 'Disabled',
     'show_archived_users' => 'Show archived users',
@@ -1049,8 +1049,8 @@ $LANG = array(
     'custom_invoice_item_fields_help' => 'Add a field when creating an invoice item and display the label and value on the PDF.',
     'recurring_invoice_number' => 'Recurring Invoice Number',
     'recurring_invoice_number_prefix_help' => 'Speciy a prefix to be added to the invoice number for recurring invoices. The default value is \'R\'.',
-    'enable_relation_portal' => 'Dashboard',
-    'enable_relation_portal_help' => 'Show/hide the dashboard page in the relation portal.',
+    'enable_customer_portal' => 'Dashboard',
+    'enable_customer_portal_help' => 'Show/hide the dashboard page in the relation portal.',
 
     // Relation Passwords
     'enable_portal_password'=>'Password protect invoices',

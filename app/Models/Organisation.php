@@ -62,7 +62,7 @@ class Organisation extends Eloquent
         ORGANISATION_INVOICE_DESIGN,
         ORGANISATION_EMAIL_SETTINGS,
         ORGANISATION_TEMPLATES_AND_REMINDERS,
-        ORGANISATION_RELATION_PORTAL,
+        ORGANISATION_CUSTOMER_PORTAL,
         ORGANISATION_CHARTS_AND_REPORTS,
         ORGANISATION_DATA_VISUALIZATIONS,
         ORGANISATION_USER_MANAGEMENT,
@@ -1063,7 +1063,7 @@ class Organisation extends Eloquent
             
             if ((Utils::isNinja() && $this->isPro()) || $this->isWhiteLabel()) {
                 // For self-hosted users, a white-label license is required for custom CSS
-                $css .= $this->relation_view_css;
+                $css .= $this->client_view_css;
             }
         }
         

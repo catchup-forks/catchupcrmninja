@@ -82,7 +82,7 @@ class OrganisationTransformer extends EntityTransformer
             'invoice_taxes' => (bool) $organisation->invoice_taxes,
             'invoice_item_taxes' => (bool) $organisation->invoice_item_taxes,
             'invoice_design_id' => (int) $organisation->invoice_design_id,
-            'relation_view_css' => (string) $organisation->relation_view_css,
+            'client_view_css' => (string) $organisation->client_view_css,
             'work_phone' => $organisation->work_phone,
             'work_email' => $organisation->work_email,
             'language_id' => (int) $organisation->language_id,
